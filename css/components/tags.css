@@ -1,0 +1,35 @@
+.tags-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 1.95rem;
+}
+
+.tags-wrapper__label {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #555;
+}
+
+.tags-wrapper__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tags-wrapper__item a {
+  display: inline-block;
+  background: #f3f3f3;
+  color: #333;
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: background 0.2s ease-in-out;
+}
+
+.tags-wrapper__item a:hover {
+  background: #e0e0e0;
+}

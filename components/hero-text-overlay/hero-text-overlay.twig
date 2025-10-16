@@ -1,0 +1,72 @@
+{# Hero Text Overlay (D11 SDC, .twig) #}
+{% set overlay_position = overlay_position|default('center') %}
+{% set height = height|default('medium') %}
+{% set variant = variant|default('default') %}
+{% set heading_level = heading_level|default(2) %}
+{% set max_width = max_width|default('60ch') %}
+{% set wrap_title = wrap_title is defined ? wrap_title : true %}
+
+{% set pos_map = {
+  'top-left':      ['justify-content-start','align-items-start'],
+  'top-center':    ['justify-content-center','align-items-start'],
+  'top-right':     ['justify-content-end','align-items-start'],
+  'center-left':   ['justify-content-start','align-items-center'],
+  'center':        ['justify-content-center','align-items-center'],
+  'center-right':  ['justify-content-end','align-items-center'],
+  'bottom-left':   ['justify-content-start','align-items-end'],
+  'bottom-center': ['justify-content-center','align-items-end'],
+  'bottom-right':  ['justify-content-end','align-items-end'],
+} %}
+{% set align_classes = pos_map[overlay_position]|default(['justify-content-center','align-items-center']) %}
+{% set height_class = {
+  'auto': '',
+  'small': 'hto--h-small',
+  'medium': 'hto--h-medium',
+  'large': 'hto--h-large',
+  'fullscreen': 'hto--h-fullscreen'
+}[height]|default('hto--h-medium') %}
+{% set variant_class = 'hto--' ~ variant %}
+{% set classes = ['hero-text-overlay', height_class, variant_class]|filter(c => c) %}
+
+{# Capture slots to test for emptiness #}
+{% set _title %}{% block title %}{% endblock %}{% endset %}
+{% set _subtitle %}{% block subtitle %}{% endblock %}{% endset %}
+{% set _content %}{% block content %}{% endblock %}{% endset %}
+{% set _cta_primary %}{% block cta_primary %}{% endblock %}{% endset %}
+{% set _cta_secondary %}{% block cta_secondary %}{% endblock %}{% endset %}
+
+<section class="{{ classes|join(' ') }}" role="banner">
+  <div class="hero-text-overlay__inner d-flex {{ align_classes|join(' ') }}">
+    <div class="container">
+      <div class="hero-text-overlay__box" style="max-width: {{ max_width }};">
+        {% if _title|trim is not empty %}
+          {% if wrap_title %}
+            {% set h = 'h' ~ heading_level %}
+            <{{ h }} class="hero-text-overlay__title mb-3">{{ _title }}</{{ h }}>
+          {% else %}
+            {{ _title }}
+          {% endif %}
+        {% endif %}
+
+        {% if _subtitle|trim is not empty %}
+          <p class="hero-text-overlay__subtitle lead mb-3">{{ _subtitle }}</p>
+        {% endif %}
+
+        {% if _content|trim is not empty %}
+          <div class="hero-text-overlay__content mb-4">{{ _content }}</div>
+        {% endif %}
+
+        {% if _cta_primary|trim is not empty or _cta_secondary|trim is not empty %}
+          <div class="hero-text-overlay__ctas d-flex flex-column flex-sm-row gap-3">
+            {% if _cta_primary|trim is not empty %}
+              <div class="hero-text-overlay__cta-primary">{{ _cta_primary }}</div>
+            {% endif %}
+            {% if _cta_secondary|trim is not empty %}
+              <div class="hero-text-overlay__cta-secondary">{{ _cta_secondary }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>

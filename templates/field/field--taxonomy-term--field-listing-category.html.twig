@@ -1,0 +1,10 @@
+{% set circle_color = content.field_listing_category_color.0['#markup']|default('#999') %}
+{% set icon_class = content.field_listing_category_icon.0['#markup']|default('la la-question') %}
+
+<div class="category-icon-wrapper">
+  <svg class="category-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <!-- Circle background -->
+    <circle cx="50" cy="50" r="50" fill="{{ circle_color }}" />
+  </svg>
+  <i class="{{ icon_class }} category-icon"></i>
+</div>

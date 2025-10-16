@@ -1,0 +1,142 @@
+.toolbar-menu-administration {
+  z-index: 10000 !important;
+  position: absolute !important; /* Or 'fixed'/'absolute' if needed for your layout */
+}
+/* Override Bootstrap's .fixed-top for your header */
+.offcanvas-backdrop, .modal-backdrop {
+  z-index: 50 !important;
+}
+header.site-header.fixed-top {
+  z-index: 500 !important;
+  position: fixed !important; /* Ensures positioning isn't overridden */
+  margin-left: 0;
+  left: 0;
+  right: 0 !important;
+  width: 100% !important;
+}
+
+/* Navbar container */
+.site-header .navbar {
+  min-height: 70px;
+  padding: 0;
+  background: #f8f9fa;
+  border-bottom: none;
+  box-shadow: none;
+}
+
+/* Align header content */
+.site-header .container-xl {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* Hamburger menu and right buttons */
+.site-header .navbar-toggler {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 1.5rem;
+  padding: 0.25rem 0.75rem;
+}
+
+.site-header .navbar-toggler:focus {
+  box-shadow: 0 0 0 2px #6661;
+}
+
+/* Centered branding */
+.site-header .flex-grow-1 {
+  flex: 1 1 auto;
+}
+.site-header .justify-content-center {
+  justify-content: center !important;
+}
+
+.site-header .container {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.site-header .title,
+.site-header .navbar-brand,
+.site-header .site-branding__text {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 600;
+}
+
+/* Right-side header icons/buttons */
+.site-header .gap-2 > * {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+.site-header .btn-link {
+  font-size: 1rem;
+  color: #222;
+  text-decoration: none;
+  background: none;
+  border: none;
+}
+.site-header .btn-link:hover,
+.site-header .btn-link:focus {
+  color: #e43610;
+  text-decoration: underline;
+}
+
+/* Offcanvas overrides (for below header, under site-header) */
+.offcanvas.offcanvas-start,
+.offcanvas.offcanvas-end {
+  top: 80px !important;
+  height: calc(100% - 80px) !important;
+  z-index: 480 !important;
+  border-top: none;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: 0 4px 32px 0 rgba(0,0,0,0.1);
+}
+
+/* Make offcanvas body scrollable if content is tall */
+.offcanvas-body {
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
+  padding-bottom: 2rem;
+}
+
+/* Offcanvas header tweaks */
+.offcanvas-header {
+  border-bottom: 1px solid #eee;
+}
+
+/* Modal for search: center content and clean header */
+#searchModal .modal-content {
+  border-radius: 0.5rem;
+  border: none;
+  box-shadow: 0 4px 32px 0 rgba(0,0,0,0.10);
+}
+#searchModal .modal-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+#searchModal .modal-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+@media (max-width: 991.98px) {
+  .site-header .container-xl {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .site-header .container {
+    max-width: 100%;
+  }
+}
+
+/* Optional: Hide outline on mouse users, show for keyboard navigation */
+.site-header button:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}

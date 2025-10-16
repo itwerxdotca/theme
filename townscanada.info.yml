@@ -1,0 +1,36 @@
+name: townscanada
+type: theme
+description: 'townscanada subtheme based on Bootstrap 5 theme.'
+core_version_requirement: '^10.1 || ^11.0'
+'base theme': bootstrap
+libraries:
+  - townscanada/global-styling
+  - townscanada/components
+  - townscanada/fontawesome
+  - townscanada/carousel
+  - townscanada/bootstrap-js
+ckeditor_stylesheets:
+  - css/style.css
+ckeditor5-stylesheets:
+  - css/ck5style.css
+# Register SDC components directory (discovery).
+components:
+  namespaces:
+    townscanada: components
+regions:
+  header: Header
+  nav_branding: 'Navigation branding region'
+  nav_main: 'Main navigation region'
+  nav_additional: 'Additional navigation region (eg search form, social icons, etc)'
+  hero: Hero
+  breadcrumb: Breadcrumbs
+  content: 'Main content'
+  sidebar_first: 'Sidebar first'
+  sidebar_second: 'Sidebar second'
+  footer_1: 'Footer 1'
+  footer_2: 'Footer 2'
+  footer_3: 'Footer 3'
+  footer_4: 'Footer 4'
+  footer_bottom: 'Footer Bottom'
+  offcanvas_left: 'Offcanvas Left'
+  offcanvas_right: 'Offcanvas Right'

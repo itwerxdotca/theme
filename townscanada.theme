@@ -1,0 +1,638 @@
+<?php
+
+/**
+ * @file
+ * Theme functions for the Towns Canada theme.
+ *
+ * Merged version: keeps original page-level hero behavior and adds
+ * block-based hero logic. Parallax library is attached for hero blocks
+ * unconditionally (parallax will always be used).
+ */
+
+use Drupal\node\NodeInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\image\Entity\ImageStyle;
+use Drupal\responsive_image\Entity\ResponsiveImageStyle;
+use Drupal\file\Entity\File;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\user\Entity\User;
+use Drupal\user\Form\UserLoginForm;
+use Drupal\user\Form\UserPasswordForm;
+use Drupal\block_content\BlockContentInterface;
+use Drupal\file\FileInterface;
+use Drupal\media\MediaInterface;
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function townscanada_preprocess_page(array &$variables) {
+  // Initialize hero variables
+  $variables['hero_image_url'] = '';
+  $variables['hero_image_responsive'] = NULL;
+  $variables['hero_image_alt'] = '';
+  $variables['hero_image_title'] = '';
+  $variables['hero_image_caption'] = '';
+  $variables['hero_title'] = '';
+
+  // Additional hero fields we may want to expose to the region template.
+  $variables['hero_subtitle'] = '';
+  $variables['hero_cta_url'] = '';
+  $variables['hero_cta_title'] = '';
+  $variables['hero_overlay_opacity'] = '';
+  $variables['hero_background_color'] = '';
+  $variables['hero_meta'] = [];
+
+  // Parallax defaults (ensure defined)
+  $variables['hero_parallax'] = FALSE;
+  $variables['hero_parallax_speed'] = '0.18';
+
+  $route_match = \Drupal::routeMatch();
+
+  // ——————————————————————————————————————
+  // CASE 1: NODE PAGE
+  // ——————————————————————————————————————
+  if (!empty($variables['node']) && $variables['node'] instanceof NodeInterface) {
+    $node = $variables['node'];
+
+    // Set title from node
+    $variables['hero_title'] = $node->getTitle();
+
+    // Check possible node image fields (these may be Media reference fields).
+    $image_fields = [
+      'field_hero_image',
+      'field_hero_media',
+      'field_image',
+      'field_listing_image',
+      'field_media', // a generic guess; keep as additional candidate
+    ];
+
+    foreach ($image_fields as $field_name) {
+      $img = _townscanada_extract_image_from_field($node, $field_name);
+      if ($img) {
+        $variables['hero_image_url'] = $img['url'] ?? '';
+        $variables['hero_image_responsive'] = $img['responsive_render'] ?? NULL;
+        $variables['hero_image_alt'] = $img['alt'] ?? '';
+        $variables['hero_image_title'] = $img['title'] ?? '';
+        $variables['hero_image_caption'] = $img['caption'] ?? '';
+
+        // Add cache tags for file/media if present
+        if (!empty($img['file_id'])) {
+          $variables['#cache']['tags'][] = 'file:' . $img['file_id'];
+        }
+        if (!empty($img['media_id'])) {
+          $variables['#cache']['tags'][] = 'media:' . $img['media_id'];
+        }
+
+        // Stop after first candidate found
+        break;
+      }
+    }
+
+    // Additional node fields to expose in the hero area (if present)
+    $subtitle_candidates = ['field_hero_subtitle', 'field_subtitle', 'field_listing_address'];
+    foreach ($subtitle_candidates as $candidate) {
+      if ($node->hasField($candidate) && !$node->get($candidate)->isEmpty()) {
+        $variables['hero_subtitle'] = $node->get($candidate)->first()->getString();
+        $variables['#cache']['tags'][] = 'node:' . $node->id();
+        break;
+      }
+    }
+
+    // CTA field (link)
+    if ($node->hasField('field_hero_cta') && !$node->get('field_hero_cta')->isEmpty()) {
+      $link_item = $node->get('field_hero_cta')->first();
+      try {
+        $variables['hero_cta_url'] = $link_item->getUrl()->toString();
+        $variables['hero_cta_title'] = $link_item->get('title')->getString() ?: t('Learn more');
+      } catch (\Exception $e) {
+        // Fallback if link object doesn't behave as expected.
+        $variables['hero_cta_url'] = $link_item->get('uri')->getString() ?? '';
+        $variables['hero_cta_title'] = $variables['hero_cta_url'];
+      }
+      $variables['#cache']['tags'][] = 'node:' . $node->id();
+    }
+
+    // Example: background color / overlay opacity fields (optional)
+    if ($node->hasField('field_hero_background_color') && !$node->get('field_hero_background_color')->isEmpty()) {
+      $variables['hero_background_color'] = $node->get('field_hero_background_color')->first()->getString();
+      $variables['#cache']['tags'][] = 'node:' . $node->id();
+    }
+    if ($node->hasField('field_hero_overlay_opacity') && !$node->get('field_hero_overlay_opacity')->isEmpty()) {
+      $variables['hero_overlay_opacity'] = $node->get('field_hero_overlay_opacity')->first()->getString();
+      $variables['#cache']['tags'][] = 'node:' . $node->id();
+    }
+
+    // Example: arbitrary meta fields (you can add more keys here)
+    if ($node->hasField('field_hero_kicker') && !$node->get('field_hero_kicker')->isEmpty()) {
+      $variables['hero_meta']['kicker'] = $node->get('field_hero_kicker')->first()->getString();
+      $variables['#cache']['tags'][] = 'node:' . $node->id();
+    }
+
+    // If you want parallax on page-level hero, enable it here (per-node logic allowed)
+    // For example enable for all nodes that have a hero image:
+    $has_hero_image = !empty($variables['hero_image_responsive']) || !empty($variables['hero_image_url']);
+    if ($has_hero_image) {
+      $variables['hero_parallax'] = TRUE;
+      // optionally set per-node speed if you have a field, else keep default
+      // $variables['hero_parallax_speed'] = '0.18';
+    }
+
+    // Cache dependency
+    $variables['#cache']['tags'][] = 'node:' . $node->id();
+  }
+
+  // ——————————————————————————————————————
+  // CASE 2: TAXONOMY TERM PAGE
+  // ——————————————————————————————————————
+  elseif ($route_match->getRouteName() === 'entity.taxonomy_term.canonical') {
+    $term = $route_match->getParameter('taxonomy_term');
+
+    if ($term instanceof Term) {
+      // Set hero title
+      $variables['hero_title'] = $term->label();
+
+      // Fields to check on taxonomy terms
+      $field_names = [
+        'field_listing_location_image',
+        'field_listing_category_image',
+        'field_listing_category_icon',
+        'field_listing_category_color',
+      ];
+
+      // Initialize term data container
+      $variables['term']['vocabulary'] = $term->bundle();
+      foreach ($field_names as $field_name) {
+        if (!$term->hasField($field_name) || $term->get($field_name)->isEmpty()) {
+          continue;
+        }
+
+        $field = $term->get($field_name);
+        $value = null;
+
+        // Handle image fields
+        if ($field->getFieldDefinition()->getType() === 'image' || $field->getFieldDefinition()->getType() === 'entity_reference') {
+          $item = $field->first();
+          $file = $item->entity;
+
+          if ($file && $file->access('view')) {
+            $uri = $file->getFileUri();
+            $style = ImageStyle::load('blog_1140x642_');
+
+            if ($style) {
+              try {
+                $url = $style->buildUrl($uri);
+              }
+              catch (\Exception $e) {
+                $url = file_create_url($uri);
+              }
+            }
+            else {
+              $url = file_create_url($uri);
+            }
+
+            $value = [
+              'url' => $url,
+              'alt' => $item->get('alt')->getString() ?: $term->label(),
+            ];
+
+            if (empty($variables['hero_image_url'])) {
+              $variables['hero_image_url'] = $url;
+            }
+          }
+        }
+        // Handle text-based fields
+        elseif (in_array($field->getFieldDefinition()->getType(), ['string', 'text', 'text_long'])) {
+          $value = $field->value;
+        }
+        // Fallback for other field types
+        else {
+          $raw = $field->getValue();
+          $value = (count($raw) === 1 && isset($raw[0]['value'])) ? $raw[0]['value'] : $raw;
+        }
+
+        if ($value !== null) {
+          $variables['term'][$field_name] = $value;
+        }
+      }
+
+      // Cache dependency
+      $variables['#cache']['tags'][] = 'taxonomy_term:' . $term->id();
+    }
+  }
+
+  // ——————————————————————————————————————
+  // Fallback title
+  // ——————————————————————————————————————
+  if (empty($variables['hero_title']) && !empty($variables['title'])) {
+    $variables['hero_title'] = $variables['title'];
+  }
+
+  // ——————————————————————————————————————
+  // Ensure navigation regions always exist
+  // ——————————————————————————————————————
+  $regions = ['nav_branding', 'nav_main', 'nav_additional', 'hero'];
+  foreach ($regions as $region) {
+    if (!isset($variables['page'][$region])) {
+      $variables['page'][$region] = [];
+    }
+  }
+
+  // ——————————————————————————————————————
+  // Pass hero variables to the hero region
+  // ——————————————————————————————————————
+  $variables['page']['hero'] = [
+    '#theme' => 'hero',
+    '#hero_title' => $variables['hero_title'],
+    '#hero_subtitle' => $variables['hero_subtitle'],
+    '#hero_image_url' => $variables['hero_image_url'],
+    '#hero_image_responsive' => $variables['hero_image_responsive'],
+    '#hero_image_alt' => $variables['hero_image_alt'],
+    '#hero_image_title' => $variables['hero_image_title'],
+    '#hero_image_caption' => $variables['hero_image_caption'],
+    '#hero_cta_url' => $variables['hero_cta_url'],
+    '#hero_cta_title' => $variables['hero_cta_title'],
+    '#hero_overlay_opacity' => $variables['hero_overlay_opacity'],
+    '#hero_background_color' => $variables['hero_background_color'],
+    '#hero_meta' => !empty($variables['hero_meta']) ? $variables['hero_meta'] : NULL,
+    '#term' => !empty($variables['term']) ? $variables['term'] : NULL,
+    // Pass parallax flags into the hero render array so the template receives them.
+    '#hero_parallax' => !empty($variables['hero_parallax']) ? $variables['hero_parallax'] : FALSE,
+    '#hero_parallax_speed' => !empty($variables['hero_parallax_speed']) ? $variables['hero_parallax_speed'] : '0.18',
+  ];
+
+  // Attach hero-parallax library for page-level hero if enabled and there is an image.
+  if (!empty($variables['page']['hero'])) {
+    $hero = $variables['page']['hero'];
+    $has_image = !empty($hero['#hero_image_responsive']) || !empty($hero['#hero_image_url']);
+    $parallax = !empty($hero['#hero_parallax']);
+    if ($has_image && $parallax) {
+      // Attach the correct library name (ensure this matches townscanada.libraries.yml)
+      $variables['page']['hero']['#attached']['library'][] = 'townscanada/hero-parallax';
+    }
+  }
+
+  // ——————————————————————————————————————
+  // Attach the modal library from the theme
+  // ——————————————————————————————————————
+  if (\Drupal::currentUser()->isAnonymous()) {
+    $variables['#attached']['library'][] = 'townscanada/modal-forms';
+  }
+}
+
+/**
+ * Helper: extract image + metadata from an entity field (file or media).
+ *
+ * Returns associative array or NULL:
+ *  - url
+ *  - responsive_render (render array or NULL)
+ *  - alt
+ *  - title
+ *  - caption
+ *  - file_id
+ *  - media_id
+ */
+function _townscanada_extract_image_from_field($entity, $field_name, $image_style = 'blog_1140x642_', $responsive_style = 'hero_responsive') {
+  if (!$entity || !$entity->hasField($field_name) || $entity->get($field_name)->isEmpty()) {
+    return NULL;
+  }
+
+  $item = $entity->get($field_name)->first();
+  $ref = $item ? $item->entity : NULL;
+  $file = NULL;
+  $alt = '';
+  $title = '';
+  $caption = '';
+  $media_id = NULL;
+
+  // If the field item is an Entity Reference to Media, $ref will be a MediaInterface.
+  if ($ref instanceof MediaInterface) {
+    $media = $ref;
+    $media_id = $media->id();
+
+    // Try common image field names inside the media entity.
+    $candidate_media_fields = [
+      'field_media_image',
+      'field_media_thumbnail',
+      'field_media_hero_image',
+      'field_image',
+      'image',
+    ];
+
+    foreach ($candidate_media_fields as $mf) {
+      if ($media->hasField($mf) && !$media->get($mf)->isEmpty()) {
+        $media_item = $media->get($mf)->first();
+        $maybe_file = $media_item->entity;
+        if ($maybe_file instanceof FileInterface) {
+          $file = $maybe_file;
+          // alt/title may be stored on the media subfield item
+          try {
+            $alt = $media_item->get('alt')->getString() ?? '';
+            $title = $media_item->get('title')->getString() ?? '';
+          } catch (\Exception $e) {}
+        }
+        break;
+      }
+    }
+
+    // Fallback caption/title from the media fields
+    if (empty($title)) {
+      $title = $media->label();
+    }
+    if (empty($caption)) {
+      if ($media->hasField('field_media_caption') && !$media->get('field_media_caption')->isEmpty()) {
+        $caption = $media->get('field_media_caption')->value;
+      } elseif ($media->hasField('field_caption') && !$media->get('field_caption')->isEmpty()) {
+        $caption = $media->get('field_caption')->value;
+      }
+    }
+  }
+  // If the field item directly references a file (File entity)
+  elseif ($ref instanceof FileInterface) {
+    $file = $ref;
+    try {
+      $alt = $item->get('alt')->getString() ?? '';
+      $title = $item->get('title')->getString() ?? '';
+    } catch (\Exception $e) {}
+    if ($file->hasField('field_caption') && !$file->get('field_caption')->isEmpty()) {
+      $caption = $file->get('field_caption')->value;
+    }
+  }
+  // Some fields (rare) might provide a URI directly on the item value - try to handle generically.
+  else {
+    // Try to get a uri from the raw item value if possible
+    $raw = $item->getValue();
+    if (!empty($raw['target_id']) && is_numeric($raw['target_id'])) {
+      // attempt to load file by id
+      $maybe_file = \Drupal::entityTypeManager()->getStorage('file')->load((int) $raw['target_id']);
+      if ($maybe_file instanceof FileInterface) {
+        $file = $maybe_file;
+      }
+    } elseif (!empty($raw['uri'])) {
+      // We have a URI but no file entity - use file_create_url fallback
+      $uri = $raw['uri'];
+      $result = [
+        'url' => '',
+        'responsive_render' => NULL,
+        'alt' => $alt ?: '',
+        'title' => $title ?: '',
+        'caption' => $caption ?: '',
+        'file_id' => NULL,
+        'media_id' => $media_id,
+      ];
+      $style = ImageStyle::load($image_style);
+      if ($style) {
+        try {
+          $result['url'] = $style->buildUrl($uri);
+        } catch (\Exception $e) {
+          $result['url'] = file_create_url($uri);
+        }
+      } else {
+        $result['url'] = file_create_url($uri);
+      }
+      // No responsive render as no file entity is present
+      return $result;
+    }
+  }
+
+  if ($file && $file->access('view')) {
+    $result = [
+      'url' => '',
+      'responsive_render' => NULL,
+      'alt' => $alt ?: '',
+      'title' => $title ?: $file->getFilename(),
+      'caption' => $caption ?: '',
+      'file_id' => $file->id(),
+      'media_id' => $media_id,
+    ];
+
+    // Build an ImageStyle URL fallback
+    $style = ImageStyle::load($image_style);
+    if ($style) {
+      try {
+        $result['url'] = $style->buildUrl($file->getFileUri());
+      } catch (\Exception $e) {
+        $result['url'] = file_create_url($file->getFileUri());
+      }
+    } else {
+      $result['url'] = file_create_url($file->getFileUri());
+    }
+
+    // Preferred: produce a responsive_image render array if responsive style exists
+    if (\Drupal::entityTypeManager()->getStorage('responsive_image_style')->load($responsive_style)) {
+      $result['responsive_render'] = [
+        '#type' => 'responsive_image',
+        '#responsive_image_style_id' => $responsive_style,
+        '#uri' => $file->getFileUri(),
+        '#attributes' => [
+          'alt' => $result['alt'],
+          'title' => $result['title'],
+          'class' => ['hero-image', 'img-fluid'],
+        ],
+      ];
+    } else {
+      // Fallback: render an image with an image style (keeps markup, accessibility)
+      if ($style) {
+        $result['responsive_render'] = [
+          '#theme' => 'image_style',
+          '#style_name' => $image_style,
+          '#uri' => $file->getFileUri(),
+          '#attributes' => [
+            'alt' => $result['alt'],
+            'title' => $result['title'],
+            'class' => ['hero-image', 'img-fluid'],
+          ],
+        ];
+      } else {
+        // Last fallback: basic image
+        $result['responsive_render'] = [
+          '#theme' => 'image',
+          '#uri' => $file->getFileUri(),
+          '#attributes' => [
+            'alt' => $result['alt'],
+            'title' => $result['title'],
+            'class' => ['hero-image', 'img-fluid'],
+          ],
+        ];
+      }
+    }
+
+    return $result;
+  }
+
+  return NULL;
+}
+
+/**
+ * Implements hook_preprocess_block().
+ *
+ * Block-first hero with node fallback using canonical field_hero_* names.
+ * Parallax library is attached unconditionally for hero blocks (parallax always used).
+ */
+function townscanada_preprocess_block(array &$variables) {
+  // Only operate on custom block content instances.
+  $block_content = NULL;
+  if (!empty($variables['elements']['#block_content']) && $variables['elements']['#block_content'] instanceof BlockContentInterface) {
+    $block_content = $variables['elements']['#block_content'];
+  }
+  if (!$block_content) {
+    return;
+  }
+
+  // Only for hero bundle.
+  if ($block_content->bundle() !== 'hero') {
+    return;
+  }
+
+  // Defaults (block overrides may populate these).
+  $variables['hero_title'] = $block_content->label() ?: '';
+  $variables['hero_subtitle'] = '';
+  $variables['hero_image_url'] = '';
+  $variables['hero_image_responsive'] = NULL;
+  $variables['hero_image_alt'] = '';
+  $variables['hero_image_title'] = '';
+  $variables['hero_image_caption'] = '';
+  $variables['hero_cta_url'] = '';
+  $variables['hero_cta_title'] = '';
+  $variables['hero_parallax'] = TRUE; // Parallax always used for hero blocks.
+  $variables['hero_parallax_speed'] = $variables['hero_parallax_speed'] ?? '0.18';
+  $variables['hero_score'] = '';
+  $variables['hero_tags'] = [];
+
+  // Cache context/tag defaults.
+  $variables['#cache']['contexts'][] = 'url.path';
+  $variables['#cache']['tags'][] = 'block_content:' . $block_content->id();
+
+  // 1) Read from block fields (if set)
+  if ($block_content->hasField('field_image') && !$block_content->get('field_image')->isEmpty()) {
+    $img = _townscanada_extract_image_from_field($block_content, 'field_image');
+    if ($img) {
+      $variables['hero_image_url'] = $img['url'];
+      $variables['hero_image_responsive'] = $img['responsive_render'];
+      $variables['hero_image_alt'] = $img['alt'];
+      $variables['hero_image_title'] = $img['title'];
+      $variables['hero_image_caption'] = $img['caption'];
+      if (!empty($img['file_id'])) {
+        $variables['#cache']['tags'][] = 'file:' . $img['file_id'];
+      }
+      if (!empty($img['media_id'])) {
+        $variables['#cache']['tags'][] = 'media:' . $img['media_id'];
+      }
+    }
+  }
+
+  if ($block_content->hasField('field_title_override') && !$block_content->get('field_title_override')->isEmpty()) {
+    $variables['hero_title'] = $block_content->get('field_title_override')->first()->getString();
+  }
+  if ($block_content->hasField('field_subtitle') && !$block_content->get('field_subtitle')->isEmpty()) {
+    $variables['hero_subtitle'] = $block_content->get('field_subtitle')->first()->getString();
+  }
+  if ($block_content->hasField('field_cta') && !$block_content->get('field_cta')->isEmpty()) {
+    $link_item = $block_content->get('field_cta')->first();
+    try {
+      $variables['hero_cta_url'] = $link_item->getUrl()->toString();
+      $variables['hero_cta_title'] = $link_item->get('title')->getString() ?: $variables['hero_cta_url'];
+    } catch (\Exception $e) {
+      $variables['hero_cta_url'] = $link_item->get('uri')->getString() ?? '';
+    }
+  }
+
+  // If block defines an overlay/colour field, use them
+  if ($block_content->hasField('field_overlay_opacity') && !$block_content->get('field_overlay_opacity')->isEmpty()) {
+    $variables['hero_overlay_opacity'] = $block_content->get('field_overlay_opacity')->first()->getString();
+  }
+  if ($block_content->hasField('field_background_color') && !$block_content->get('field_background_color')->isEmpty()) {
+    $variables['hero_background_color'] = $block_content->get('field_background_color')->first()->getString();
+  }
+
+  // ALWAYS attach the parallax library for hero blocks (this assumes your library is named townscanada/hero-parallax).
+  $variables['#attached']['library'][] = 'townscanada/hero-parallax';
+
+  // 2) Node fallback for empty variables (use canonical field_hero_* names first)
+  $route_match = \Drupal::routeMatch();
+  $node = $route_match->getParameter('node');
+  if ($node instanceof NodeInterface) {
+    // Image fallback
+    if (empty($variables['hero_image_url'])) {
+      $image_candidates = ['field_hero_image', 'field_image', 'field_listing_image', 'field_hero_media'];
+      foreach ($image_candidates as $candidate) {
+        $img = _townscanada_extract_image_from_field($node, $candidate);
+        if ($img) {
+          $variables['hero_image_url'] = $img['url'];
+          $variables['hero_image_responsive'] = $img['responsive_render'];
+          $variables['hero_image_alt'] = $img['alt'];
+          $variables['hero_image_title'] = $img['title'];
+          $variables['hero_image_caption'] = $img['caption'];
+          if (!empty($img['file_id'])) {
+            $variables['#cache']['tags'][] = 'file:' . $img['file_id'];
+          }
+          if (!empty($img['media_id'])) {
+            $variables['#cache']['tags'][] = 'media:' . $img['media_id'];
+          }
+          $variables['#cache']['tags'][] = 'node:' . $node->id();
+          break;
+        }
+      }
+    }
+
+    // Title fallback: prefer block title_override, then node.field_hero_title, then node.title
+    if (empty($variables['hero_title'])) {
+      if ($node->hasField('field_hero_title') && !$node->get('field_hero_title')->isEmpty()) {
+        $variables['hero_title'] = $node->get('field_hero_title')->first()->getString();
+        $variables['#cache']['tags'][] = 'node:' . $node->id();
+      } else {
+        // Always fall back to the node title if no hero title provided anywhere.
+        $variables['hero_title'] = $node->getTitle();
+        $variables['#cache']['tags'][] = 'node:' . $node->id();
+      }
+    }
+
+    // Subtitle fallback
+    if (empty($variables['hero_subtitle'])) {
+      $subtitle_candidates = ['field_hero_subtitle', 'field_listing_address'];
+      foreach ($subtitle_candidates as $candidate) {
+        if ($node->hasField($candidate) && !$node->get($candidate)->isEmpty()) {
+          $variables['hero_subtitle'] = $node->get($candidate)->first()->getString();
+          $variables['#cache']['tags'][] = 'node:' . $node->id();
+          break;
+        }
+      }
+    }
+
+    // CTA fallback: try hero_cta or field_website (simple link)
+    if (empty($variables['hero_cta_url'])) {
+      $cta_candidates = ['field_hero_cta', 'field_website'];
+      foreach ($cta_candidates as $candidate) {
+        if ($node->hasField($candidate) && !$node->get($candidate)->isEmpty()) {
+          $link_item = $node->get($candidate)->first();
+          try {
+            $variables['hero_cta_url'] = $link_item->getUrl()->toString();
+            $variables['hero_cta_title'] = $link_item->get('title')->getString() ?: $variables['hero_cta_url'];
+          } catch (\Exception $e) {
+            $variables['hero_cta_url'] = $link_item->get('uri')->getString() ?? '';
+          }
+          $variables['#cache']['tags'][] = 'node:' . $node->id();
+          break;
+        }
+      }
+    }
+
+    // Score / tags fallback (optional)
+    if (empty($variables['hero_score']) && $node->hasField('group_local_impact_score') && !$node->get('group_local_impact_score')->isEmpty()) {
+      $variables['hero_score'] = $node->get('group_local_impact_score')->first()->getString();
+      $variables['#cache']['tags'][] = 'node:' . $node->id();
+    }
+    if (empty($variables['hero_tags']) && $node->hasField('field_hero_tags') && !$node->get('field_hero_tags')->isEmpty()) {
+      $tags = [];
+      foreach ($node->get('field_hero_tags')->referencedEntities() as $t) {
+        if ($t) {
+          $tags[] = $t->label();
+        }
+      }
+      if (!empty($tags)) {
+        $variables['hero_tags'] = $tags;
+        $variables['#cache']['tags'][] = 'node:' . $node->id();
+      }
+    }
+  } // end node fallback
+}

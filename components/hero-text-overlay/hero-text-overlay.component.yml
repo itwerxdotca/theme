@@ -1,0 +1,44 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Hero Text Overlay
+status: stable
+description: Text/HTML overlay positioned within a hero region whose background is supplied externally.
+template: hero-text-overlay.twig
+
+props:
+  type: object
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    overlay_position:
+      type: string
+      enum: [top-left, top-center, top-right, center-left, center, center-right, bottom-left, bottom-center, bottom-right]
+      default: center
+    height:
+      type: string
+      enum: [auto, small, medium, large, fullscreen]
+      default: medium
+    variant:
+      type: string
+      enum: [default, dark, light, scrim-dark, scrim-light]
+      default: default
+    heading_level:
+      type: integer
+      minimum: 2
+      maximum: 6
+      default: 2
+    max_width:
+      type: string
+      default: "60ch"
+    wrap_title:
+      type: boolean
+      default: true
+
+slots:
+  content: { title: Main body HTML, required: false }
+  cta_primary: { title: Primary CTA, required: false }
+  cta_secondary: { title: Secondary CTA, required: false }
+
+library:
+  css:
+    component:
+      hero_text_overlay.css: {}

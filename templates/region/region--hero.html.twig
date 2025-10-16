@@ -1,0 +1,30 @@
+{# Region: hero - Background image layer #}
+
+{% set has_image = hero_image_responsive is not empty or hero_image_url is not empty %}
+
+<div class="hero-region"
+     {% if has_image %}data-parallax="true" data-parallax-speed="{{ hero_parallax_speed|default('0.18') }}"{% else %}data-parallax="false"{% endif %}
+     {% if hero_fit %}data-hero-fit="scale"{% endif %}
+     {% set bg_style = '' %}
+     {% if hero_image_url and not hero_image_responsive %}
+       {% set bg_style = "background-image: url('" ~ hero_image_url ~ "');" %}
+     {% endif %}
+     {% if hero_background_color %}
+       {% set bg_style = bg_style ~ " background-color: " ~ hero_background_color ~ ";" %}
+     {% endif %}
+     {% if bg_style %} style="{{ bg_style }}"{% endif %}>
+
+  <div class="hero-media" aria-hidden="true">
+    {% if hero_image_responsive %}
+      {{ hero_image_responsive }}
+    {% endif %}
+  </div>
+
+  {# Foreground content - just render the blocks #}
+  <div class="hero-content">
+    {{ content }}
+  </div>
+
+  {% set overlay_opacity = hero_overlay_opacity|default('0.35') %}
+  <div class="hero-overlay" aria-hidden="true" style="background: rgba(0,0,0,{{ overlay_opacity }});"></div>
+</div>

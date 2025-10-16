@@ -1,0 +1,24 @@
+{#
+/**
+ * @file
+ * Custom row template for the Stories block.
+ *
+ * Available variables:
+ * - fields: A list of fields keyed by field id. Each field has:
+ *   - content: The rendered output of the field.
+ *   - raw: The raw value of the field (not always available).
+ */
+#}
+
+<article class="card h-100" style="max-width: 20rem;">
+  {% if fields.field_image is defined %}
+    <img src="{{ fields.field_image.content|striptags }}" class="card-img-top" alt="{{ fields.title.content|striptags }}">
+  {% endif %}
+
+  <div class="card-body">
+    <h5 class="card-title">{{ fields.title.content }}</h5>
+    <div class="card-text">
+      {{ fields.field_post_category.content }}
+    </div>
+  </div>
+</article>

@@ -1,0 +1,102 @@
+{# =======================================================
+   Page template for townscanada theme
+   ======================================================= #}
+
+{# Include the header with offcanvas triggers #}
+{% include "@townscanada/templates/region/header.html.twig" %}
+
+<main role="main">
+  <a id="main-content" tabindex="-1"></a>
+{# Hero region #}
+ {% if page.hero %}
+   {{ page.hero }}
+ {% endif %}
+
+  {# Breadcrumb #}
+  {% if page.breadcrumb %}
+    <div class="container my-2">
+      {{ page.breadcrumb }}
+    </div>
+  {% endif %}
+
+  {# Layout for content and sidebars #}
+  <div class="container {{ b5_top_container }}">
+    <div class="row g-3">
+
+      {# Sidebar first #}
+      {% if page.sidebar_first %}
+        <aside class="col-lg-3 order-lg-1">
+          {{ page.sidebar_first }}
+        </aside>
+      {% endif %}
+
+      {# Content #}
+      <div class="{% if page.sidebar_first and page.sidebar_second %}col-lg-6{% elseif page.sidebar_first or page.sidebar_second %}col-lg-9{% else %}col-12{% endif %} order-lg-2">
+        {{ page.content }}
+      </div>
+
+      {# Sidebar second #}
+      {% if page.sidebar_second %}
+        <aside class="col-lg-3 order-lg-3">
+          {{ page.sidebar_second }}
+        </aside>
+      {% endif %}
+    </div>
+  </div>
+</main>
+
+{# ==================== FOOTER ==================== #}
+<footer role="contentinfo" class="bg-dark text-white py-4">
+  <div class="container">
+
+    {# Footer Top Regions (1–4) #}
+    <div class="row text-center">
+      {% for i in 1..4 %}
+        {% set region_name = 'footer_' ~ i %}
+        {% if attribute(page, region_name) %}
+          <div class="col-12 col-md-3 mb-3 mb-md-0 d-flex justify-content-center">
+            {{ attribute(page, region_name) }}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {# Footer Bottom Region #}
+    {% if page.footer_bottom %}
+      <div class="row mt-4">
+        <div class="col-12 d-flex justify-content-center">
+          {{ page.footer_bottom }}
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</footer>
+
+{# ==================== OFFCANVAS LEFT ==================== #}
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
+  <div class="offcanvas-body">
+    {% if page.offcanvas_left %}
+      {{ page.offcanvas_left }}
+    {% else %}
+      {{ drupal_menu('main') }}
+    {% endif %}
+  </div>
+</div>
+
+{# ==================== OFFCANVAS RIGHT ==================== #}
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+  <div class="offcanvas-body">
+    {% if page.offcanvas_right %}
+      {{ page.offcanvas_right }}
+    {% else %}
+      {% if logged_in %}
+        {{ drupal_menu('account') }}
+      {% else %}
+        <button type="button" class="btn btn-primary w-100"
+                data-bs-toggle="modal"
+                data-bs-target="#loginModal">{{ 'Login / Register'|t }}</button>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>

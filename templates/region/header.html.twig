@@ -1,0 +1,130 @@
+<header class="site-header bg-white border-bottom shadow-sm fixed-top" role="banner">
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-xl d-flex align-items-center py-2 w-100">
+
+      {# Left: Hamburger menu trigger (offcanvas left) #}
+      <button class="navbar-toggler me-2"
+              type="button"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasLeft"
+              aria-controls="offcanvasLeft"
+              aria-label="{{ 'Open menu'|t }}">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      {# Center: Site branding block #}
+      <div class="flex-grow-1 d-flex justify-content-center">
+        {{ drupal_block('system_branding_block') }}
+      </div>
+
+      {# Right: Search + Account #}
+      <div class="d-flex align-items-center gap-2">
+        {# Search modal trigger #}
+        <button type="button" class="btn btn-link text-dark p-0"
+                data-bs-toggle="modal"
+                data-bs-target="#searchModal"
+                aria-label="{{ 'Search'|t }}">
+          <i class="la la-search"></i>
+        </button>
+
+        {# Account offcanvas/modal #}
+        {% if logged_in %}
+          <button type="button" class="btn btn-link text-dark p-0"
+                  data-bs-toggle="offcanvas"
+                  data-bs-target="#offcanvasRight"
+                  aria-controls="offcanvasRight"
+                  aria-label="{{ 'Account menu'|t }}">
+            <i class="la la-user"></i>
+          </button>
+        {% else %}
+          <button type="button" class="btn btn-link text-dark p-0"
+                  data-bs-toggle="modal"
+                  data-bs-target="#loginModal"
+                  aria-label="{{ 'Login / Register'|t }}">
+            <i class="la la-user"></i>
+          </button>
+        {% endif %}
+      </div>
+
+    </div>
+  </nav>
+</header>
+
+
+{# ----------------- SEARCH MODAL ----------------- #}
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="searchModalLabel">{{ 'Search'|t }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close'|t }}"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-tabs" id="loginModalTabs" role="tablist">
+           <li class="nav-item">
+             <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#listings" type="button" role="tab">{{ 'Listings'|t }}</button>
+           </li>
+           <li class="nav-item">
+             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#rpoi" type="button" role="tab">{{ 'Points of Interest'|t }}</button>
+           </li>
+           <li class="nav-item">
+             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#stories" type="button" role="tab">{{ 'Stories'|t }}</button>
+
+           </li>
+         </ul>
+        <div class="tab-content mt-3">
+           <div class="tab-pane fade show active" id="listings" role="tabpanel">
+             <div class="ajax-form-loading text-center">
+               <div class="spinner-border"></div>
+             </div>
+           </div>
+           <div class="tab-pane fade" id="poi" role="tabpanel">
+             <div class="ajax-form-loading text-center"></div>
+           </div>
+           <div class="tab-pane fade" id="stories" role="tabpanel">
+             <div class="ajax-form-loading text-center"></div>
+             {{ drupal_block('story_search_block') }}
+           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ----------------- LOGIN/REGISTER MODAL ----------------- #}
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="loginModalLabel">{{ 'Account Access'|t }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close'|t }}"></button>
+      </div>
+      <div class="modal-body">
+         <ul class="nav nav-tabs" id="loginModalTabs" role="tablist">
+           <li class="nav-item">
+             <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab">{{ 'Login'|t }}</button>
+           </li>
+           <li class="nav-item">
+             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#register" type="button" role="tab">{{ 'Register'|t }}</button>
+           </li>
+           <li class="nav-item">
+             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab">{{ 'Forgot Password'|t }}</button>
+           </li>
+         </ul>
+        <div class="tab-content mt-3">
+           <div class="tab-pane fade show active" id="login" role="tabpanel">
+             <div class="ajax-form-loading text-center py-5">
+               <div class="spinner-border"></div>
+             </div>
+           </div>
+           <div class="tab-pane fade" id="register" role="tabpanel">
+             <div class="ajax-form-loading text-center py-5"></div>
+           </div>
+           <div class="tab-pane fade" id="password" role="tabpanel">
+             <div class="ajax-form-loading text-center py-5"></div>
+           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

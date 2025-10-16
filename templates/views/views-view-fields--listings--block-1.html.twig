@@ -1,0 +1,24 @@
+{% set address_html = (fields.field_listing_address is defined and fields.field_listing_address.content is not empty) ? fields.field_listing_address.content : null %}
+{% set phone_html   = (fields.field_listing_phone   is defined and fields.field_listing_phone.content   is not empty) ? fields.field_listing_phone.content   : null %}
+{% set website_html = (fields.field_listing_website is defined and fields.field_listing_website.content is not empty) ? fields.field_listing_website.content : null %}
+
+{% embed 'townscanada:hero-text-overlay' with {
+  'overlay_position': 'center',
+  'height': 'medium',
+  'heading_level': 4,
+} %}
+
+  {% block content %}
+    <ul class="list-inline">
+      {% if address_html %}
+        <li class="list-inline-item"><i class="fas fa-map-marker-alt"></i>&nbsp;{{ address_html }}</li>
+      {% endif %}
+      {% if phone_html %}
+        <li class="list-inline-item"><i class="fas fa-phone-alt"></i>&nbsp;{{ phone_html }}</li>
+      {% endif %}
+      {% if website_html %}
+        <li class="list-inline-item"><i class="fas fa-link"></i>&nbsp;{{ website_html }}</li>
+      {% endif %}
+    </ul>
+  {% endblock %}
+{% endembed %}

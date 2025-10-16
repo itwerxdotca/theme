@@ -1,0 +1,87 @@
+/* 1. Add outer padding to the carousel container */
+.carousel {
+  padding: 3px;
+}
+
+/* 2. Ensure all images are the same size and touch each other */
+.carousel .carousel-item img {
+  width: 100%;
+  height: 245px;
+  object-fit: cover;
+  display: block;
+  padding: 0;
+  margin: 0;
+}
+.carousel-inner img {
+  opacity: 0.7;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.carousel-inner img:hover {
+  opacity: 1; /* Fully visible on hover */
+}
+
+/* Remove spacing between columns */
+.carousel .row {
+  margin: 0;
+}
+.carousel .row > div[class*="col-"] {
+  padding: 0;
+}
+
+/* 3. Center and style the title/term name */
+.carousel-caption {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically center */
+  align-items: center; /* Horizontally center */
+  text-align: center; /* Ensure text alignment is centered */
+  bottom: 30%; /* Adjust position from bottom */
+}
+
+/* Responsive font for .carousel-caption h3 */
+.carousel-caption h3 {
+  font-size: clamp(1.05rem, 2vw, 1.5rem); /* fluid scaling */
+  color: white; /* Ensure it contrasts well */
+  line-height: 1.2;
+  margin: 0.5em 0 0 0;
+  font-weight: 600;
+}
+
+/* Optional: tweak for extra-small and extra-large screens */
+@media (max-width: 575.98px) {
+  .carousel-caption h3 {
+    font-size: 1rem;
+  }
+}
+@media (min-width: 1400px) {
+  .carousel-caption h3 {
+    font-size: 1.8rem;
+  }
+}
+
+/* Responsive base font for carousel (optional, affects all text inside) */
+.carousel {
+  font-size: clamp(0.95rem, 1.5vw, 1.13rem);
+}
+
+/* 4. Style the icon inside the image at the bottom right */
+.carousel .position-relative {
+  position: relative;
+}
+
+.carousel .term-icon {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  z-index: 2;
+  width: 32px;  /* Adjust size as needed */
+  height: 32px;
+}
+
+/* Optional: make sure icons are not blurred when using object-fit */
+.carousel .term-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

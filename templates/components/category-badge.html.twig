@@ -1,0 +1,16 @@
+{#
+/**
+ * @file
+ * Category badge component.
+ *
+ * Available variables:
+ * - colour: background color (hex or rgba).
+ * - label: text to display inside badge.
+ */
+#}
+{# templates/components/category-badge.html.twig #}
+<a href="{{ url }}" title="View posts filed under {{ label }}">
+  <span class="badge category-name" style="background-color: {{ colour }}; border: 5px solid {{ border_colour }};">
+	{{ label }}
+  </span>
+</a>

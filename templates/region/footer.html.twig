@@ -1,0 +1,45 @@
+{#
+/**
+ * @file
+ * Theme override to display the footer region.
+ */
+#}
+{% if content %}
+  <footer class="site-footer">
+    <div class="container">
+      {# Top footer with 4 columns #}
+      <div class="row footer-top">
+        {% if footer_first %}
+          <div class="col-md-3 col-sm-6 footer-column">
+            {{ footer_first }}
+          </div>
+        {% endif %}
+
+        {% if footer_second %}
+          <div class="col-md-3 col-sm-6 footer-column">
+            {{ footer_second }}
+          </div>
+        {% endif %}
+
+        {% if footer_third %}
+          <div class="col-md-3 col-sm-6 footer-column">
+            {{ footer_third }}
+          </div>
+        {% endif %}
+
+        {% if footer_fourth %}
+          <div class="col-md-3 col-sm-6 footer-column">
+            {{ footer_fourth }}
+          </div>
+        {% endif %}
+      </div>
+
+      {# Full-width bottom footer #}
+      {% if footer_bottom %}
+        <div class="footer-bottom d-flex justify-content-center align-items-center text-center">
+          {{ footer_bottom }}
+        </div>
+      {% endif %}
+    </div>
+  </footer>
+{% endif %}

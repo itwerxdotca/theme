@@ -1,0 +1,28 @@
+[data-component-id="townscanada:hero_text_overlay"] {
+  .hero-text-overlay {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .hero-text-overlay__inner {
+    position: relative;
+    z-index: 2;
+    min-height: 18rem;
+    padding-block: 3rem;
+  }
+
+  /* Height variants */
+  .hto--h-small .hero-text-overlay__inner { min-height: 12rem; }
+  .hto--h-medium .hero-text-overlay__inner { min-height: 22rem; }
+  .hto--h-large .hero-text-overlay__inner { min-height: 32rem; }
+  .hto--h-fullscreen .hero-text-overlay__inner { min-height: 100vh; }
+
+  .hero-text-overlay__title {
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  /* Color variants */
+  .hto--light { color: var(--bs-dark); }
+  .hto--dark { color: var(--bs-white); }
+}

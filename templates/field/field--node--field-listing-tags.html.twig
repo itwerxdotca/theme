@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Custom field template for field_listing_tags.
+ *
+ * Variables:
+ * - label: The label of the field.
+ * - label_hidden: Whether the label is hidden.
+ * - items: Array of field items.
+ * - attributes: HTML attributes for the wrapping element.
+ * - title_attributes: HTML attributes for the label.
+ */
+#}
+
+<div{{ attributes.addClass('d-flex flex-wrap align-items-center gap-2 tags-wrapper') }}>
+  {% if not label_hidden %}
+    <div{{ title_attributes.addClass('me-2 d-flex align-items-center tags-wrapper__label') }} aria-label="{{ label }}">
+      <i class="fa-solid fa-tags"></i>
+      <span class="visually-hidden">{{ label }}</span>
+    </div>
+  {% endif %}
+  <div class="d-flex flex-wrap gap-2">
+    {% for item in items %}
+      <span class="badge tags-wrapper__item">{{ item.content }}</span>
+    {% endfor %}
+  </div>
+</div>

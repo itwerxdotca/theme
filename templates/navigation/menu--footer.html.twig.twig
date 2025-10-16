@@ -1,0 +1,7 @@
+<ul{{ attributes.addClass('nav', 'flex-row', 'justify-content-center') }}>
+  {% for item in items %}
+    <li class="nav-item">
+      <a href="{{ item.url }}" class="nav-link">{{ item.title }}</a>
+    </li>
+  {% endfor %}
+</ul>

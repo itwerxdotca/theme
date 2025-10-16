@@ -1,0 +1,106 @@
+{#
+/**
+ * @file
+ * Default theme implementation for displaying a view as a bootstrap carousel.
+ *
+ * Available variables:
+ * - view: The view object.
+ * - rows: A list of the view's row items.
+ * - id: A valid HTML ID and guaranteed to be unique.
+ * - interval: The amount of time to delay between automatically cycling a
+ *   slide item. If false, carousel will not automatically cycle.
+ * - pause: Pauses the cycling of the carousel on mouseenter and
+ *   resumes the cycling of the carousel on mouseleave.
+ * - wrap: Whether the carousel should cycle continuously or have
+ *   hard stops.
+ * - columns: The amount of columns in a single slide.
+ * - breakpoints: The min-width of the multicolumn view.
+ *
+ * @see template_preprocess_views_bootstrap_carousel()
+ *
+ * @ingroup themeable
+ */
+#}
+{{ attach_library('townscanada/components') }}
+{{ attach_library('townscanada/carousel') }}
+
+<div id="{{ id }}" class="carousel {{ effect }}"
+     {% if ride %} data-bs-ride="{{ ride }}"{% endif %}
+     data-bs-interval="{{ interval }}"
+     data-bs-pause="{% if pause %}hover{% else %}false{% endif %}"
+     data-bs-wrap="{% if wrap %}true{% else %}false{% endif %}">
+
+  {# Carousel indicators #}
+  {% if indicators %}
+    <div class="carousel-indicators">
+      {% for key, row in rows %}
+        {% if key % columns == 0 %}
+          {% set indicator_classes = [loop.first ? 'active'] %}
+          <button class="{{ indicator_classes|join(' ') }}" data-bs-target="#{{ id }}" data-bs-slide-to="{{ key/columns }}" aria-label="{{ 'Slide'|t ~ ' ' ~ loop.index }}"></button>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# Carousel rows #}
+  <div class="carousel-inner">
+    {% for row in rows %}
+      {% if (loop.index-1) % columns == 0 %}
+        {% set row_classes = ['carousel-item', loop.first ? 'active'] %}
+        <div {{ row.attributes.addClass(row_classes) }}>
+          <div class="row">
+      {% endif %}
+      <div class="{{ breakpoints }} position-relative">
+        {% if display == 'fields' %}
+          {# --- Begin: Centered Badge over Image --- #}
+          <div class="carousel-image-wrapper position-relative text-center" style="display: inline-block;">
+            {{ row.image }}
+            <div class="hero-term">
+              <div class="term-badge position-absolute top-50 start-50 translate-middle" style="z-index: 2;">
+                {% set circle_color = term.field_listing_category_color|default('#999') %}
+                {% set icon_class = row.field_listing_category_icon|default('la la-question') %}
+                <div class="category-icon-wrapper">
+                  <svg class="category-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="50" fill="{{ circle_color }}" />
+                  </svg>
+                  <i class="{{ icon_class }} category-icon"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          {# --- End: Centered Badge over Image --- #}
+          {% if row.title or row.description %}
+            {% if use_caption %}
+              <div class="carousel-caption {{ caption_breakpoints }}">
+            {% endif %}
+            {% if row.title %}
+              <span class="visually-hidden">{{ row.title }}</span>
+            {% endif %}
+            {% if row.description %}
+              <p>{{ row.description }}</p>
+            {% endif %}
+            {% if use_caption %}
+              </div>
+            {% endif %}
+          {% endif %}
+        {% else %}
+          {{ row.content }}
+        {% endif %}
+      </div>
+      {% if (loop.index is divisible by columns) or (loop.index == rows|length) %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% if navigation %}
+    <a class="carousel-control-prev" href="#{{ id }}" role="button" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">{{ 'Previous'|t }}</span>
+    </a>
+    <a class="carousel-control-next" href="#{{ id }}" role="button" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">{{ 'Next'|t }}</span>
+    </a>
+  {% endif %}
+</div>
