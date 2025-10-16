@@ -926,6 +926,7 @@ code {
 .hero-region {
   width: 100%;
   min-height: 60vh;
+  margin-top: 6.1rem;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
