@@ -239,40 +239,6 @@ function townscanada_preprocess_page(array &$variables) {
   }
 
   // ——————————————————————————————————————
-  // Pass hero variables to the hero region
-  // ——————————————————————————————————————
-  $variables['page']['hero'] = [
-    '#theme' => 'hero',
-    '#hero_title' => $variables['hero_title'],
-    '#hero_subtitle' => $variables['hero_subtitle'],
-    '#hero_image_url' => $variables['hero_image_url'],
-    '#hero_image_responsive' => $variables['hero_image_responsive'],
-    '#hero_image_alt' => $variables['hero_image_alt'],
-    '#hero_image_title' => $variables['hero_image_title'],
-    '#hero_image_caption' => $variables['hero_image_caption'],
-    '#hero_cta_url' => $variables['hero_cta_url'],
-    '#hero_cta_title' => $variables['hero_cta_title'],
-    '#hero_overlay_opacity' => $variables['hero_overlay_opacity'],
-    '#hero_background_color' => $variables['hero_background_color'],
-    '#hero_meta' => !empty($variables['hero_meta']) ? $variables['hero_meta'] : NULL,
-    '#term' => !empty($variables['term']) ? $variables['term'] : NULL,
-    // Pass parallax flags into the hero render array so the template receives them.
-    '#hero_parallax' => !empty($variables['hero_parallax']) ? $variables['hero_parallax'] : FALSE,
-    '#hero_parallax_speed' => !empty($variables['hero_parallax_speed']) ? $variables['hero_parallax_speed'] : '0.18',
-  ];
-
-  // Attach hero-parallax library for page-level hero if enabled and there is an image.
-  if (!empty($variables['page']['hero'])) {
-    $hero = $variables['page']['hero'];
-    $has_image = !empty($hero['#hero_image_responsive']) || !empty($hero['#hero_image_url']);
-    $parallax = !empty($hero['#hero_parallax']);
-    if ($has_image && $parallax) {
-      // Attach the correct library name (ensure this matches townscanada.libraries.yml)
-      $variables['page']['hero']['#attached']['library'][] = 'townscanada/hero-parallax';
-    }
-  }
-
-  // ——————————————————————————————————————
   // Attach the modal library from the theme
   // ——————————————————————————————————————
   if (\Drupal::currentUser()->isAnonymous()) {
@@ -635,4 +601,107 @@ function townscanada_preprocess_block(array &$variables) {
       }
     }
   } // end node fallback
+}
+
+/**
+ * Implements hook_preprocess_region().
+ *
+ * Provide hero_* variables to templates/region/region--hero.html.twig
+ * without replacing the region content (blocks continue to render).
+ */
+function townscanada_preprocess_region(array &$variables) {
+  if ($variables['region'] !== 'hero') {
+    return;
+  }
+
+  // Safe defaults used by region--hero.html.twig.
+  $variables['hero_image_url'] = '';
+  $variables['hero_image_responsive'] = NULL;
+  $variables['hero_image_alt'] = '';
+  $variables['hero_image_title'] = '';
+  $variables['hero_image_caption'] = '';
+  $variables['hero_overlay_opacity'] = '0.35';
+  $variables['hero_background_color'] = '';
+  $variables['hero_parallax_speed'] = '0.18';
+  $variables['hero_fit'] = FALSE;
+
+  // Cache context: hero background can vary by path.
+  $variables['#cache']['contexts'][] = 'url.path';
+
+  $route_match = \Drupal::routeMatch();
+  $file_id = NULL;
+  $media_id = NULL;
+
+  // Try to derive image from node pages first.
+  $node = $route_match->getParameter('node');
+  if ($node instanceof \Drupal\node\NodeInterface) {
+    $image_candidates = ['field_hero_image', 'field_hero_media', 'field_image', 'field_listing_image', 'field_media'];
+    foreach ($image_candidates as $candidate) {
+      $img = _townscanada_extract_image_from_field($node, $candidate);
+      if ($img) {
+        $variables['hero_image_url'] = $img['url'] ?? '';
+        $variables['hero_image_responsive'] = $img['responsive_render'] ?? NULL;
+        $variables['hero_image_alt'] = $img['alt'] ?? '';
+        $variables['hero_image_title'] = $img['title'] ?? '';
+        $variables['hero_image_caption'] = $img['caption'] ?? '';
+        $file_id = $img['file_id'] ?? NULL;
+        $media_id = $img['media_id'] ?? NULL;
+        $variables['#cache']['tags'][] = 'node:' . $node->id();
+        break;
+      }
+    }
+
+    // Optional: background/overlay from node if available.
+    if ($node->hasField('field_hero_background_color') && !$node->get('field_hero_background_color')->isEmpty()) {
+      $variables['hero_background_color'] = $node->get('field_hero_background_color')->first()->getString();
+      $variables['#cache']['tags'][] = 'node:' . $node->id();
+    }
+    if ($node->hasField('field_hero_overlay_opacity') && !$node->get('field_hero_overlay_opacity')->isEmpty()) {
+      $variables['hero_overlay_opacity'] = $node->get('field_hero_overlay_opacity')->first()->getString();
+      $variables['#cache']['tags'][] = 'node:' . $node->id();
+    }
+  }
+  // Taxonomy term pages.
+  elseif ($route_match->getRouteName() === 'entity.taxonomy_term.canonical') {
+    $term = $route_match->getParameter('taxonomy_term');
+    if ($term instanceof \Drupal\taxonomy\Entity\Term) {
+      $field_names = [
+        'field_listing_location_image',
+        'field_listing_category_image',
+      ];
+      foreach ($field_names as $field_name) {
+        if (!$term->hasField($field_name) || $term->get($field_name)->isEmpty()) {
+          continue;
+        }
+        $item = $term->get($field_name)->first();
+        $file = $item?->entity;
+        if ($file && $file->access('view')) {
+          $style = \Drupal\image\Entity\ImageStyle::load('blog_1140x642_');
+          try {
+            $variables['hero_image_url'] = $style ? $style->buildUrl($file->getFileUri()) : file_create_url($file->getFileUri());
+          } catch (\Exception $e) {
+            $variables['hero_image_url'] = file_create_url($file->getFileUri());
+          }
+          // Minimal alt fallback.
+          $variables['hero_image_alt'] = $item->get('alt')->getString() ?: $term->label();
+          $variables['#cache']['tags'][] = 'taxonomy_term:' . $term->id();
+          break;
+        }
+      }
+    }
+  }
+
+  // Cache tags for referenced file/media.
+  if (!empty($file_id)) {
+    $variables['#cache']['tags'][] = 'file:' . $file_id;
+  }
+  if (!empty($media_id)) {
+    $variables['#cache']['tags'][] = 'media:' . $media_id;
+  }
+
+  // Attach hero parallax on region when an image exists.
+  $has_image = !empty($variables['hero_image_responsive']) || !empty($variables['hero_image_url']);
+  if ($has_image) {
+    $variables['#attached']['library'][] = 'townscanada/hero-parallax';
+  }
 }
