@@ -9,7 +9,7 @@
 /* ===== CUSTOM CSS VARIABLES ===== */
 :root,
 [data-bs-theme=light] {
-  --header-h: 6rem;
+  --header-h: 16rem;
   /* CUSTOM: Override primary color */
   --bs-primary: #C71C1C;
   --bs-primary-rgb: 199, 28, 28;
@@ -965,6 +965,9 @@ code {
   overflow: hidden;
   pointer-events: none;
   will-change: transform;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .hero-media frame,
@@ -1023,7 +1026,7 @@ code {
   }
 
   .hero-region[data-hero-fit="scale"] .hero-media img,
-  .hero-region[data-hero-fit="scale"] .hero-media picture {
+  .hero-region[data-hero-fit="scale"] .hero-media frame {
     width: 100%;
     height: auto;
     object-fit: contain;
