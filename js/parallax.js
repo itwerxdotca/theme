@@ -1,13 +1,16 @@
 /**
  * hero-parallax.js
- * Combined parallax + small-screen scale helper for hero-region.
- * Conservative and robust for lazy-loaded images.
+ * Parallax + small-screen scale helper for hero-region.
+ * Adds per-hero controls:
+ *  - data-parallax-breakpoint="992"   // disable parallax below this width
+ *  - data-parallax-speed="0.18"       // tweak parallax speed per hero
+ *  - data-parallax-clamp="up|down|none" // default "up" prevents downward shift
  */
 
 (function () {
   'use strict';
 
-  var PARALLAX_BREAKPOINT = 1024;
+  var PARALLAX_BREAKPOINT = 1024;   // default if no per-hero override
   var SCALE_BREAKPOINT = 768;
   var DEFAULT_SPEED = 0.18;
   var DEBOUNCE_MS = 120;
@@ -32,29 +35,50 @@
     return rect.bottom >= -buffer && rect.top <= (window.innerHeight + buffer);
   }
 
+  function getBreakpointFor(h) {
+    var bpAttr = parseInt(h.getAttribute('data-parallax-breakpoint'), 10);
+    return Number.isFinite(bpAttr) ? bpAttr : PARALLAX_BREAKPOINT;
+  }
+
+  function getClampModeFor(h) {
+    var m = (h.getAttribute('data-parallax-clamp') || 'up').toLowerCase();
+    return m === 'down' ? 'down' : m === 'none' ? 'none' : 'up';
+  }
+
   function parallaxUpdate() {
     ticking = false;
     var scrollY = window.pageYOffset || document.documentElement.scrollTop;
     var width = window.innerWidth || document.documentElement.clientWidth;
 
-    if (width < PARALLAX_BREAKPOINT) {
-      parallaxHeroes.forEach(function (h) {
-        var media = h.querySelector('.hero-media');
-        if (media) media.style.transform = '';
-      });
-      return;
-    }
-
     activeParallax.forEach(function (h) {
       var media = h.querySelector('.hero-media');
       if (!media) return;
+
+      // Per-hero disable below breakpoint
+      var effectiveBP = getBreakpointFor(h);
+      if (width < effectiveBP) {
+        media.style.transform = ''; // clear transform when disabled
+        return;
+      }
+
       var rect = h.getBoundingClientRect();
       if (!isInViewport(rect, 200)) return;
-      var speed = parseFloat(h.getAttribute('data-parallax-speed')) || DEFAULT_SPEED;
+
+      var speed = parseFloat(h.getAttribute('data-parallax-speed'));
+      speed = Number.isFinite(speed) ? speed : DEFAULT_SPEED;
+
+      // Compute translate based on hero vs. viewport center
       var heroTopPage = scrollY + rect.top;
       var viewportCenter = scrollY + (window.innerHeight / 2);
       var distance = heroTopPage - viewportCenter;
       var translate = -distance * speed;
+
+      // Clamp (default "up" prevents the image being pushed down and revealing gaps)
+      var clampMode = getClampModeFor(h);
+      if (clampMode === 'up') translate = Math.min(0, translate);
+      else if (clampMode === 'down') translate = Math.max(0, translate);
+      // "none" leaves translate as-is
+
       media.style.transform = 'translate3d(0,' + translate + 'px,0)';
     });
   }
@@ -68,15 +92,17 @@
 
   function refreshActiveParallax() {
     var width = window.innerWidth || document.documentElement.clientWidth;
-    if (width < PARALLAX_BREAKPOINT) {
-      activeParallax = [];
-      parallaxHeroes.forEach(function (h) {
-        var media = h.querySelector('.hero-media');
-        if (media) media.style.transform = '';
-      });
-      return;
-    }
     activeParallax = parallaxHeroes.filter(function (h) {
+      var media = h.querySelector('.hero-media');
+      if (!media) return false;
+
+      // Per-hero disable below breakpoint
+      var effectiveBP = getBreakpointFor(h);
+      if (width < effectiveBP) {
+        media.style.transform = ''; // clear transform when disabled
+        return false;
+      }
+
       var rect = h.getBoundingClientRect();
       return isInViewport(rect, 300);
     });

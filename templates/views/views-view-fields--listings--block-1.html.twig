@@ -3,7 +3,7 @@
 {% set website_html = (fields.field_listing_website is defined and fields.field_listing_website.content is not empty) ? fields.field_listing_website.content : null %}
 
 {% embed 'townscanada:hero-text-overlay' with {
-  'overlay_position': 'center',
+  'overlay_position': 'bottom-left',
   'height': 'medium',
   'heading_level': 4,
 } %}

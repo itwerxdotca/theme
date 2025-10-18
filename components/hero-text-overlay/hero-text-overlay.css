@@ -1,28 +1,49 @@
+/* Position the overlay component in the bottom-left of the hero region. */
 [data-component-id="townscanada:hero_text_overlay"] {
   .hero-text-overlay {
-    position: relative;
+    position: absolute;
+    bottom: var(--hero-pad, 1.25rem);
+    left: var(--hero-pad, 1.25rem);
+    z-index: 3; /* Above hero ::before (1) and H1 (2) if overlapping */
     isolation: isolate;
+    max-width: min(70ch, calc(100% - (2 * var(--hero-pad, 1.25rem))));
+    /* Background is applied to content, not the whole section, so the section stays as a "holder" */
   }
 
+  /* Override Bootstrap centering utilities so the content hugs the corner. */
   .hero-text-overlay__inner {
-    position: relative;
-    z-index: 2;
-    min-height: 18rem;
-    padding-block: 3rem;
+    display: block !important; /* overrides .d-flex */
+    padding: 0;
+    min-height: auto;
   }
 
-  /* Height variants */
-  .hto--h-small .hero-text-overlay__inner { min-height: 12rem; }
-  .hto--h-medium .hero-text-overlay__inner { min-height: 22rem; }
-  .hto--h-large .hero-text-overlay__inner { min-height: 32rem; }
-  .hto--h-fullscreen .hero-text-overlay__inner { min-height: 100vh; }
+  /* Remove container padding so the overlay truly sits at the corner. */
+  .hero-text-overlay .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
 
+  /* Style the actual overlay box/content. Your markup uses __content, so target it. */
+  .hero-text-overlay__content {
+    --overlay-bg: rgba(0, 0, 0, 0.5);
+    background: var(--overlay-bg);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+  }
+
+  .hero-text-overlay__content a {
+    color: #fff;
+    text-decoration-color: rgba(255, 255, 255, 0.7);
+  }
+
+  /* Keep title text style (positioning handled in style.css). */
   .hero-text-overlay__title {
     text-align: center;
     text-wrap: balance;
   }
 
-  /* Color variants */
+  /* Variants */
   .hto--light { color: var(--bs-dark); }
   .hto--dark { color: var(--bs-white); }
 }

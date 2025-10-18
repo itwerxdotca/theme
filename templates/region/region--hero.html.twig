@@ -2,8 +2,21 @@
 
 {% set has_image = hero_image_responsive is not empty or hero_image_url is not empty %}
 
+{# Parallax config (safe defaults if not provided by preprocess) #}
+{% set parallax_enabled = has_image ? 'true' : 'false' %}
+{% set parallax_speed = hero_parallax_speed|default('0.18') %}
+{# Disable parallax below this width (px). Common choice: 992 for Bootstrap md/lg boundary. #}
+{% set parallax_breakpoint = hero_parallax_breakpoint|default('992') %}
+{# Clamp modes: 'up' (default, prevents downward gap), 'down', or 'none' #}
+{% set parallax_clamp = hero_parallax_clamp|default('up') %}
+
 <div class="hero-region"
-     {% if has_image %}data-parallax="true" data-parallax-speed="{{ hero_parallax_speed|default('0.18') }}"{% else %}data-parallax="false"{% endif %}
+     data-parallax="{{ parallax_enabled }}"
+     {% if parallax_enabled == 'true' %}
+       data-parallax-speed="{{ parallax_speed }}"
+       data-parallax-breakpoint="{{ parallax_breakpoint }}"
+       data-parallax-clamp="{{ parallax_clamp }}"
+     {% endif %}
      {% if hero_fit %}data-hero-fit="scale"{% endif %}
      {% set bg_style = '' %}
      {% if hero_image_url and not hero_image_responsive %}
