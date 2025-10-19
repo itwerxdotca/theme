@@ -9,6 +9,7 @@
 /* ===== CUSTOM CSS VARIABLES ===== */
 :root,
 [data-bs-theme=light] {
+  --header-h: 6rem;
   /* CUSTOM: Override primary color */
   --bs-primary: #C71C1C;
   --bs-primary-rgb: 199, 28, 28;
@@ -20,7 +21,7 @@
   --font-body-weight-bold: 700;
   --font-heading-family: "Courier New", Courier, "Lucida Console", monospace;
   --font-heading-style: normal;
-  --font-heading-weight: 400;
+  --font-heading-weight: 600;
   --font-body-scale: 1.0;
   --font-heading-scale: 1.0;
 
@@ -36,7 +37,7 @@
 
 /* Inter optimization */
 body {
-  padding-top: 4rem; /* Automatically scales with base font size */
+  padding-top: calc(var(--header-h) + var(--toolbar-h, 0px)); /* Automatically scales with base font size */
   letter-spacing: -0.011em;
 }
 
@@ -46,7 +47,7 @@ h1, h2, h3, h4, h5, h6,
   font-family: var(--font-heading-family);
   font-weight: 400;
   letter-spacing: -0.02em; /* Compensates for Courier natural spacing */
-  max-width: 90%;
+  max-width: 100%;
 }
 
 /* Component-specific heading fixes */
@@ -926,17 +927,18 @@ code {
 .hero-region {
   width: 100%;
   min-height: 60vh;
-  margin-top: 6.1rem;
   margin-bottom: 20px;
   display: flex;
-  align-items: center;
-  justify-content: center;
   color: #fff;
   position: relative;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
+  --hero-pad: clamp(1rem, 2vw + 0.5rem, 2rem);
+  display: grid;            /* replaces earlier display:flex */
+  align-items: normal;      /* reset any centering from old flex */
+  justify-content: normal;  /* reset */
 }
 
 .hero-region::before {
@@ -963,9 +965,12 @@ code {
   overflow: hidden;
   pointer-events: none;
   will-change: transform;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.hero-media picture,
+.hero-media frame,
 .hero-media img,
 .hero-media .hero-image {
   width: 100%;
@@ -979,15 +984,42 @@ code {
   display: block;
 }
 
+/* Ensure hero content is above the dark overlay and provides a positioning context */
 .hero-region[data-hero-fit="scale"] .hero-content,
 .hero-region .hero-content {
-  z-index: 2;
-  display: flex;
+  position: relative;
+  width: 100%;
+  z-index: 2;           /* Above ::before / .hero-overlay */
+  min-height: inherit;  /* Inherit min-height: 60vh from .hero-region so bottom is the region’s bottom */
+  align-content: stretch;
+  display: flex !important;      /* Bootstrap default: flexbox */
+  flex-direction: column;        /* stack top (title) and bottom content */          /* fill the hero height */
 }
 
-.hero-region .title,
-.title {
-  text-align: center;
+.hero-region .hero-content .block-page-title-block {
+  margin-top: auto;              /* pushes down from top */
+  margin-bottom: auto;           /* pushes up from bottom => centered vertically */
+  align-self: center;            /* center horizontally */
+  text-align: center;            /* Bootstrap-like text-center without changing markup */
+  width: 100%;
+  padding-left: var(--hero-pad, 1rem);
+  padding-right: var(--hero-pad, 1rem);
+}
+
+/* Ensure the H1 itself isn’t absolutely positioned by earlier rules */
+.hero-region .hero-content .block-page-title-block h1.title {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  margin: 0;
+}
+
+/* If you have an explicit bottom row element inside hero-content, let it sit at the bottom */
+.hero-region .hero-content > .hero-bottom,
+.hero-region .hero-content > .align-bottom,
+.hero-region .hero-content > .hero-text-overlay {
+  margin-top: auto;              /* pushes this block to the bottom of the region */
 }
 
 @media (max-width: 767px) {
@@ -1006,7 +1038,7 @@ code {
   }
 
   .hero-region[data-hero-fit="scale"] .hero-media img,
-  .hero-region[data-hero-fit="scale"] .hero-media picture {
+  .hero-region[data-hero-fit="scale"] .hero-media frame {
     width: 100%;
     height: auto;
     object-fit: contain;
@@ -1156,4 +1188,20 @@ button:hover i.la {
 
 body > .offcanvas {
   z-index: 900 !important;
+}
+/* === Parallax coverage: image larger than region (6rem) and centered === */
+.hero-region { --parallax-bleed: 6rem; }
+
+/* When using a responsive <img> inside .hero-media */
+.hero-media {
+  /* Add vertical bleed so parallax never reveals grey at top/bottom */
+  top: calc(-1 * var(--parallax-bleed));
+  bottom: calc(-1 * var(--parallax-bleed));
+  /* left/right remain from existing inset: 0 */
+}
+
+/* When using background-image on .hero-region */
+.hero-region {
+  background-position: 50% 50%;
+  background-size: cover; /* ensures full coverage while we shift background-position */
 }

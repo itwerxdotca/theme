@@ -1,9 +1,15 @@
 /**
- * hero-parallax.js
- * Combined parallax + small-screen scale helper for hero-region.
- * Conservative and robust for lazy-loaded images.
+ * Parallax for hero-region (center-anchored).
+ * Works with current Twig/CSS:
+ *  - If .hero-media contains an <img>, translate .hero-media
+ *  - If .hero-region has background-image, animate background-position (clamped to avoid top gap)
+ *
+ * Controls:
+ *  - data-parallax="true"
+ *  - data-parallax-speed (default 0.18)
+ *  - Disable under PARALLAX_BREAKPOINT (default 1024px)
+ *  - Respects prefers-reduced-motion
  */
-
 (function () {
   'use strict';
 
@@ -12,18 +18,15 @@
   var DEFAULT_SPEED = 0.18;
   var DEBOUNCE_MS = 120;
 
-  // Respect reduced motion
-  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    return;
-  }
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   var heroes = Array.prototype.slice.call(document.querySelectorAll('.hero-region'));
   if (!heroes.length) return;
 
-  // Parallax targets (only if data-parallax="true")
   var parallaxHeroes = heroes.filter(function (h) {
     return h.getAttribute('data-parallax') === 'true';
   });
+
   var activeParallax = [];
   var ticking = false;
 
@@ -32,30 +35,60 @@
     return rect.bottom >= -buffer && rect.top <= (window.innerHeight + buffer);
   }
 
+  function getSpeed(h) {
+    var s = parseFloat(h.getAttribute('data-parallax-speed'));
+    return Number.isFinite(s) ? s : DEFAULT_SPEED;
+  }
+
+  function hasRegionBackground(h) {
+    var cs = getComputedStyle(h);
+    return !!cs.backgroundImage && cs.backgroundImage !== 'none';
+  }
+
+  function clearTransforms(h) {
+    var media = h.querySelector('.hero-media');
+    if (media) media.style.transform = '';
+    h.style.backgroundPosition = '';
+  }
+
   function parallaxUpdate() {
     ticking = false;
+
     var scrollY = window.pageYOffset || document.documentElement.scrollTop;
     var width = window.innerWidth || document.documentElement.clientWidth;
 
     if (width < PARALLAX_BREAKPOINT) {
-      parallaxHeroes.forEach(function (h) {
-        var media = h.querySelector('.hero-media');
-        if (media) media.style.transform = '';
-      });
+      parallaxHeroes.forEach(clearTransforms);
       return;
     }
 
     activeParallax.forEach(function (h) {
-      var media = h.querySelector('.hero-media');
-      if (!media) return;
       var rect = h.getBoundingClientRect();
       if (!isInViewport(rect, 200)) return;
-      var speed = parseFloat(h.getAttribute('data-parallax-speed')) || DEFAULT_SPEED;
-      var heroTopPage = scrollY + rect.top;
+
+      var media = h.querySelector('.hero-media');
+      var img = media ? media.querySelector('img') : null;
+      var bgOnRegion = !img && hasRegionBackground(h);
+      var speed = getSpeed(h);
+
+      // Center-anchored: hero center vs viewport center
+      var heroCenterPage = scrollY + rect.top + (rect.height / 2);
       var viewportCenter = scrollY + (window.innerHeight / 2);
-      var distance = heroTopPage - viewportCenter;
+      var distance = heroCenterPage - viewportCenter;
       var translate = -distance * speed;
-      media.style.transform = 'translate3d(0,' + translate + 'px,0)';
+
+      if (img && media) {
+        // Responsive image case: translate media both directions (bleed prevents gaps)
+        media.style.transform = 'translate3d(0,' + translate + 'px,0)';
+        h.style.backgroundPosition = '';
+      } else if (bgOnRegion) {
+        // Background-on-region case: animate background-position, but don't push image down
+        var bgTranslate = Math.min(0, translate); // clamp to avoid revealing top
+        h.style.backgroundPosition = '50% calc(50% + ' + bgTranslate + 'px)';
+        if (media) media.style.transform = '';
+      } else {
+        clearTransforms(h);
+      }
     });
   }
 
@@ -68,21 +101,20 @@
 
   function refreshActiveParallax() {
     var width = window.innerWidth || document.documentElement.clientWidth;
+
     if (width < PARALLAX_BREAKPOINT) {
       activeParallax = [];
-      parallaxHeroes.forEach(function (h) {
-        var media = h.querySelector('.hero-media');
-        if (media) media.style.transform = '';
-      });
+      parallaxHeroes.forEach(clearTransforms);
       return;
     }
+
     activeParallax = parallaxHeroes.filter(function (h) {
       var rect = h.getBoundingClientRect();
       return isInViewport(rect, 300);
     });
   }
 
-  // Scale helper (small screens) - only for elements with data-hero-fit="scale"
+  // Small-screen scale helper (unchanged)
   var scaleHeroes = heroes.filter(function (h) {
     return h.getAttribute('data-hero-fit') === 'scale';
   });

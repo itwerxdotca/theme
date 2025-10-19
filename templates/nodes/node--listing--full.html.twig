@@ -91,15 +91,6 @@
         <div class="main-content content col col-lg-8">
           {{ content|without('field_opening_hours','field_tags','field_hero_image','field_address','field_phone','field_website','field_geofield','field_rating','addtoany') }}
         </div>
-        <aside id="sidebar-second" class="col-lg-4 hidden-sm">
-          <div class="block block-addtoany"><div class="block-inner">{{ content.addtoany }}</div></div>
-          <div class="block field-opening-hours">{{ content.field_opening_hours }}</div>
-          <div class="block field-listing-tags">{{ content.field_listing_tags }}</div>
-          <div class="block similar-listings">
-            <h2 class="block-title">{{ 'Similar'|t }}</h2>
-            {{ drupal_view('listing_list', 'block_1') }}
-          </div>
-        </aside>
         </div>
       </div>
     </div>

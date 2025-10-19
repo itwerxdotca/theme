@@ -2,19 +2,33 @@
 
 {% set has_image = hero_image_responsive is not empty or hero_image_url is not empty %}
 
-<div class="hero-region"
-     {% if has_image %}data-parallax="true" data-parallax-speed="{{ hero_parallax_speed|default('0.18') }}"{% else %}data-parallax="false"{% endif %}
-     {% if hero_fit %}data-hero-fit="scale"{% endif %}
-     {% set bg_style = '' %}
-     {% if hero_image_url and not hero_image_responsive %}
-       {% set bg_style = "background-image: url('" ~ hero_image_url ~ "');" %}
-     {% endif %}
-     {% if hero_background_color %}
-       {% set bg_style = bg_style ~ " background-color: " ~ hero_background_color ~ ";" %}
-     {% endif %}
-     {% if bg_style %} style="{{ bg_style }}"{% endif %}>
+{# Parallax config (safe defaults if not provided by preprocess) #}
+{% set parallax_enabled = has_image ? 'true' : 'false' %}
+{% set parallax_speed = hero_parallax_speed|default('0.18') %}
+{# Disable parallax below this width (px). Common choice: 992 for Bootstrap md/lg boundary. #}
+{% set parallax_breakpoint = hero_parallax_breakpoint|default('992') %}
+{# Clamp modes: 'up' (default, prevents downward gap), 'down', or 'none' #}
+{% set parallax_clamp = hero_parallax_clamp|default('up') %}
 
-  <div class="hero-media" aria-hidden="true">
+{# Region: hero - Background image layer #}
+
+<div class="hero-region"
+     {% if has_image %}data-parallax="true" data-parallax-speed="{{ hero_parallax_speed|default('0.50') }}"{% else %}data-parallax="false"{% endif %}
+     {% if hero_fit %}data-hero-fit="scale"{% endif %}
+     {# MINIMAL CHANGE: keep only background-color on the region #}
+     {% set region_style = '' %}
+     {% if hero_background_color %}
+       {% set region_style = "background-color: " ~ hero_background_color ~ ";" %}
+     {% endif %}
+     {% if region_style %} style="{{ region_style }}"{% endif %}>
+
+  {# MINIMAL CHANGE: put background-image on .hero-media when there is no responsive image #}
+  {% set media_bg = '' %}
+  {% if hero_image_url and not hero_image_responsive %}
+    {% set media_bg = "background-image: url('" ~ hero_image_url ~ "');" %}
+  {% endif %}
+
+  <div class="hero-media" aria-hidden="true"{% if media_bg %} style="{{ media_bg }}"{% endif %}>
     {% if hero_image_responsive %}
       {{ hero_image_responsive }}
     {% endif %}
