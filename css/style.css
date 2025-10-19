@@ -9,7 +9,7 @@
 /* ===== CUSTOM CSS VARIABLES ===== */
 :root,
 [data-bs-theme=light] {
-  --header-h: 16rem;
+  --header-h: 6rem;
   /* CUSTOM: Override primary color */
   --bs-primary: #C71C1C;
   --bs-primary-rgb: 199, 28, 28;
@@ -21,7 +21,7 @@
   --font-body-weight-bold: 700;
   --font-heading-family: "Courier New", Courier, "Lucida Console", monospace;
   --font-heading-style: normal;
-  --font-heading-weight: 400;
+  --font-heading-weight: 600;
   --font-body-scale: 1.0;
   --font-heading-scale: 1.0;
 
@@ -47,7 +47,7 @@ h1, h2, h3, h4, h5, h6,
   font-family: var(--font-heading-family);
   font-weight: 400;
   letter-spacing: -0.02em; /* Compensates for Courier natural spacing */
-  max-width: 90%;
+  max-width: 100%;
 }
 
 /* Component-specific heading fixes */
@@ -991,23 +991,35 @@ code {
   width: 100%;
   z-index: 2;           /* Above ::before / .hero-overlay */
   min-height: inherit;  /* Inherit min-height: 60vh from .hero-region so bottom is the region’s bottom */
-  display: grid;
-  grid-template-rows: 1fr auto;
   align-content: stretch;
+  display: flex !important;      /* Bootstrap default: flexbox */
+  flex-direction: column;        /* stack top (title) and bottom content */          /* fill the hero height */
 }
 
-.hero-region .hero-content h1,
-.hero-region > h1 {
-  position: absolute;
-  top: var(--hero-pad);
-  left: 50%;
-  transform: translateX(-50%);
+.hero-region .hero-content .block-page-title-block {
+  margin-top: auto;              /* pushes down from top */
+  margin-bottom: auto;           /* pushes up from bottom => centered vertically */
+  align-self: center;            /* center horizontally */
+  text-align: center;            /* Bootstrap-like text-center without changing markup */
+  width: 100%;
+  padding-left: var(--hero-pad, 1rem);
+  padding-right: var(--hero-pad, 1rem);
+}
+
+/* Ensure the H1 itself isn’t absolutely positioned by earlier rules */
+.hero-region .hero-content .block-page-title-block h1.title {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
   margin: 0;
-  z-index: 2; /* above .hero-region::before (z-index:1) */
-  width: min(70ch, calc(100% - (2 * var(--hero-pad))));
-  text-align: center;
-  line-height: 1.1;
-  text-wrap: balance;
+}
+
+/* If you have an explicit bottom row element inside hero-content, let it sit at the bottom */
+.hero-region .hero-content > .hero-bottom,
+.hero-region .hero-content > .align-bottom,
+.hero-region .hero-content > .hero-text-overlay {
+  margin-top: auto;              /* pushes this block to the bottom of the region */
 }
 
 @media (max-width: 767px) {
@@ -1176,4 +1188,20 @@ button:hover i.la {
 
 body > .offcanvas {
   z-index: 900 !important;
+}
+/* === Parallax coverage: image larger than region (6rem) and centered === */
+.hero-region { --parallax-bleed: 6rem; }
+
+/* When using a responsive <img> inside .hero-media */
+.hero-media {
+  /* Add vertical bleed so parallax never reveals grey at top/bottom */
+  top: calc(-1 * var(--parallax-bleed));
+  bottom: calc(-1 * var(--parallax-bleed));
+  /* left/right remain from existing inset: 0 */
+}
+
+/* When using background-image on .hero-region */
+.hero-region {
+  background-position: 50% 50%;
+  background-size: cover; /* ensures full coverage while we shift background-position */
 }

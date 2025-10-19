@@ -1,32 +1,32 @@
 /**
- * hero-parallax.js
- * Parallax + small-screen scale helper for hero-region.
- * Adds per-hero controls:
- *  - data-parallax-breakpoint="992"   // disable parallax below this width
- *  - data-parallax-speed="0.18"       // tweak parallax speed per hero
- *  - data-parallax-clamp="up|down|none" // default "up" prevents downward shift
+ * Parallax for hero-region (center-anchored).
+ * Works with current Twig/CSS:
+ *  - If .hero-media contains an <img>, translate .hero-media
+ *  - If .hero-region has background-image, animate background-position (clamped to avoid top gap)
+ *
+ * Controls:
+ *  - data-parallax="true"
+ *  - data-parallax-speed (default 0.18)
+ *  - Disable under PARALLAX_BREAKPOINT (default 1024px)
+ *  - Respects prefers-reduced-motion
  */
-
 (function () {
   'use strict';
 
-  var PARALLAX_BREAKPOINT = 1024;   // default if no per-hero override
+  var PARALLAX_BREAKPOINT = 1024;
   var SCALE_BREAKPOINT = 768;
   var DEFAULT_SPEED = 0.18;
   var DEBOUNCE_MS = 120;
 
-  // Respect reduced motion
-  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    return;
-  }
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   var heroes = Array.prototype.slice.call(document.querySelectorAll('.hero-region'));
   if (!heroes.length) return;
 
-  // Parallax targets (only if data-parallax="true")
   var parallaxHeroes = heroes.filter(function (h) {
     return h.getAttribute('data-parallax') === 'true';
   });
+
   var activeParallax = [];
   var ticking = false;
 
@@ -35,51 +35,60 @@
     return rect.bottom >= -buffer && rect.top <= (window.innerHeight + buffer);
   }
 
-  function getBreakpointFor(h) {
-    var bpAttr = parseInt(h.getAttribute('data-parallax-breakpoint'), 10);
-    return Number.isFinite(bpAttr) ? bpAttr : PARALLAX_BREAKPOINT;
+  function getSpeed(h) {
+    var s = parseFloat(h.getAttribute('data-parallax-speed'));
+    return Number.isFinite(s) ? s : DEFAULT_SPEED;
   }
 
-  function getClampModeFor(h) {
-    var m = (h.getAttribute('data-parallax-clamp') || 'up').toLowerCase();
-    return m === 'down' ? 'down' : m === 'none' ? 'none' : 'up';
+  function hasRegionBackground(h) {
+    var cs = getComputedStyle(h);
+    return !!cs.backgroundImage && cs.backgroundImage !== 'none';
+  }
+
+  function clearTransforms(h) {
+    var media = h.querySelector('.hero-media');
+    if (media) media.style.transform = '';
+    h.style.backgroundPosition = '';
   }
 
   function parallaxUpdate() {
     ticking = false;
+
     var scrollY = window.pageYOffset || document.documentElement.scrollTop;
     var width = window.innerWidth || document.documentElement.clientWidth;
 
+    if (width < PARALLAX_BREAKPOINT) {
+      parallaxHeroes.forEach(clearTransforms);
+      return;
+    }
+
     activeParallax.forEach(function (h) {
-      var media = h.querySelector('.hero-media');
-      if (!media) return;
-
-      // Per-hero disable below breakpoint
-      var effectiveBP = getBreakpointFor(h);
-      if (width < effectiveBP) {
-        media.style.transform = ''; // clear transform when disabled
-        return;
-      }
-
       var rect = h.getBoundingClientRect();
       if (!isInViewport(rect, 200)) return;
 
-      var speed = parseFloat(h.getAttribute('data-parallax-speed'));
-      speed = Number.isFinite(speed) ? speed : DEFAULT_SPEED;
+      var media = h.querySelector('.hero-media');
+      var img = media ? media.querySelector('img') : null;
+      var bgOnRegion = !img && hasRegionBackground(h);
+      var speed = getSpeed(h);
 
-      // Compute translate based on hero vs. viewport center
-      var heroTopPage = scrollY + rect.top;
+      // Center-anchored: hero center vs viewport center
+      var heroCenterPage = scrollY + rect.top + (rect.height / 2);
       var viewportCenter = scrollY + (window.innerHeight / 2);
-      var distance = heroTopPage - viewportCenter;
+      var distance = heroCenterPage - viewportCenter;
       var translate = -distance * speed;
 
-      // Clamp (default "up" prevents the image being pushed down and revealing gaps)
-      var clampMode = getClampModeFor(h);
-      if (clampMode === 'up') translate = Math.min(0, translate);
-      else if (clampMode === 'down') translate = Math.max(0, translate);
-      // "none" leaves translate as-is
-
-      media.style.transform = 'translate3d(0,' + translate + 'px,0)';
+      if (img && media) {
+        // Responsive image case: translate media both directions (bleed prevents gaps)
+        media.style.transform = 'translate3d(0,' + translate + 'px,0)';
+        h.style.backgroundPosition = '';
+      } else if (bgOnRegion) {
+        // Background-on-region case: animate background-position, but don't push image down
+        var bgTranslate = Math.min(0, translate); // clamp to avoid revealing top
+        h.style.backgroundPosition = '50% calc(50% + ' + bgTranslate + 'px)';
+        if (media) media.style.transform = '';
+      } else {
+        clearTransforms(h);
+      }
     });
   }
 
@@ -92,23 +101,20 @@
 
   function refreshActiveParallax() {
     var width = window.innerWidth || document.documentElement.clientWidth;
+
+    if (width < PARALLAX_BREAKPOINT) {
+      activeParallax = [];
+      parallaxHeroes.forEach(clearTransforms);
+      return;
+    }
+
     activeParallax = parallaxHeroes.filter(function (h) {
-      var media = h.querySelector('.hero-media');
-      if (!media) return false;
-
-      // Per-hero disable below breakpoint
-      var effectiveBP = getBreakpointFor(h);
-      if (width < effectiveBP) {
-        media.style.transform = ''; // clear transform when disabled
-        return false;
-      }
-
       var rect = h.getBoundingClientRect();
       return isInViewport(rect, 300);
     });
   }
 
-  // Scale helper (small screens) - only for elements with data-hero-fit="scale"
+  // Small-screen scale helper (unchanged)
   var scaleHeroes = heroes.filter(function (h) {
     return h.getAttribute('data-hero-fit') === 'scale';
   });
