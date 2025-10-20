@@ -705,8 +705,3 @@ function townscanada_preprocess_region(array &$variables) {
     $variables['#attached']['library'][] = 'townscanada/hero-parallax';
   }
 }
-function townscanada_preprocess_links__comment(&$variables) {
-  if (\Drupal::currentUser()->isAnonymous() && isset($variables['links']['comment-forbidden'])) {
-    unset($variables['links']['comment-forbidden']);
-  }
-}
