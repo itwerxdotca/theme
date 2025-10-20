@@ -1,0 +1,47 @@
+{#
+/**
+ * @file
+ * paragraph--listing-amenities.html.twig
+ *
+ * Template for the listing_amenities paragraph bundle.
+ * - Does NOT render the field label (we build our own markup).
+ * - Uses Bootstrap grid to display items 3-per-row on md+ (row-cols-1 row-cols-md-3).
+ * - Centers each term in its cell.
+ *
+ * Put this file in your active theme's templates/ folder and clear caches (drush cr).
+ */
+#}
+
+<div class="paragraph paragraph--listing-amenities">
+  {# Render the description (if present) - full width above the grid #}
+  {% if content.field_listing_amenities_description is defined and content.field_listing_amenities_description %}
+    <div class="amenity__desc mb-3">
+      {{ content.field_listing_amenities_description }}
+    </div>
+  {% endif %}
+
+  {# Render the amenities as a Bootstrap grid, do NOT use the field render array
+     so the field label is not output. We iterate the paragraph entity field items
+     and show the term label (or the raw value if not an entity reference). #}
+  {% if paragraph.hasField('field_listing_amenities') and not paragraph.get('field_listing_amenities').isEmpty() %}
+    <div class="listing-amenities">
+      <div class="row row-cols-1 row-cols-md-3 g-3 justify-content-center">
+        {% for item in paragraph.field_listing_amenities %}
+          {# item.entity exists for term reference fields; fallback to item.value #}
+          {% set term = (item.entity is defined and item.entity) ? item.entity : null %}
+          <div class="col d-flex justify-content-center">
+            <div class="amenity-item text-center w-100">
+              <span class="amenity-name d-inline-block">
+                {% if term %}
+                  {{ term.label() }}
+                {% elseif item.value is defined %}
+                  {{ item.value }}
+                {% endif %}
+              </span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>
