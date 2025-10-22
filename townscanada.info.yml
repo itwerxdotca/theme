@@ -13,7 +13,6 @@ ckeditor_stylesheets:
   - css/style.css
 ckeditor5-stylesheets:
   - css/ck5style.css
-# Register SDC components directory (discovery).
 components:
   namespaces:
     townscanada: components

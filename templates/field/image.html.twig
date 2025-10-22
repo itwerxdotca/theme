@@ -1,18 +1,19 @@
 {#
 /**
- * @file
- * Theme override of an image.
+ * Temporary debug image template.
  *
- * Available variables:
- * - attributes: HTML attributes for the img tag.
- * - style_name: (optional) The name of the image style applied.
+ * Prints the image as usual and outputs an HTML comment with the
+ * resolved src/srcset/sizes variables for diagnosis.
  *
- * @see template_preprocess_image()
+ * Remove this debug template after troubleshooting.
  */
 #}
-{%
-set classes = [
-  style_name ? 'image-style-' ~ style_name|clean_class,
-]
-%}
-<img{{ attributes.addClass(classes) }} />
+<img{{ attributes }}
+     {% if src is defined and src %} src="{{ src }}" {% endif %}
+     {% if srcset is defined and srcset %} srcset="{{ srcset }}" {% endif %}
+     {% if sizes is defined and sizes %} sizes="{{ sizes }}" {% endif %}
+     alt="{{ alt|default('') }}"
+     {% if title is defined and title %} title="{{ title }}" {% endif %}
+     {% if width is defined and width %} width="{{ width }}" {% endif %}
+     {% if height is defined and height %} height="{{ height }}" {% endif %} />
+<!-- DEBUG_IMAGE_VARS src="{{ src|default('') }}" srcset="{{ srcset|default('') }}" sizes="{{ sizes|default('') }}" -->

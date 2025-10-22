@@ -1,0 +1,28 @@
+{#
+/**
+ * Field template for field_hero_image.
+ *
+ * Keeps a predictable wrapper for the hero field. The responsive image
+ * inside will be rendered by the responsive image formatter and the
+ * responsive-image template override (responsive-image--hero_responsive.html.twig)
+ * will add the hero-image class and loading="eager".
+ */
+#}
+{% if label_hidden %}
+  <div{{ attributes }}>
+    {% for item in items %}
+      <div{{ item.attributes.addClass('hero-image-wrapper') }}>
+        {{ item.content }}
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div{{ attributes }}>
+    <h3{{ title_attributes }}>{{ label }}</h3>
+    {% for item in items %}
+      <div{{ item.attributes.addClass('hero-image-wrapper') }}>
+        {{ item.content }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}

@@ -39,7 +39,16 @@
              'field_description',
              'field_listing_components',
              'comment',
-             'comments'
+             'comments',
+             'field_hero_image',
+             'field_listing_address',
+             'field_listing_category',
+             'field_listing_phone',
+             'field_listing_website',
+             'langcode',
+             'group_local_impact_score',
+             'field_listing_tags',
+             'field_location_vocabulary'
            ) }}
 
         {#
@@ -169,10 +178,10 @@
 
                     {% else %}
                       <div class="text-center py-4">
-                        <p class="mb-3 lead">Become a Member to Leave a Review!</p>
+                        <p class="mb-3 lead">Login to leave a review!</p>
                         <div class="d-flex justify-content-center gap-2">
-                          <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
-                            Log in / Register
+                          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            Log in
                           </button>
                         </div>
                       </div>

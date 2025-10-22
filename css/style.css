@@ -13,7 +13,8 @@
   /* CUSTOM: Override primary color */
   --bs-primary: #C71C1C;
   --bs-primary-rgb: 199, 28, 28;
-
+  --bs-secondary: #4FB9A4;
+  --bs-secondary-rgb: 79, 185, 164;
   /* CUSTOM: Font variables - Inter + Courier */
   --font-body-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-body-style: normal;
@@ -31,8 +32,23 @@
   /* CUSTOM: Link colors */
   --bs-link-color: #b13736;
   --bs-link-color-rgb: 177, 55, 54;
-  --bs-link-hover-color: #0a58ca;
-  --bs-link-hover-color-rgb: 10, 88, 202;
+  --bs-link-hover-color: #4FB9A4;
+  --bs-link-hover-color-rgb: 79, 185, 164;
+}
+
+/* Custom button color overrides */
+.btn-primary {
+  --bs-btn-bg: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+  --bs-btn-hover-bg: #a91515;          /* slightly darker red for hover */
+  --bs-btn-hover-border-color: #a91515;
+  --bs-btn-color: #fff;                /* text color */
+  --bs-btn-hover-color: #fff;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: var(--bs-secondary);
+  color: #fff;
 }
 
 /* Inter optimization */
@@ -45,7 +61,7 @@ body {
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
   font-family: var(--font-heading-family);
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: -0.02em; /* Compensates for Courier natural spacing */
   max-width: 100%;
 }
@@ -970,7 +986,7 @@ code {
   background-repeat: no-repeat;
 }
 
-.hero-media frame,
+.hero-media picture,
 .hero-media img,
 .hero-media .hero-image {
   width: 100%;
@@ -1038,7 +1054,7 @@ code {
   }
 
   .hero-region[data-hero-fit="scale"] .hero-media img,
-  .hero-region[data-hero-fit="scale"] .hero-media frame {
+  .hero-region[data-hero-fit="scale"] .hero-media picture {
     width: 100%;
     height: auto;
     object-fit: contain;

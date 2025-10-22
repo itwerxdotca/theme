@@ -1,9 +1,9 @@
 {# Hero Text Overlay (D11 SDC, .twig) #}
-{% set overlay_position = overlay_position|default('center') %}
+{% set overlay_position = overlay_position|default('bottom-left') %}
 {% set height = height|default('medium') %}
 {% set variant = variant|default('default') %}
 {% set heading_level = heading_level|default(2) %}
-{% set max_width = max_width|default('60ch') %}
+{% set max_width = max_width|default('100%') %}
 {% set wrap_title = wrap_title is defined ? wrap_title : true %}
 
 {% set pos_map = {
