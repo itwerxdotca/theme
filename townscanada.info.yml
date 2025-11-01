@@ -9,6 +9,11 @@ libraries:
   - townscanada/fontawesome
   - townscanada/carousel
   - townscanada/bootstrap-js
+libraries-override:
+  hierarchical_taxonomy_menu/hierarchical_taxonomy_menu:
+    js:
+      js/hierarchical-taxonomy-menu.js: false
+
 ckeditor_stylesheets:
   - css/style.css
 ckeditor5-stylesheets:

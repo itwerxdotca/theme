@@ -9,6 +9,11 @@
  *  - data-parallax-speed (default 0.18)
  *  - Disable under PARALLAX_BREAKPOINT (default 1024px)
  *  - Respects prefers-reduced-motion
+ *
+ * Improvements:
+ *  - Uses matchMedia to enable/disable parallax, avoids work on small screens
+ *  - Adds .no-parallax class and clears inline transforms when disabled
+ *  - Ensures scale/height adjustments run when parallax is turned off
  */
 (function () {
   'use strict';
@@ -27,8 +32,14 @@
     return h.getAttribute('data-parallax') === 'true';
   });
 
+  var scaleHeroes = heroes.filter(function (h) {
+    return h.getAttribute('data-hero-fit') === 'scale';
+  });
+
   var activeParallax = [];
   var ticking = false;
+  var parallaxEnabled = false;
+  var scrollHandler = null;
 
   function isInViewport(rect, buffer) {
     buffer = buffer || 0;
@@ -47,20 +58,21 @@
 
   function clearTransforms(h) {
     var media = h.querySelector('.hero-media');
-    if (media) media.style.transform = '';
+    if (media) {
+      media.style.transform = '';
+      // keep a no-parallax marker but remove style
+      media.classList.remove('parallax-active');
+    }
     h.style.backgroundPosition = '';
   }
 
   function parallaxUpdate() {
     ticking = false;
 
-    var scrollY = window.pageYOffset || document.documentElement.scrollTop;
-    var width = window.innerWidth || document.documentElement.clientWidth;
+    // If parallax is currently disabled, bail early.
+    if (!parallaxEnabled) return;
 
-    if (width < PARALLAX_BREAKPOINT) {
-      parallaxHeroes.forEach(clearTransforms);
-      return;
-    }
+    var scrollY = window.pageYOffset || document.documentElement.scrollTop;
 
     activeParallax.forEach(function (h) {
       var rect = h.getBoundingClientRect();
@@ -80,6 +92,7 @@
       if (img && media) {
         // Responsive image case: translate media both directions (bleed prevents gaps)
         media.style.transform = 'translate3d(0,' + translate + 'px,0)';
+        media.classList.add('parallax-active');
         h.style.backgroundPosition = '';
       } else if (bgOnRegion) {
         // Background-on-region case: animate background-position, but don't push image down
@@ -93,16 +106,15 @@
   }
 
   function requestParallaxTick() {
-    if (!ticking) {
-      ticking = true;
-      requestAnimationFrame(parallaxUpdate);
-    }
+    if (ticking || !parallaxEnabled) return;
+    ticking = true;
+    requestAnimationFrame(parallaxUpdate);
   }
 
   function refreshActiveParallax() {
     var width = window.innerWidth || document.documentElement.clientWidth;
 
-    if (width < PARALLAX_BREAKPOINT) {
+    if (!parallaxEnabled) {
       activeParallax = [];
       parallaxHeroes.forEach(clearTransforms);
       return;
@@ -113,11 +125,6 @@
       return isInViewport(rect, 300);
     });
   }
-
-  // Small-screen scale helper (unchanged)
-  var scaleHeroes = heroes.filter(function (h) {
-    return h.getAttribute('data-hero-fit') === 'scale';
-  });
 
   function computeHeightFromNatural(img, containerWidth) {
     if (!img || !img.naturalWidth || !img.naturalHeight) return null;
@@ -228,15 +235,84 @@
     }, DEBOUNCE_MS);
   }
 
+  // Enable parallax: attach scroll listener, refresh active set, trigger tick
+  function enableParallax() {
+    if (parallaxEnabled) return;
+    parallaxEnabled = true;
+    // add scroll listener
+    scrollHandler = function () { requestParallaxTick(); };
+    window.addEventListener('scroll', scrollHandler, { passive: true });
+    // remove no-parallax marker and any inline disabling set previously
+    parallaxHeroes.forEach(function (h) {
+      var media = h.querySelector('.hero-media');
+      if (media) media.classList.remove('no-parallax');
+    });
+    refreshActiveParallax();
+    requestParallaxTick();
+  }
+
+  // Disable parallax: remove scroll listener, clear transforms and mark elements
+  function disableParallax() {
+    if (!parallaxEnabled) return;
+    parallaxEnabled = false;
+    if (scrollHandler) {
+      window.removeEventListener('scroll', scrollHandler, { passive: true });
+      scrollHandler = null;
+    }
+    // clear any transforms and add marker class so CSS can enforce static layout
+    parallaxHeroes.forEach(function (h) {
+      var media = h.querySelector('.hero-media');
+      if (media) {
+        media.style.transform = 'none';
+        media.classList.add('no-parallax');
+        media.classList.remove('parallax-active');
+      }
+      h.style.backgroundPosition = '';
+    });
+    activeParallax = [];
+    // ensure scale heights are refreshed when parallax is disabled (mobile behavior)
+    refreshAllScales();
+  }
+
+  // Set up a media query listener for the breakpoint and toggle parallax
+  function watchBreakpoint() {
+    if (!window.matchMedia) {
+      // fallback: decide once
+      if ((window.innerWidth || document.documentElement.clientWidth) >= PARALLAX_BREAKPOINT) {
+        enableParallax();
+      } else {
+        disableParallax();
+      }
+      return;
+    }
+
+    var mq = window.matchMedia('(min-width: ' + PARALLAX_BREAKPOINT + 'px)');
+    function handleMqChange(e) {
+      if (e.matches) {
+        enableParallax();
+      } else {
+        disableParallax();
+      }
+    }
+    // initial
+    handleMqChange(mq);
+    // listen for changes
+    if (typeof mq.addEventListener === 'function') {
+      mq.addEventListener('change', handleMqChange);
+    } else if (typeof mq.addListener === 'function') {
+      mq.addListener(handleMqChange);
+    }
+  }
+
   function init() {
+    // wire parallax toggle by breakpoint first
     if (parallaxHeroes.length) {
-      window.addEventListener('scroll', requestParallaxTick, { passive: true });
+      watchBreakpoint();
+      // we still need to update active set on resize
       window.addEventListener('resize', function () {
         refreshActiveParallax();
         requestParallaxTick();
       }, { passive: true });
-      refreshActiveParallax();
-      requestParallaxTick();
     }
 
     if (scaleHeroes.length) {
