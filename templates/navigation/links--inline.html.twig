@@ -1,0 +1,13 @@
+{#
+  navigation/links--inline.html.twig
+  Hide comment/login links for anonymous users by filtering keys that start with "comment".
+#}
+
+{%- for key, item in links -%}
+  {%- if item.link -%}
+    {# Show all links to logged-in users. For anonymous, skip keys that are comment-related. #}
+    {% if logged_in or not (key starts with 'comment' or key in ['comment', 'comment-forbidden', 'comment_forbidden']) %}
+      <span{{ item.attributes }}>{{ item.link }}</span>
+    {% endif %}
+  {%- endif -%}
+{%- endfor -%}

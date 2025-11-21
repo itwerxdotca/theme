@@ -1377,6 +1377,8 @@ body > .offcanvas {
 
 /* Mobile carousel styling */
 @media (max-width: 768px) {
+
+
   .hierarchical-taxonomy-menu.nav {
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -1401,7 +1403,7 @@ body > .offcanvas {
     left: 50%;
     transform: translateX(-50%);
     -webkit-transform: translateX(-50%);
-    margin-top: 0.3rem;
+    margin-top: -3.4rem;
   }
 
   /* Hide scrollbar but keep functionality */

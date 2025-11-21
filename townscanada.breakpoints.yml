@@ -1,3 +1,24 @@
+breakpoint.phone_small:
+  label: 'Phone small (xxs)'
+  mediaQuery: '(max-width: 319px)'
+  weight: 0
+  group: townscanada.screen
+  multipliers: [1x, 2x]
+
+breakpoint.phone:
+  label: 'Phone (xs)'
+  mediaQuery: '(min-width: 320px) and (max-width: 374px)'
+  weight: 1
+  group: townscanada.screen
+  multipliers: [1x, 2x]
+
+breakpoint.phone_plus:
+  label: 'Phone plus (sm-min)'
+  mediaQuery: '(min-width: 375px) and (max-width: 575px)'
+  weight: 2
+  group: townscanada.screen
+  multipliers: [1x, 2x]
+
 townscanada.screen.xs-max:
   label: xs-max
   mediaQuery: '(max-width: 575.98px)'

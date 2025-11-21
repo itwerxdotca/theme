@@ -1,0 +1,22 @@
+{#
+/**
+ * Responsive image template override for responsive image style "hero_responsive".
+ *
+ * Place in: themes/townscanada/templates/responsive-image/responsive-image--hero_responsive.html.twig
+ *
+ * Adds .hero-image and forces loading="eager" for the hero responsive image style.
+ *
+ * Variables:
+ * - image: array with keys src, srcset, sizes
+ * - attributes: Attributes object for the <img>
+ */
+#}
+
+{# Add hero class and eager loading #}
+{% set attributes = attributes.addClass('hero-image') %}
+{% set attributes = attributes.setAttribute('loading', 'eager') %}
+
+<img{{ attributes }}
+     src="{{ image.src }}"
+     srcset="{{ image.srcset }}"
+     sizes="{{ image.sizes }}" />

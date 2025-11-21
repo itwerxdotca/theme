@@ -28,7 +28,7 @@ props:
       default: 2
     max_width:
       type: string
-      default: "60ch"
+      default: ""
     wrap_title:
       type: boolean
       default: true

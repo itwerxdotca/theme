@@ -44,54 +44,67 @@
 
   {# Carousel rows #}
   <div class="carousel-inner">
+
     {% for row in rows %}
       {% if (loop.index-1) % columns == 0 %}
         {% set row_classes = ['carousel-item', loop.first ? 'active'] %}
         <div {{ row.attributes.addClass(row_classes) }}>
           <div class="row">
-      {% endif %}
-      <div class="{{ breakpoints }} position-relative">
-        {% if display == 'fields' %}
-          {# --- Begin: Centered Badge over Image --- #}
-          <div class="carousel-image-wrapper position-relative text-center" style="display: inline-block;">
-            {{ row.image }}
-            <div class="hero-term">
-              <div class="term-badge position-absolute top-50 start-50 translate-middle" style="z-index: 2;">
-                {% set circle_color = term.field_listing_category_color|default('#999') %}
-                {% set icon_class = row.field_listing_category_icon|default('la la-question') %}
-                <div class="category-icon-wrapper">
-                  <svg class="category-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="50" fill="{{ circle_color }}" />
-                  </svg>
-                  <i class="{{ icon_class }} category-icon"></i>
+        {% endif %}
+          <div class="{{ breakpoints }} position-relative">
+          {% if display == 'fields' %}
+            {# --- Begin: Centered Badge over Image --- #}
+            {% set title_rendered = row.title|render|trim %}
+            {% if 'href="' in title_rendered %}
+              {% set term_url = title_rendered|split('href="')[1]|split('"')[0] %}
+            {% else %}
+              {% set term_url = '#' %}
+            {% endif %}
+            {% set term_name = title_rendered|striptags|trim %}
+
+
+            {# --- End: Centered Badge over Image --- #}
+
+            <a href="{{ term_url }}" class="carousel-image-wrapper position-relative text-center d-inline-block text-decoration-none">
+              {{ row.image }}
+              <div class="hero-term">
+                <div class="term-badge position-absolute top-50 start-50 translate-middle" style="z-index: 2;">
+                  {% set circle_color = row.field_listing_category_color|striptags|trim|default('#999') %}
+                  {% set icon_class = row.field_listing_category_icon|striptags|trim|default('la la-question') %}
+                  <div class="category-icon-wrapper">
+                    <svg class="category-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="50" cy="50" r="50" fill="{{ circle_color }}" />
+                    </svg>
+                    <i class="{{ icon_class }} category-icon"></i>
+                  </div>
                 </div>
               </div>
+            </a>
+            {# --- End: Centered Badge over Image --- #}
+
+            {% if row.title or row.description %}
+              {% if use_caption %}
+                <div class="carousel-caption {{ caption_breakpoints }}">
+              {% endif %}
+              {% if row.title %}
+                <span class="visually-hidden">{{ row.title }}</span>
+              {% endif %}
+              {% if row.description %}
+                <p>{{ row.description }}</p>
+              {% endif %}
+              {% if use_caption %}
+                </div>
+              {% endif %}
+            {% endif %}
+          {% else %}
+            {{ row.content }}
+          {% endif %}
+        </div>
+        {% if (loop.index is divisible by columns) or (loop.index == rows|length) %}
             </div>
           </div>
-          {# --- End: Centered Badge over Image --- #}
-          {% if row.title or row.description %}
-            {% if use_caption %}
-              <div class="carousel-caption {{ caption_breakpoints }}">
-            {% endif %}
-            {% if row.title %}
-              <span class="visually-hidden">{{ row.title }}</span>
-            {% endif %}
-            {% if row.description %}
-              <p>{{ row.description }}</p>
-            {% endif %}
-            {% if use_caption %}
-              </div>
-            {% endif %}
-          {% endif %}
-        {% else %}
-          {{ row.content }}
         {% endif %}
-      </div>
-      {% if (loop.index is divisible by columns) or (loop.index == rows|length) %}
-          </div>
-        </div>
-      {% endif %}
-    {% endfor %}
+      {% endfor %}
   </div>
   {% if navigation %}
     <a class="carousel-control-prev" href="#{{ id }}" role="button" data-bs-slide="prev">
