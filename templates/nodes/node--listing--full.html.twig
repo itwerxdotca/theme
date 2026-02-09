@@ -85,11 +85,11 @@
               {# ---------- About panel (OPEN) ---------- #}
               {% if has_description %}
                 <div class="accordion-item">
-                  <h3 class="accordion-header" id="heading-about-{{ node.id() }}">
+                  <h2 class="accordion-header" id="heading-about-{{ node.id() }}">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-about-{{ node.id() }}" aria-expanded="true" aria-controls="collapse-about-{{ node.id() }}">
-                      About
+                      About {{ node.label() }}
                     </button>
-                  </h3>
+                  </h2>
                   <div id="collapse-about-{{ node.id() }}" class="accordion-collapse collapse show" aria-labelledby="heading-about-{{ node.id() }}" data-bs-parent="#{{ accordion_id }}">
                     <div class="accordion-body">
                       {% if content['body'] is defined and content.body %}
@@ -107,11 +107,11 @@
               {# ---------- Amenities panel (CLOSED) - show only when there is content ---------- #}
               {% if has_amenities %}
                 <div class="accordion-item">
-                  <h3 class="accordion-header" id="heading-amenities-{{ node.id() }}">
+                  <h2 class="accordion-header" id="heading-amenities-{{ node.id() }}">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-amenities-{{ node.id() }}" aria-expanded="false" aria-controls="collapse-amenities-{{ node.id() }}">
-                      Amenities
+                      {{ node.label() }} Amenities
                     </button>
-                  </h3>
+                  </h2>
 
                   <div id="collapse-amenities-{{ node.id() }}" class="accordion-collapse collapse" aria-labelledby="heading-amenities-{{ node.id() }}" data-bs-parent="#{{ accordion_id }}">
                     <div class="accordion-body">
@@ -140,11 +140,11 @@
 
               {# ---------- Reviews panel (CLOSED) - comment form placed here ---------- #}
               <div class="accordion-item">
-                <h3 class="accordion-header" id="heading-reviews-{{ node.id() }}">
+                <h2 class="accordion-header" id="heading-reviews-{{ node.id() }}">
                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-reviews-{{ node.id() }}" aria-expanded="false" aria-controls="collapse-reviews-{{ node.id() }}">
-                    Reviews
+                    Reviews For {{ node.label() }}
                   </button>
-                </h3>
+                </h2>
 
                 <div id="collapse-reviews-{{ node.id() }}" class="accordion-collapse collapse" aria-labelledby="heading-reviews-{{ node.id() }}" data-bs-parent="#{{ accordion_id }}">
                   <div class="accordion-body" id="reviews-{{ node.id() }}">

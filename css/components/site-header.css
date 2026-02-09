@@ -110,21 +110,6 @@ header.site-header.fixed-top {
   border-bottom: 1px solid #eee;
 }
 
-/* Modal for search: center content and clean header */
-#searchModal .modal-content {
-  border-radius: 0.5rem;
-  border: none;
-  box-shadow: 0 4px 32px 0 rgba(0,0,0,0.10);
-}
-#searchModal .modal-header {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-#searchModal .modal-title {
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
 @media (max-width: 991.98px) {
   .site-header .container-xl {
     padding-left: 8px;

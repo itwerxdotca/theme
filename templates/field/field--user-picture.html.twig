@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * Theme override for user picture in articles (MEDIUM size).
+ *
+ * Filename: field--user-picture--node--article.html.twig
+ * Location: themes/MYTHEME/templates/field/
+ *
+ * Available variables:
+ * - items: List of all the field items.
+ * - element: The field element containing #object (the entity).
+ *
+ * This template is used for user pictures within article nodes.
+ */
+#}
+{% set classes = [
+  'user-picture',
+  'user-picture--medium',
+  'float-start',
+  'me-3',
+  'mb-2',
+] %}
+
+{# Get the user ID and entity from the field #}
+{% set user_id = element['#object'].id() %}
+{% set user_entity = element['#object'] %}
+{% set user_url = path('entity.user.canonical', {'user': user_id}) %}
+{% set user_fullname = user_entity.field_user_fullname.value|default(user_entity.getDisplayName()) %}
+
+<div{{ attributes.addClass(classes) }}>
+    {% for item in items %}
+      {% if item.content['#item'] %}
+        <img src="{{ item.content['#item'].entity.uri.value|image_style('thumbnail') }}" alt="{{ user_fullname }}" />
+      {% else %}
+        {# Default avatar fallback #}
+        <div class="user-picture__default">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="currentColor"/>
+          </svg>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    {% if items is empty %}
+      {# Show default avatar when no picture exists #}
+      <div class="user-picture__default">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="currentColor"/>
+        </svg>
+      </div>
+    {% endif %}
+</div>

@@ -92,7 +92,12 @@
 </div>
 
 {# ----------------- LOGIN/REGISTER MODAL ----------------- #}
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+<div class="modal fade ajax-tab-modal"
+     id="loginModal"
+     data-ajax-endpoint="modal/tclogin"
+     tabindex="-1"
+     aria-labelledby="loginModalLabel"
+     aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header border-0">
@@ -100,7 +105,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close'|t }}"></button>
       </div>
       <div class="modal-body">
-         <ul class="nav nav-tabs" id="loginModalTabs" role="tablist">
+         <ul class="nav nav-tabs" role="tablist">
            <li class="nav-item">
              <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab">{{ 'Login'|t }}</button>
            </li>

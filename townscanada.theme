@@ -22,6 +22,21 @@ use Drupal\user\Form\UserPasswordForm;
 use Drupal\block_content\BlockContentInterface;
 use Drupal\file\FileInterface;
 use Drupal\media\MediaInterface;
+use Drupal\Core\File\FileUrlGeneratorInterface;
+
+function townscanada_file_url(string $uri): string {
+  if (empty($uri)) {
+    return '';
+  }
+
+  try {
+    return \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
+  }
+  catch (\Throwable $e) {
+    return '';
+  }
+}
+
 
 /**
  * Implements hook_preprocess_page().
@@ -184,11 +199,11 @@ function townscanada_preprocess_page(array &$variables) {
                 $url = $style->buildUrl($uri);
               }
               catch (\Exception $e) {
-                $url = file_create_url($uri);
+                $url = townscanada_file_url($uri);
               }
             }
             else {
-              $url = file_create_url($uri);
+              $url = townscanada_file_url($uri);
             }
 
             $value = [
@@ -351,10 +366,10 @@ function _townscanada_extract_image_from_field($entity, $field_name, $image_styl
         try {
           $result['url'] = $style->buildUrl($uri);
         } catch (\Exception $e) {
-          $result['url'] = file_create_url($uri);
+          $result['url'] = townscanada_file_url($uri);
         }
       } else {
-        $result['url'] = file_create_url($uri);
+        $result['url'] = townscanada_file_url($uri);
       }
       // No responsive render as no file entity is present
       return $result;
@@ -378,10 +393,10 @@ function _townscanada_extract_image_from_field($entity, $field_name, $image_styl
       try {
         $result['url'] = $style->buildUrl($file->getFileUri());
       } catch (\Exception $e) {
-        $result['url'] = file_create_url($file->getFileUri());
+        $result['url'] = townscanada_file_url($file->getFileUri());
       }
     } else {
-      $result['url'] = file_create_url($file->getFileUri());
+      $result['url'] = townscanada_file_url($file->getFileUri());
     }
 
     // Preferred: produce a responsive_image render array if responsive style exists
@@ -678,9 +693,9 @@ function townscanada_preprocess_region(array &$variables) {
         if ($file && $file->access('view')) {
           $style = \Drupal\image\Entity\ImageStyle::load('blog_1140x642_');
           try {
-            $variables['hero_image_url'] = $style ? $style->buildUrl($file->getFileUri()) : file_create_url($file->getFileUri());
+            $variables['hero_image_url'] = $style ? $style->buildUrl($file->getFileUri()) : townscanada_file_url($file->getFileUri());
           } catch (\Exception $e) {
-            $variables['hero_image_url'] = file_create_url($file->getFileUri());
+            $variables['hero_image_url'] = townscanada_file_url($file->getFileUri());
           }
           // Minimal alt fallback.
           $variables['hero_image_alt'] = $item->get('alt')->getString() ?: $term->label();
@@ -708,39 +723,57 @@ function townscanada_preprocess_region(array &$variables) {
 
 /**
  * Implements hook_preprocess_hierarchical_taxonomy_menu().
+ *
+ * Menu links point to /province/town/alias/... if we're on that URL pattern,
+ * otherwise just /alias/... (no node/### prefixes).
  */
-function townscanada_preprocess_hierarchical_taxonomy_menu(&$variables) {
-  if (isset($variables['menu_tree']) && is_array($variables['menu_tree'])) {
-    _townscanada_add_term_fields($variables['menu_tree']);
-  }
-}
-
 /**
- * Recursively add term fields to menu items.
+  * Implements hook_preprocess_hierarchical_taxonomy_menu().
+  */
+ function townscanada_preprocess_hierarchical_taxonomy_menu(&$variables) {
+   if (isset($variables['menu_tree']) && is_array($variables['menu_tree'])) {
+     _townscanada_add_term_fields($variables['menu_tree']);
+   }
+ }
+
+ /**
+  * Recursively add term fields to menu items.
+  */
+ function _townscanada_add_term_fields(&$menu_tree) {
+   foreach ($menu_tree as &$item) {
+     if (isset($item['tid'])) {
+       $term = \Drupal::entityTypeManager()
+         ->getStorage('taxonomy_term')
+         ->load($item['tid']);
+
+       if ($term) {
+         // Add icon field
+         if ($term->hasField('field_listing_category_icon') && !$term->get('field_listing_category_icon')->isEmpty()) {
+           $item['field_listing_category_icon'] = $term->get('field_listing_category_icon')->value;
+         }
+
+         // Add color field
+         if ($term->hasField('field_listing_category_color') && !$term->get('field_listing_category_color')->isEmpty()) {
+           $item['field_listing_category_color'] = $term->get('field_listing_category_color')->value;
+         }
+       }
+     }
+
+     // Recurse into subitems
+     if (isset($item['subitem']) && is_array($item['subitem'])) {
+       _townscanada_add_term_fields($item['subitem']);
+     }
+   }
+ }
+
+ /**
+ * Implements hook_preprocess_flag().
  */
-function _townscanada_add_term_fields(&$menu_tree) {
-  foreach ($menu_tree as &$item) {
-    if (isset($item['tid'])) {
-      $term = \Drupal::entityTypeManager()
-        ->getStorage('taxonomy_term')
-        ->load($item['tid']);
+function townscanada_preprocess_flag(&$variables) {
+  // Make current user object available in flag template
+  $variables['current_user'] = \Drupal::currentUser();
+  $variables['is_anonymous'] = $variables['current_user']->isAnonymous();
 
-      if ($term) {
-        // Add icon field
-        if ($term->hasField('field_listing_category_icon') && !$term->get('field_listing_category_icon')->isEmpty()) {
-          $item['field_listing_category_icon'] = $term->get('field_listing_category_icon')->value;
-        }
-
-        // Add color field
-        if ($term->hasField('field_listing_category_color') && !$term->get('field_listing_category_color')->isEmpty()) {
-          $item['field_listing_category_color'] = $term->get('field_listing_category_color')->value;
-        }
-      }
-    }
-
-    // Recurse into subitems
-    if (isset($item['subitem']) && is_array($item['subitem'])) {
-      _townscanada_add_term_fields($item['subitem']);
-    }
-  }
+  // Add cache context so it varies per user
+  $variables['#cache']['contexts'][] = 'user';
 }

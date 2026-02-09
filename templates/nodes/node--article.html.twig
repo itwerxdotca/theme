@@ -1,4 +1,21 @@
 {#
+/**
+ * @file
+ * Theme override to display an article node.
+ *
+ * Available variables:
+ * - node: The node entity with limited access to object properties and methods.
+ * - label: The title of the node.
+ * - content: All node items. Use {{ content }} to print them all,
+ *   or print a subset such as {{ content.field_example }}.
+ * - url: Direct URL of the current node.
+ * - date: Themed creation date field.
+ *
+ * Filename: node--article.html.twig
+ * Location: themes/MYTHEME/templates/node/
+ */
+#}
+{#
   Sets the CSS classes dynamically based on node properties.
 #}
 {% set classes = [
@@ -11,7 +28,6 @@
   view_mode ? 'node--view-mode-' ~ view_mode|clean_class,
   'clearfix',
 ] %}
-
 <!-- Start Display article for teaser page -->
 {% if view_mode == 'teaser' %}
   <div class="post-block">
@@ -25,8 +41,13 @@
       {% endif %}
     </div>
     <div class="post-content text-left">
-      <div class="post-meta">
-        <span class="post-categories">{{ content.field_post_category }}</span>
+      <div class="post-meta d-flex align-items-center">
+        {# Author picture for teaser #}
+        {{ author_picture }}
+        <div class="post-meta-content">
+          <span class="post-categories">{{ content.field_post_category }}</span>
+          <span class="post-author">{{ author_name }}</span>
+        </div>
       </div>
       <div class="post-title"> <a href="{{ url }}" rel="bookmark">{{ label }}</a> </div>
       <div class="post-body">
@@ -45,6 +66,11 @@
     </div>
     <div class="post-content">
       <div class="post-categories">{{ content.field_post_category }}</div>
+      {# Author info with picture #}
+      <div class="post-author-info d-flex align-items-center mt-2">
+        {{ author_picture }}
+        <span class="post-author">{{ author_name }}</span>
+      </div>
     </div>
   </div>
 {% else %}
@@ -55,17 +81,20 @@
         <article{{ attributes }}>
           <div class="post-header">
           </div>
+          <div class="post-meta align-items-center">
+            {# Author picture for full article view #}
+            {{ author_picture }}
 
-          <div class="post-meta">
-            <span class="post-author">{% trans %}Submitted by {{ node.uid.entity.realname }} on {% endtrans %}<span class="post-created"> {{ date }} </span></span>
           </div>
-
           <div class="content-with-sidebar">
-            <div class="main-content" {{ content_attributes.addClass('node__content', 'clearfix') }}>
+
+            <div class="main-content p-3" {{ content_attributes.addClass('node__content', 'clearfix') }}>
+            <div class="post-meta-content mb-3">
+                <i class="la la-calendar"></i> Submitted on <span class="post-created"> {{ date }} </span>
+            </div>
               {{ content|without('field_image', 'field_post_category', 'field_post_format', 'field_post_type', 'field_post_embed', 'field_post_gallery', 'comment') }}
             </div>
           </div>
-
           <div id="node-single-comment">
             {{ content.comment }}
           </div>
