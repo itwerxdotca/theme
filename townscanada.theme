@@ -724,22 +724,65 @@ function townscanada_preprocess_region(array &$variables) {
 /**
  * Implements hook_preprocess_hierarchical_taxonomy_menu().
  *
- * Menu links point to /province/town/alias/... if we're on that URL pattern,
- * otherwise just /alias/... (no node/### prefixes).
+ * Menu links point to /province/town/category-alias/subcategory...
  */
 /**
   * Implements hook_preprocess_hierarchical_taxonomy_menu().
   */
  function townscanada_preprocess_hierarchical_taxonomy_menu(&$variables) {
-   if (isset($variables['menu_tree']) && is_array($variables['menu_tree'])) {
-     _townscanada_add_term_fields($variables['menu_tree']);
+   if (!is_array($variables['menu_tree'])) {
+     return;
    }
+
+   // Get all path information for debugging
+   $current_path = \Drupal::service('path.current')->getPath();
+   $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+   $route_name = \Drupal::routeMatch()->getRouteName();
+   $route_params = \Drupal::routeMatch()->getRawParameters()->all();
+
+   // Log for debugging
+   \Drupal::logger('townscanada')->notice('Path: @path | Alias: @alias | Route: @route | Params: @params', [
+     '@path' => $current_path,
+     '@alias' => $alias,
+     '@route' => $route_name,
+     '@params' => print_r($route_params, TRUE),
+   ]);
+
+   // Detect prefix
+   $prefix = _townscanada_get_province_town_prefix();
+
+   \Drupal::logger('townscanada')->notice('Detected prefix: @prefix', ['@prefix' => $prefix ?: 'NONE']);
+
+   // Add term fields
+   _townscanada_add_term_fields($variables['menu_tree'], $prefix);
+
+   $variables['prefix'] = $prefix;
+ }
+
+ /**
+  * Get the /province/town prefix.
+  */
+ function _townscanada_get_province_town_prefix() {
+   $current_path = \Drupal::service('path.current')->getPath();
+   $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+
+   // Parse the alias
+   $segments = explode('/', trim($alias, '/'));
+
+   // If we have at least 2 segments, assume first two are province/town
+   if (count($segments) >= 2) {
+     return '/' . $segments[0] . '/' . $segments[1];
+   }
+
+   return '';
  }
 
  /**
   * Recursively add term fields to menu items.
   */
- function _townscanada_add_term_fields(&$menu_tree) {
+ function _townscanada_add_term_fields(&$menu_tree, $prefix = '') {
+   $is_province_town = !empty($prefix);
+
    foreach ($menu_tree as &$item) {
      if (isset($item['tid'])) {
        $term = \Drupal::entityTypeManager()
@@ -747,21 +790,23 @@ function townscanada_preprocess_region(array &$variables) {
          ->load($item['tid']);
 
        if ($term) {
-         // Add icon field
          if ($term->hasField('field_listing_category_icon') && !$term->get('field_listing_category_icon')->isEmpty()) {
            $item['field_listing_category_icon'] = $term->get('field_listing_category_icon')->value;
          }
 
-         // Add color field
          if ($term->hasField('field_listing_category_color') && !$term->get('field_listing_category_color')->isEmpty()) {
            $item['field_listing_category_color'] = $term->get('field_listing_category_color')->value;
+         }
+
+         if ($is_province_town) {
+           $slug = strtolower(preg_replace('/[^\w]+/', '-', trim($term->getName())));
+           $item['custom_url'] = $prefix . '/' . $slug;
          }
        }
      }
 
-     // Recurse into subitems
      if (isset($item['subitem']) && is_array($item['subitem'])) {
-       _townscanada_add_term_fields($item['subitem']);
+       _townscanada_add_term_fields($item['subitem'], $prefix);
      }
    }
  }
