@@ -23,6 +23,7 @@ use Drupal\block_content\BlockContentInterface;
 use Drupal\file\FileInterface;
 use Drupal\media\MediaInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 function townscanada_file_url(string $uri): string {
   if (empty($uri)) {
@@ -740,20 +741,10 @@ function townscanada_preprocess_region(array &$variables) {
    $route_name = \Drupal::routeMatch()->getRouteName();
    $route_params = \Drupal::routeMatch()->getRawParameters()->all();
 
-   // Log for debugging
-   \Drupal::logger('townscanada')->notice('Path: @path | Alias: @alias | Route: @route | Params: @params', [
-     '@path' => $current_path,
-     '@alias' => $alias,
-     '@route' => $route_name,
-     '@params' => print_r($route_params, TRUE),
-   ]);
-
    // Detect prefix
    $prefix = _townscanada_get_province_town_prefix();
 
-   \Drupal::logger('townscanada')->notice('Detected prefix: @prefix', ['@prefix' => $prefix ?: 'NONE']);
-
-   // Add term fields
+   // Add term fields - Pass menu tree by reference
    _townscanada_add_term_fields($variables['menu_tree'], $prefix);
 
    $variables['prefix'] = $prefix;
@@ -778,9 +769,9 @@ function townscanada_preprocess_region(array &$variables) {
  }
 
  /**
-  * Recursively add term fields to menu items.
+  * Recursively add term fields to menu items with hierarchical URLs.
   */
- function _townscanada_add_term_fields(&$menu_tree, $prefix = '') {
+ function _townscanada_add_term_fields(&$menu_tree, $prefix = '', $parent_path = '') {
    $is_province_town = !empty($prefix);
 
    foreach ($menu_tree as &$item) {
@@ -790,6 +781,7 @@ function townscanada_preprocess_region(array &$variables) {
          ->load($item['tid']);
 
        if ($term) {
+         // Add term fields
          if ($term->hasField('field_listing_category_icon') && !$term->get('field_listing_category_icon')->isEmpty()) {
            $item['field_listing_category_icon'] = $term->get('field_listing_category_icon')->value;
          }
@@ -799,15 +791,91 @@ function townscanada_preprocess_region(array &$variables) {
          }
 
          if ($is_province_town) {
+           // Generate slug for the current term
            $slug = strtolower(preg_replace('/[^\w]+/', '-', trim($term->getName())));
-           $item['custom_url'] = $prefix . '/' . $slug;
+
+           // Build the full hierarchical path
+           if (!empty($parent_path)) {
+             // This is a child term, include parent in path
+             $item['custom_url'] = $prefix . $parent_path . '/' . $slug;
+           } else {
+             // This is a top-level term
+             $item['custom_url'] = $prefix . '/' . $slug;
+           }
          }
        }
      }
 
+     // If this item has children, recursively process them
      if (isset($item['subitem']) && is_array($item['subitem'])) {
-       _townscanada_add_term_fields($item['subitem'], $prefix);
+       // Build the parent path for children
+       $current_parent_path = '';
+       if (isset($term)) {
+         $current_slug = strtolower(preg_replace('/[^\w]+/', '-', trim($term->getName())));
+         if (!empty($parent_path)) {
+           $current_parent_path = $parent_path . '/' . $current_slug . '/';
+         } else {
+           $current_parent_path = '/' . $current_slug . '/';
+         }
+       }
+
+       // Recursively process children with the updated parent path
+       _townscanada_add_term_fields($item['subitem'], $prefix, $current_parent_path);
      }
+   }
+ }
+
+/**
+  * Implements hook_system_breadcrumb_alter().
+  */
+ function townscanada_system_breadcrumb_alter(&$breadcrumb, &$context) {
+   // Get current path and alias
+   $current_path = \Drupal::service('path.current')->getPath();
+   $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+
+   // Debug logging
+   \Drupal::logger('townscanada')->notice('Breadcrumb hook triggered. Path: @path, Alias: @alias', [
+     '@path' => $current_path,
+     '@alias' => $alias,
+   ]);
+
+   // Only process for location-based taxonomy pages
+   // Check if alias matches pattern: /province/town/...
+   if (preg_match('#^/([^/]+)/([^/]+)/(.+)$#', $alias, $matches)) {
+     $province = $matches[1];
+     $town = $matches[2];
+     $category_path = $matches[3];
+
+     // Create new breadcrumb
+     $new_breadcrumb = new \Drupal\Core\Breadcrumb\Breadcrumb();
+
+     // FIXED: Remove t() function
+     $new_breadcrumb->addLink(\Drupal\Core\Link::createFromRoute('Home', '<front>'));
+
+     // Add province
+     $province_name = ucwords(str_replace('-', ' ', $province));
+     $new_breadcrumb->addLink(\Drupal\Core\Link::createFromRoute($province_name, '<none>'));
+
+     // Add town
+     $town_name = ucwords(str_replace('-', ' ', $town));
+     $new_breadcrumb->addLink(\Drupal\Core\Link::createFromRoute($town_name, '<none>'));
+
+     // Parse hierarchical categories
+     $segments = explode('/', $category_path);
+
+     // Build links for each category segment
+     foreach ($segments as $index => $segment) {
+       if (empty($segment)) continue;
+
+       $term_name = ucwords(str_replace('-', ' ', $segment));
+       $new_breadcrumb->addLink(\Drupal\Core\Link::createFromRoute($term_name, '<none>'));
+     }
+
+     // Add cache contexts
+     $new_breadcrumb->addCacheContexts(['url.path']);
+
+     // Replace the breadcrumb
+     $breadcrumb = $new_breadcrumb;
    }
  }
 
