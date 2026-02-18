@@ -727,9 +727,7 @@ function townscanada_preprocess_region(array &$variables) {
  *
  * Menu links point to /province/town/category-alias/subcategory...
  */
-/**
-  * Implements hook_preprocess_hierarchical_taxonomy_menu().
-  */
+
  function townscanada_preprocess_hierarchical_taxonomy_menu(&$variables) {
    if (!is_array($variables['menu_tree'])) {
      return;
@@ -813,9 +811,9 @@ function townscanada_preprocess_region(array &$variables) {
        if (isset($term)) {
          $current_slug = strtolower(preg_replace('/[^\w]+/', '-', trim($term->getName())));
          if (!empty($parent_path)) {
-           $current_parent_path = $parent_path . '/' . $current_slug . '/';
+           $current_parent_path = $parent_path . '/' . $current_slug;
          } else {
-           $current_parent_path = '/' . $current_slug . '/';
+           $current_parent_path = '/' . $current_slug;
          }
        }
 
