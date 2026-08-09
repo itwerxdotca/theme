@@ -1,0 +1,93 @@
+{#
+/**
+ * @file
+ * Theme implementation for a compact user profile display.
+ *
+ * Available variables:
+ * - content: A list of content items.  Use 'content' to print all content, or
+ *   print a subset such as 'content.  field_example'.
+ * - user: The user entity with limited access to object properties and methods.
+ * - url: Direct URL of the current user.
+ */
+#}
+
+<article{{ attributes. addClass('user-profile', 'user-profile--compact') }}>
+
+  <div class="container-fluid">
+	<div class="row">
+	  {# Half-width container on large screens, full width on mobile #}
+	  <div class="col-12">
+
+		<div class="">
+		  <div class="card-body p-2">
+
+			<div class="row">
+			  {# User Picture Column #}
+			  <div class="col-auto">
+				{{ content.user_picture }}
+        {# Follow Button - always show #}
+        <div class="user-actions">
+          {% if logged_in %}
+          {# Logged in users:  show real flag #}
+          {{ content.flag_following }}
+          {% else %}
+          <span class="btn-badge bg-secondary"><i class="la la-user-plus p-1"></i> <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" aria-label="Login to follow this user">
+          Follow
+          </a></span>
+          {% endif %}
+        </div>
+			  </div>
+
+			  {# User Information Column #}
+			  <div class="col">
+
+				{# User Name #}
+				<h2 class="h4 mb-2">
+				 <a href="{{ url('entity.user.canonical', {'user': user.id}) }}" class="text-decoration-none">{{ user.  getDisplayName() }}</a>
+				</h2>
+
+				{# Meta Description / Bio #}
+				{% if content.field_meta_description %}
+				  <div class="user-bio mb-3">
+					{{ content.field_meta_description }}
+				  </div>
+				{% endif %}
+
+				{# User Details List #}
+				<ul class="list-unstyled small text-muted mb-3">
+
+				  {# Location #}
+				  {% if content.field_user_location %}
+					<li class="mb-1">
+					  <i class="la la-map-marker"></i>
+					  <strong>Location:</strong> {{ content.field_user_location }}
+					</li>
+				  {% endif %}
+
+				  {# Member Since / Join Date #}
+				  <li class="mb-1">
+					<i class="la la-calendar"></i>
+					<strong>Member since:</strong> {{ user. getCreatedTime()|format_date('custom', 'F Y') }}
+				  </li>
+
+				  {# Followers Count #}
+				  {% if content. field_numberoffollowers %}
+					<li class="mb-1">
+					  <i class="la la-users"></i>
+					  <strong>Followers: </strong> {{ content.field_numberoffollowers }}
+					</li>
+				  {% endif %}
+
+				</ul>
+
+			  </div>
+			</div>
+
+		  </div>
+		</div>
+
+	  </div>
+	</div>
+  </div>
+
+</article>

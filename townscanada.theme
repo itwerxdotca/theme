@@ -22,6 +22,22 @@ use Drupal\user\Form\UserPasswordForm;
 use Drupal\block_content\BlockContentInterface;
 use Drupal\file\FileInterface;
 use Drupal\media\MediaInterface;
+use Drupal\Core\File\FileUrlGeneratorInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+
+function townscanada_file_url(string $uri): string {
+  if (empty($uri)) {
+    return '';
+  }
+
+  try {
+    return \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
+  }
+  catch (\Throwable $e) {
+    return '';
+  }
+}
+
 
 /**
  * Implements hook_preprocess_page().
@@ -184,11 +200,11 @@ function townscanada_preprocess_page(array &$variables) {
                 $url = $style->buildUrl($uri);
               }
               catch (\Exception $e) {
-                $url = file_create_url($uri);
+                $url = townscanada_file_url($uri);
               }
             }
             else {
-              $url = file_create_url($uri);
+              $url = townscanada_file_url($uri);
             }
 
             $value = [
@@ -351,10 +367,10 @@ function _townscanada_extract_image_from_field($entity, $field_name, $image_styl
         try {
           $result['url'] = $style->buildUrl($uri);
         } catch (\Exception $e) {
-          $result['url'] = file_create_url($uri);
+          $result['url'] = townscanada_file_url($uri);
         }
       } else {
-        $result['url'] = file_create_url($uri);
+        $result['url'] = townscanada_file_url($uri);
       }
       // No responsive render as no file entity is present
       return $result;
@@ -378,10 +394,10 @@ function _townscanada_extract_image_from_field($entity, $field_name, $image_styl
       try {
         $result['url'] = $style->buildUrl($file->getFileUri());
       } catch (\Exception $e) {
-        $result['url'] = file_create_url($file->getFileUri());
+        $result['url'] = townscanada_file_url($file->getFileUri());
       }
     } else {
-      $result['url'] = file_create_url($file->getFileUri());
+      $result['url'] = townscanada_file_url($file->getFileUri());
     }
 
     // Preferred: produce a responsive_image render array if responsive style exists
@@ -678,9 +694,9 @@ function townscanada_preprocess_region(array &$variables) {
         if ($file && $file->access('view')) {
           $style = \Drupal\image\Entity\ImageStyle::load('blog_1140x642_');
           try {
-            $variables['hero_image_url'] = $style ? $style->buildUrl($file->getFileUri()) : file_create_url($file->getFileUri());
+            $variables['hero_image_url'] = $style ? $style->buildUrl($file->getFileUri()) : townscanada_file_url($file->getFileUri());
           } catch (\Exception $e) {
-            $variables['hero_image_url'] = file_create_url($file->getFileUri());
+            $variables['hero_image_url'] = townscanada_file_url($file->getFileUri());
           }
           // Minimal alt fallback.
           $variables['hero_image_alt'] = $item->get('alt')->getString() ?: $term->label();
@@ -708,39 +724,167 @@ function townscanada_preprocess_region(array &$variables) {
 
 /**
  * Implements hook_preprocess_hierarchical_taxonomy_menu().
+ *
+ * Menu links point to /province/town/category-alias/subcategory...
  */
-function townscanada_preprocess_hierarchical_taxonomy_menu(&$variables) {
-  if (isset($variables['menu_tree']) && is_array($variables['menu_tree'])) {
-    _townscanada_add_term_fields($variables['menu_tree']);
-  }
-}
+
+ function townscanada_preprocess_hierarchical_taxonomy_menu(&$variables) {
+   if (!is_array($variables['menu_tree'])) {
+     return;
+   }
+
+   // Get all path information for debugging
+   $current_path = \Drupal::service('path.current')->getPath();
+   $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+   $route_name = \Drupal::routeMatch()->getRouteName();
+   $route_params = \Drupal::routeMatch()->getRawParameters()->all();
+
+   // Detect prefix
+   $prefix = _townscanada_get_province_town_prefix();
+
+   // Add term fields - Pass menu tree by reference
+   _townscanada_add_term_fields($variables['menu_tree'], $prefix);
+
+   $variables['prefix'] = $prefix;
+ }
+
+ /**
+  * Get the /province/town prefix.
+  */
+ function _townscanada_get_province_town_prefix() {
+   $current_path = \Drupal::service('path.current')->getPath();
+   $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+
+   // Parse the alias
+   $segments = explode('/', trim($alias, '/'));
+
+   // If we have at least 2 segments, assume first two are province/town
+   if (count($segments) >= 2) {
+     return '/' . $segments[0] . '/' . $segments[1];
+   }
+
+   return '';
+ }
+
+ /**
+  * Recursively add term fields to menu items with hierarchical URLs.
+  */
+ function _townscanada_add_term_fields(&$menu_tree, $prefix = '', $parent_path = '') {
+   $is_province_town = !empty($prefix);
+
+   foreach ($menu_tree as &$item) {
+     if (isset($item['tid'])) {
+       $term = \Drupal::entityTypeManager()
+         ->getStorage('taxonomy_term')
+         ->load($item['tid']);
+
+       if ($term) {
+         // Add term fields
+         if ($term->hasField('field_listing_category_icon') && !$term->get('field_listing_category_icon')->isEmpty()) {
+           $item['field_listing_category_icon'] = $term->get('field_listing_category_icon')->value;
+         }
+
+         if ($term->hasField('field_listing_category_color') && !$term->get('field_listing_category_color')->isEmpty()) {
+           $item['field_listing_category_color'] = $term->get('field_listing_category_color')->value;
+         }
+
+         if ($is_province_town) {
+           // Generate slug for the current term
+           $slug = strtolower(preg_replace('/[^\w]+/', '-', trim($term->getName())));
+
+           // Build the full hierarchical path
+           if (!empty($parent_path)) {
+             // This is a child term, include parent in path
+             $item['custom_url'] = $prefix . $parent_path . '/' . $slug;
+           } else {
+             // This is a top-level term
+             $item['custom_url'] = $prefix . '/' . $slug;
+           }
+         }
+       }
+     }
+
+     // If this item has children, recursively process them
+     if (isset($item['subitem']) && is_array($item['subitem'])) {
+       // Build the parent path for children
+       $current_parent_path = '';
+       if (isset($term)) {
+         $current_slug = strtolower(preg_replace('/[^\w]+/', '-', trim($term->getName())));
+         if (!empty($parent_path)) {
+           $current_parent_path = $parent_path . '/' . $current_slug;
+         } else {
+           $current_parent_path = '/' . $current_slug;
+         }
+       }
+
+       // Recursively process children with the updated parent path
+       _townscanada_add_term_fields($item['subitem'], $prefix, $current_parent_path);
+     }
+   }
+ }
 
 /**
- * Recursively add term fields to menu items.
+  * Implements hook_system_breadcrumb_alter().
+  */
+ function townscanada_system_breadcrumb_alter(&$breadcrumb, &$context) {
+   // Get current path and alias
+   $current_path = \Drupal::service('path.current')->getPath();
+   $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+
+   // Debug logging
+   \Drupal::logger('townscanada')->notice('Breadcrumb hook triggered. Path: @path, Alias: @alias', [
+     '@path' => $current_path,
+     '@alias' => $alias,
+   ]);
+
+   // Only process for location-based taxonomy pages
+   // Check if alias matches pattern: /province/town/...
+   if (preg_match('#^/([^/]+)/([^/]+)/(.+)$#', $alias, $matches)) {
+     $province = $matches[1];
+     $town = $matches[2];
+     $category_path = $matches[3];
+
+     // Create new breadcrumb
+     $new_breadcrumb = new \Drupal\Core\Breadcrumb\Breadcrumb();
+
+     // FIXED: Remove t() function
+     $new_breadcrumb->addLink(\Drupal\Core\Link::createFromRoute('Home', '<front>'));
+
+     // Add province
+     $province_name = ucwords(str_replace('-', ' ', $province));
+     $new_breadcrumb->addLink(\Drupal\Core\Link::createFromRoute($province_name, '<none>'));
+
+     // Add town
+     $town_name = ucwords(str_replace('-', ' ', $town));
+     $new_breadcrumb->addLink(\Drupal\Core\Link::createFromRoute($town_name, '<none>'));
+
+     // Parse hierarchical categories
+     $segments = explode('/', $category_path);
+
+     // Build links for each category segment
+     foreach ($segments as $index => $segment) {
+       if (empty($segment)) continue;
+
+       $term_name = ucwords(str_replace('-', ' ', $segment));
+       $new_breadcrumb->addLink(\Drupal\Core\Link::createFromRoute($term_name, '<none>'));
+     }
+
+     // Add cache contexts
+     $new_breadcrumb->addCacheContexts(['url.path']);
+
+     // Replace the breadcrumb
+     $breadcrumb = $new_breadcrumb;
+   }
+ }
+
+ /**
+ * Implements hook_preprocess_flag().
  */
-function _townscanada_add_term_fields(&$menu_tree) {
-  foreach ($menu_tree as &$item) {
-    if (isset($item['tid'])) {
-      $term = \Drupal::entityTypeManager()
-        ->getStorage('taxonomy_term')
-        ->load($item['tid']);
+function townscanada_preprocess_flag(&$variables) {
+  // Make current user object available in flag template
+  $variables['current_user'] = \Drupal::currentUser();
+  $variables['is_anonymous'] = $variables['current_user']->isAnonymous();
 
-      if ($term) {
-        // Add icon field
-        if ($term->hasField('field_listing_category_icon') && !$term->get('field_listing_category_icon')->isEmpty()) {
-          $item['field_listing_category_icon'] = $term->get('field_listing_category_icon')->value;
-        }
-
-        // Add color field
-        if ($term->hasField('field_listing_category_color') && !$term->get('field_listing_category_color')->isEmpty()) {
-          $item['field_listing_category_color'] = $term->get('field_listing_category_color')->value;
-        }
-      }
-    }
-
-    // Recurse into subitems
-    if (isset($item['subitem']) && is_array($item['subitem'])) {
-      _townscanada_add_term_fields($item['subitem']);
-    }
-  }
+  // Add cache context so it varies per user
+  $variables['#cache']['contexts'][] = 'user';
 }

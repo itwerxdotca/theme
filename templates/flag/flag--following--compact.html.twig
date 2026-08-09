@@ -1,0 +1,49 @@
+{#
+/**
+ * @file
+ * Theme implementation for following flag in compact view mode.
+ *
+ * Available variables:
+ * - attributes: HTML attributes for the link element.  
+ * - title: The flag link title. 
+ * - action: 'flag' or 'unflag'
+ * - flag:   The flag object.
+ * - flaggable: The flaggable entity. 
+ * - is_anonymous:  Boolean, true if current user is anonymous.
+ */
+#}
+
+{# Attach the flag CSS library. #}
+{{ attach_library('flag/flag. link') }}
+
+
+{# Logged in users - show normal flag link as Bootstrap button #}
+
+{# Depending on the flag action, set the appropriate action class.  #}
+{% if action == 'unflag' %}
+  {% set action_class = 'action-unflag' %}
+  {% set badge_class = 'btn-badge bg-primary' %}
+  {% set icon_class = 'la la-user-check' %}
+{% else %}
+  {% set action_class = 'action-flag' %}
+  {% set badge_class = 'btn-badge bg-secondary' %}
+  {% set icon_class = 'la la-user-plus' %}
+{% endif %}
+
+{# Set the remaining Flag CSS classes. #}
+{% set classes = [
+  'flag',
+  'flag-' ~ flag. id()|clean_class,
+  'js-flag-' ~ flag.id()|clean_class ~ '-' ~ flaggable. id(),
+  action_class,
+] %}
+
+{# Add rel to attributes only #}
+{% set attributes = attributes.setAttribute('rel', 'nofollow') %}
+
+<span class="{{ classes|join(' ') }} {{ badge_class }}">
+  <i class="{{ icon_class }}"></i>
+  <a{{ attributes }}>
+	 {{ title }}
+  </a>
+</span>

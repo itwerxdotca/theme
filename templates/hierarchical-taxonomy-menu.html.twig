@@ -1,4 +1,15 @@
-{% macro menu_links(menu_tree, route_tid, current_depth, max_depth, collapsible) %}
+{# hierarchical-taxonomy-menu.html.twig #}
+
+{# Get current path #}
+{% set current_path = request.pathInfo %}
+{% set path_parts = current_path|split('/') %}
+{% set prefix = (path_parts|length >= 3) ? '/' ~ path_parts[1] ~ '/' ~ path_parts[2] : '' %}
+
+{# Debug - remove after #}
+<!-- DEBUG: Path: {{ current_path }} -->
+<!-- DEBUG: Prefix: {{ prefix }} -->
+
+{% macro menu_links(menu_tree, route_tid, current_depth, max_depth, collapsible, prefix) %}
   {% import _self as macros %}
   {% for item in menu_tree %}
     {%
@@ -11,7 +22,11 @@
     <li class="{{ liClass|join(' ') }}">
       {% if item.subitem and current_depth < max_depth %}
         {% if current_depth == 0 %}
-          <a href="{{ item.url }}" class="nav-link dropdown-toggle {% if route_tid == item.tid %}active{% endif %}" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="{{ item.name }}">
+          {% set final_url = item.custom_url ?? item.url %}
+          {% if prefix and not item.custom_url %}
+            {% set final_url = prefix ~ final_url %}
+          {% endif %}
+          <a href="{{ final_url }}" class="nav-link dropdown-toggle {% if route_tid == item.tid %}active{% endif %}" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="{{ item.name }}">
             {% if item.field_listing_category_icon and item.field_listing_category_color %}
               {% set circle_color = item.field_listing_category_color|default('#999') %}
               {% set icon_class = item.field_listing_category_icon|default('la la-question') %}
@@ -24,7 +39,11 @@
             {% endif %}
           </a>
         {% else %}
-          <a href="{{ item.url }}" class="dropdown-item dropdown-toggle {% if route_tid == item.tid %}active{% endif %}">
+          {% set final_url = item.custom_url ?? item.url %}
+          {% if prefix and not item.custom_url %}
+            {% set final_url = prefix ~ final_url %}
+          {% endif %}
+          <a href="{{ final_url }}" class="dropdown-item dropdown-toggle {% if route_tid == item.tid %}active{% endif %}">
             {% if item.field_listing_category_icon and item.field_listing_category_color %}
               {% set circle_color = item.field_listing_category_color|default('#999') %}
               {% set icon_class = item.field_listing_category_icon|default('la la-question') %}
@@ -39,11 +58,15 @@
           </a>
         {% endif %}
         <ul class="menu dropdown-menu dropdown-submenu {% if collapsible == TRUE %}collapsed-submenu{% endif %}">
-          {{ macros.menu_links(item.subitem, route_tid, current_depth + 1, max_depth, collapsible) }}
+          {{ macros.menu_links(item.subitem, route_tid, current_depth + 1, max_depth, collapsible, prefix) }}
         </ul>
       {% else %}
         {% if current_depth == 0 %}
-          <a href="{{ item.url }}" class="nav-link {% if route_tid == item.tid %}active{% endif %}" title="{{ item.name }}">
+          {% set final_url = item.custom_url ?? item.url %}
+          {% if prefix and not item.custom_url and not final_url starts with prefix %}
+            {% set final_url = prefix ~ final_url %}
+          {% endif %}
+          <a href="{{ final_url }}" class="nav-link {% if route_tid == item.tid %}active{% endif %}" title="{{ item.name }}">
             {% if item.field_listing_category_icon and item.field_listing_category_color %}
               {% set circle_color = item.field_listing_category_color|default('#999') %}
               {% set icon_class = item.field_listing_category_icon|default('la la-question') %}
@@ -56,7 +79,11 @@
             {% endif %}
           </a>
         {% else %}
-          <a href="{{ item.url }}" class="dropdown-item {% if route_tid == item.tid %}active{% endif %}">
+          {% set final_url = item.custom_url ?? item.url %}
+          {% if prefix and not item.custom_url %}
+            {% set final_url = prefix ~ final_url %}
+          {% endif %}
+          <a href="{{ final_url }}" class="dropdown-item {% if route_tid == item.tid %}active{% endif %}">
             {% if item.field_listing_category_icon and item.field_listing_category_color %}
               {% set circle_color = item.field_listing_category_color|default('#999') %}
               {% set icon_class = item.field_listing_category_icon|default('la la-question') %}
@@ -76,5 +103,9 @@
 {% endmacro %}
 {% import _self as macros %}
 <ul class="menu hierarchical-taxonomy-menu nav">
-  {{ macros.menu_links(menu_tree, route_tid, 0, max_depth, collapsible) }}
+  {{ macros.menu_links(menu_tree, route_tid, 0, max_depth, collapsible, prefix) }}
 </ul>
+<!-- DEBUG: Current path: {{ current_path }} -->
+<!-- DEBUG: Path parts: {{ path_parts|join(',') }} -->
+<!-- DEBUG: Prefix: {{ prefix }} -->
+<!-- DEBUG: First item URL: {{ menu_tree.0.url|default('NO ITEMS') }} -->
