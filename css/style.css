@@ -1,5 +1,3 @@
-@charset "UTF-8";
-
 /*!
  * TownsCanada — Single-File Custom Theme
  * Bootstrap 5.3.3 subtheme overrides
@@ -679,7 +677,6 @@ tr.region-title td {
   .hero-region {
     min-height: 45vh;
     margin-bottom: 2rem;
-    display: flex;
   }
 
   .hero-region[data-hero-fit="scale"] {
@@ -1565,7 +1562,6 @@ code {
   border-radius: 0.25em;
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 0.75rem;
 }
 
 .media-library-item__edit {
@@ -1822,18 +1818,24 @@ code {
   .hierarchical-taxonomy-menu.nav {
     flex-wrap: nowrap;
     overflow-x: auto;
-    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
     gap: 0.5rem;
     padding: 1rem 0.5rem;
     justify-content: flex-start;
+    /* NOTE: overflow-y can't stay "visible" while overflow-x is "auto" —
+       the spec forces both to auto. If flyout dropdowns must escape this
+       container visually, they need to be repositioned with JS (e.g.
+       position: fixed, computed from getBoundingClientRect) rather than
+       relying on CSS overflow alone. */
   }
+
   .hierarchical-taxonomy-menu .nav-item {
     flex: 0 0 auto;
     scroll-snap-align: center;
-    position: static;
+    position: relative; /* was: static — this broke absolute anchoring */
   }
+
   .hierarchical-taxonomy-menu .nav-item > .dropdown-menu {
     position: absolute;
     top: 100%;
@@ -1841,7 +1843,11 @@ code {
     transform: translateX(-50%);
     -webkit-transform: translateX(-50%);
     margin-top: 0.3rem;
+    z-index: 1000;
+    max-width: calc(100vw - 1rem);
+    /* clamp so it never runs off-screen at edges */
   }
+
   .hierarchical-taxonomy-menu.nav::-webkit-scrollbar {
     display: none;
   }
@@ -1849,6 +1855,7 @@ code {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
   .hierarchical-taxonomy-menu .dropdown-menu .dropdown-menu {
     position: relative;
     top: 0;
@@ -1861,18 +1868,25 @@ code {
     border: none;
     border-top: 1px solid rgba(0,0,0,.1);
     padding-left: 1rem;
-    max-height: 30rem;
-    transition: max-height 1.4s ease-out;
-    -webkit-transition: max-height 1.4s ease-out;
+    max-height: 0;              /* was 30rem — should start fully collapsed */
+    overflow: hidden;
+    transition: max-height 0.3s ease-out; /* was 1.4s — too slow */
+    -webkit-transition: max-height 0.3s ease-out;
   }
-  .hierarchical-taxonomy-menu .dropdown:hover > .dropdown-menu {
-    max-height: 200rem;
+
+  /* Hover kept only as a desktop/mouse-hover enhancement.
+     Real toggle on touch devices should be a JS-driven class, e.g. .is-open,
+     and :focus-within added below for keyboard access. */
+  .hierarchical-taxonomy-menu .dropdown:hover > .dropdown-menu,
+  .hierarchical-taxonomy-menu .dropdown:focus-within > .dropdown-menu,
+  .hierarchical-taxonomy-menu .dropdown.is-open > .dropdown-menu {
+    max-height: 50rem; /* generous cap, not 200rem — just needs to exceed content */
   }
+
   .hierarchical-taxonomy-menu .dropdown-menu .dropdown-item {
     padding-left: 1.5rem;
   }
 }
-
 /* ============================================
    10. UTILITIES & FIXES
    ============================================ */
