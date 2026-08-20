@@ -1,5 +1,7 @@
 {# hierarchical-taxonomy-menu.html.twig #}
 
+{# hierarchical-taxonomy-menu.html.twig #}
+{{ attach_library('townscanada/taxonomy-menu') }}
 {# Get current path #}
 {% set current_path = request.pathInfo %}
 {% set path_parts = current_path|split('/') %}

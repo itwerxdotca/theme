@@ -13,13 +13,17 @@
 [data-bs-theme=light] {
   /* Layout */
   --header-h: 6rem;
-
   /* Brand */
   --bs-primary: #C71C1C;
   --bs-primary-rgb: 199, 28, 28;
-  --bs-secondary: #4FB9A4;
-  --bs-secondary-rgb: 79, 185, 164;
-
+  --bs-secondary: #22773E;
+  --bs-secondary-rgb: 34, 119, 62;
+ /* Accent — Heritage yellow (was gold #D9A441). Dark text only, same rule as before. */
+ --bs-accent: #DDBC3C;
+ --bs-accent-rgb: 221, 188, 60;
+ /* New — Heritage indigo. Dark UI surfaces (footer, dividers, dark badges). White text on top. */
+ --bs-heritage-indigo: #191957;
+ --bs-heritage-indigo-rgb: 25, 25, 87;
   /* Typography */
   --font-body-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-heading-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -55,8 +59,17 @@ body {
   line-height: 1.6;
 }
 
-h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6 {
+h1, h2,
+.h1, .h2 {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: var(--font-heading-weight);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  max-width: 100%;
+}
+
+h3, h4, h5, h6,
+.h3, .h4, .h5, .h6 {
   font-family: var(--font-heading-family);
   font-weight: var(--font-heading-weight);
   letter-spacing: -0.01em;
@@ -65,7 +78,8 @@ h1, h2, h3, h4, h5, h6,
 }
 
 p {
-  max-width: 70ch; /* Improves readability on wide screens */
+  max-width: 90ch;
+  margin-inline: auto;
 }
 
 code, pre, kbd, .font-monospace {
@@ -110,11 +124,11 @@ a.button.button--danger {
 
 a.button.button--action {
   --bs-btn-color: #000;
-  --bs-btn-bg: #0dcaf0;
-  --bs-btn-border-color: #0dcaf0;
+  --bs-btn-bg: #D9A441;
+  --bs-btn-border-color: #D9A441;
   --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #31d2f2;
-  --bs-btn-hover-border-color: #25cff2;
+  --bs-btn-hover-bg: #DFB361;
+  --bs-btn-hover-border-color: #DDAE57;
 }
 
 /* Default button fallback */
@@ -1700,194 +1714,178 @@ code {
    9. HIERARCHICAL TAXONOMY MENU
    ============================================ */
 .hierarchical-taxonomy-menu.nav {
-  display: flex;
-  flex-wrap: wrap;
-  padding-left: 0;
-  margin-bottom: 0;
-  list-style: none;
-  justify-content: center;
-}
+     display: flex;
+     flex-wrap: wrap;
+     padding-left: 0;
+     margin-bottom: 0;
+     list-style: none;
+     justify-content: center;
+   }
 
-.hierarchical-taxonomy-menu .dropdown {
-  position: relative;
-}
+   .hierarchical-taxonomy-menu .dropdown {
+     position: relative;
+   }
 
-.hierarchical-taxonomy-menu .dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 9999;
-  min-width: 16rem;
-  padding: 0.5rem 0;
-  margin: 0;
-  list-style: none;
-  background-color: #fff;
-  border: 1px solid rgba(0,0,0,.15);
-  border-radius: 0.375rem;
-  box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
-}
+   .hierarchical-taxonomy-menu .dropdown-menu {
+     display: none;
+     position: absolute;
+     top: 100%;
+     left: 0;
+     z-index: 9999;
+     min-width: 16rem;
+     padding: 0.5rem 0;
+     margin: 0;
+     list-style: none;
+     background-color: #fff;
+     border: 1px solid rgba(0,0,0,.15);
+     border-radius: 0.375rem;
+     box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
+   }
 
-.hierarchical-taxonomy-menu .nav-item > .dropdown-menu {
-  left: 50%;
-  transform: translateX(-50%);
-}
+   .hierarchical-taxonomy-menu .nav-item > .dropdown-menu {
+     left: 50%;
+     transform: translateX(-50%);
+   }
 
-.hierarchical-taxonomy-menu .dropdown:hover > .dropdown-menu {
-  display: block;
-}
+   .hierarchical-taxonomy-menu .dropdown:hover > .dropdown-menu {
+     display: block;
+   }
 
-.hierarchical-taxonomy-menu .dropdown-menu .dropdown-menu {
-  top: 0;
-  left: 100%;
-  transform: none;
-  margin-top: -0.5rem;
-  margin-left: -1px;
-}
+   .hierarchical-taxonomy-menu .dropdown-menu .dropdown-menu {
+     top: 0;
+     left: 100%;
+     transform: none;
+     margin-top: -0.5rem;
+     margin-left: -1px;
+   }
 
-.hierarchical-taxonomy-menu .dropdown-item {
-  display: block;
-  width: 100%;
-  padding: 0.25rem 1rem;
-  clear: both;
-  font-weight: 400;
-  color: #212529;
-  text-align: inherit;
-  text-decoration: none;
-  white-space: nowrap;
-  background-color: transparent;
-  border: 0;
-}
+   .hierarchical-taxonomy-menu .dropdown-item {
+     display: block;
+     width: 100%;
+     padding: 0.25rem 1rem;
+     clear: both;
+     font-weight: 400;
+     color: #212529;
+     text-align: inherit;
+     text-decoration: none;
+     white-space: nowrap;
+     background-color: transparent;
+     border: 0;
+   }
 
-.hierarchical-taxonomy-menu .dropdown-item:hover,
-.hierarchical-taxonomy-menu .dropdown-item:focus {
-  color: #1e2125;
-  background-color: #e9ecef;
-}
+   .hierarchical-taxonomy-menu .dropdown-item:hover,
+   .hierarchical-taxonomy-menu .dropdown-item:focus {
+     color: #1e2125;
+     background-color: #e9ecef;
+   }
 
-.hierarchical-taxonomy-menu .dropdown-menu .dropdown-toggle::after {
-  content: "›";
-  border: none;
-  margin-left: 0.5rem;
-  font-size: 0.75rem;
-}
+   .hierarchical-taxonomy-menu .dropdown-menu .dropdown-toggle::after {
+     content: "\203A";
+     border: none;
+     margin-left: 0.5rem;
+     font-size: 0.75rem;
+   }
 
-.hierarchical-taxonomy-menu .dropdown-item.dropdown-toggle::after {
-  float: right;
-  margin-top: 0.25rem;
-}
+   .hierarchical-taxonomy-menu .dropdown-item.dropdown-toggle::after {
+     float: right;
+     margin-top: 0.25rem;
+   }
 
-.hierarchical-taxonomy-menu .nav-link.dropdown-toggle::after {
-  display: none;
-}
+   .hierarchical-taxonomy-menu .nav-link.dropdown-toggle::after {
+     display: none;
+   }
 
-/* Category icons */
-.hierarchical-taxonomy-menu .category-icon-inline {
-  position: relative;
-  display: inline-block;
-  vertical-align: middle;
-}
-.hierarchical-taxonomy-menu .category-icon-svg {
-  display: block;
-}
-.hierarchical-taxonomy-menu .category-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 0.75rem;
-  pointer-events: none;
-}
-.hierarchical-taxonomy-menu .nav-link .category-icon {
-  font-size: 1.6rem;
-}
-.hierarchical-taxonomy-menu .dropdown-item .category-icon {
-  font-size: 0.6875rem;
-}
-.hierarchical-taxonomy-menu .category-icon-large .category-icon-svg {
-  width: 3.125rem;
-  height: 3.125rem;
-}
-.hierarchical-taxonomy-menu .category-icon-large {
-  font-size: 4.5rem;
-}
+   /* Category icons */
+   .hierarchical-taxonomy-menu .category-icon-inline {
+     position: relative;
+     display: inline-block;
+     vertical-align: middle;
+   }
+   .hierarchical-taxonomy-menu .category-icon-svg {
+     display: block;
+   }
+   .hierarchical-taxonomy-menu .category-icon {
+     position: absolute;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     color: white;
+     font-size: 0.75rem;
+     pointer-events: none;
+   }
+   .hierarchical-taxonomy-menu .nav-link .category-icon {
+     font-size: 1.6rem;
+   }
+   .hierarchical-taxonomy-menu .dropdown-item .category-icon {
+     font-size: 0.6875rem;
+   }
+   .hierarchical-taxonomy-menu .category-icon-large .category-icon-svg {
+     width: 3.125rem;
+     height: 3.125rem;
+   }
+   .hierarchical-taxonomy-menu .category-icon-large {
+     font-size: 4.5rem;
+   }
 
-/* Mobile taxonomy menu */
-@media (max-width: 768px) {
-  .hierarchical-taxonomy-menu.nav {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    gap: 0.5rem;
-    padding: 1rem 0.5rem;
-    justify-content: flex-start;
-    /* NOTE: overflow-y can't stay "visible" while overflow-x is "auto" —
-       the spec forces both to auto. If flyout dropdowns must escape this
-       container visually, they need to be repositioned with JS (e.g.
-       position: fixed, computed from getBoundingClientRect) rather than
-       relying on CSS overflow alone. */
-  }
+   /* Mobile taxonomy menu */
+   @media (max-width: 768px) {
+     .hierarchical-taxonomy-menu.nav {
+       flex-wrap: nowrap;
+       overflow-x: auto;
+       -webkit-overflow-scrolling: touch;
+       scroll-snap-type: x mandatory;
+       gap: 0.5rem;
+       padding: 1rem 0.5rem;
+       justify-content: flex-start;
+     }
 
-  .hierarchical-taxonomy-menu .nav-item {
-    flex: 0 0 auto;
-    scroll-snap-align: center;
-    position: relative; /* was: static — this broke absolute anchoring */
-  }
+     .hierarchical-taxonomy-menu.nav::-webkit-scrollbar {
+       display: none;
+     }
+     .hierarchical-taxonomy-menu.nav {
+       -ms-overflow-style: none;
+       scrollbar-width: none;
+     }
 
-  .hierarchical-taxonomy-menu .nav-item > .dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    -webkit-transform: translateX(-50%);
-    margin-top: 0.3rem;
-    z-index: 1000;
-    max-width: calc(100vw - 1rem);
-    /* clamp so it never runs off-screen at edges */
-  }
+     .hierarchical-taxonomy-menu .nav-item {
+       flex: 0 0 auto;
+       scroll-snap-align: center;
+       position: static;
+     }
 
-  .hierarchical-taxonomy-menu.nav::-webkit-scrollbar {
-    display: none;
-  }
-  .hierarchical-taxonomy-menu.nav {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+     /* Default (unopened / desktop-fallback) positioning. While a dropdown
+        is actually open on mobile, taxonomy-menu-reparent.js moves the menu
+        to <body> and sets its position inline — this rule only matters
+        before that JS runs or if JS fails to load. */
+     .hierarchical-taxonomy-menu .nav-item > .dropdown-menu {
+       position: absolute;
+       top: 100%;
+       left: 50%;
+       transform: translateX(-50%);
+       margin-top: 0.3rem;
+       max-width: calc(100vw - 1rem);
+     }
 
-  .hierarchical-taxonomy-menu .dropdown-menu .dropdown-menu {
-    position: relative;
-    top: 0;
-    left: 0;
-    transform: none;
-    margin-top: 0;
-    margin-left: 0;
-    width: 100%;
-    box-shadow: none;
-    border: none;
-    border-top: 1px solid rgba(0,0,0,.1);
-    padding-left: 1rem;
-    max-height: 0;              /* was 30rem — should start fully collapsed */
-    overflow: hidden;
-    transition: max-height 0.3s ease-out; /* was 1.4s — too slow */
-    -webkit-transition: max-height 0.3s ease-out;
-  }
+     .hierarchical-taxonomy-menu .dropdown-menu .dropdown-menu {
+       position: relative;
+       top: 0;
+       left: 0;
+       transform: none;
+       margin-top: 0;
+       margin-left: 0;
+       width: 100%;
+       box-shadow: none;
+       border: none;
+       border-top: 1px solid rgba(0,0,0,.1);
+       padding-left: 1rem;
+     }
 
-  /* Hover kept only as a desktop/mouse-hover enhancement.
-     Real toggle on touch devices should be a JS-driven class, e.g. .is-open,
-     and :focus-within added below for keyboard access. */
-  .hierarchical-taxonomy-menu .dropdown:hover > .dropdown-menu,
-  .hierarchical-taxonomy-menu .dropdown:focus-within > .dropdown-menu,
-  .hierarchical-taxonomy-menu .dropdown.is-open > .dropdown-menu {
-    max-height: 50rem; /* generous cap, not 200rem — just needs to exceed content */
-  }
+     .hierarchical-taxonomy-menu .dropdown-menu .dropdown-item {
+       padding-left: 1.5rem;
+     }
+   }
 
-  .hierarchical-taxonomy-menu .dropdown-menu .dropdown-item {
-    padding-left: 1.5rem;
-  }
-}
-/* ============================================
+  /* ============================================
    10. UTILITIES & FIXES
    ============================================ */
 
