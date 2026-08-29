@@ -1910,17 +1910,37 @@ code {
    10. UTILITIES & FIXES
    ============================================ */
 
-/* Icon enhancements */
-button i.la {
+/* Header Icon enhancements */
+.site-header button i.la,
+.site-header a i.la {
   font-size: 2.5rem;
   margin-right: 0.5rem;
   vertical-align: middle;
   color: #333;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: transform 0.2s, color 0.2s;
 }
-button:hover i.la {
+
+.site-header button:hover i.la,
+.site-header a:hover i.la {
   transform: scale(1.2);
-  color: #22223B;
+  color: #22223b;
+}
+
+/* Tablet */
+@media (max-width: 991.98px) {
+  .site-header button i.la,
+  .site-header a i.la {
+    font-size: 2rem;
+  }
+}
+
+/* Phone */
+@media (max-width: 575.98px) {
+  .site-header button i.la,
+  .site-header a i.la {
+    font-size: 1.5rem;
+    margin-right: 0.25rem;
+  }
 }
 
 /* Search modal */
