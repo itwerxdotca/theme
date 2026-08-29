@@ -30,8 +30,8 @@
   /* Alternative editorial feel: "Merriweather", Georgia, serif; */
 
   --font-body-weight: 400;
-  --font-body-weight-bold: 700;
-  --font-heading-weight: 600;
+  --font-body-weight-bold: 600;
+  --font-heading-weight: 400;
 
   --bs-font-sans-serif: var(--font-body-family);
 
@@ -46,6 +46,27 @@
   --prime-two: #C71C1C;
   --prime-five: #a91515;
   --prime-ten: #4FB9A4;
+
+  /* Territories */
+  --tc-yukon: #7C868E;                    /* RGB 124, 134, 142 */
+  --tc-northwest-territories: #96AEBF;    /* RGB 150, 174, 191 */
+  --tc-nunavut: #76C4F1;                  /* RGB 118, 196, 241 */
+
+  /* Western Canada */
+  --tc-british-columbia: #449284;         /* RGB 68, 146, 132 */
+  --tc-alberta: #99AE85;                  /* RGB 153, 174, 133 */
+  --tc-saskatchewan: #A6C875;             /* RGB 166, 200, 117 */
+  --tc-manitoba: #BDDA57;                 /* RGB 189, 218, 87 */
+
+  /* Central Canada */
+  --tc-ontario: #F9C201;                  /* RGB 249, 194, 1 */
+  --tc-quebec: #FFB07C;                   /* RGB 255, 176, 124 */
+
+  /* Atlantic Canada */
+  --tc-new-brunswick: #F08080;            /* RGB 240, 128, 128 */
+  --tc-prince-edward-island: #5C5D75;     /* RGB 92, 93, 117 */
+  --tc-nova-scotia: #C62D42;              /* RGB 198, 45, 66 */
+  --tc-newfoundland-labrador: #FEBAAD;    /* RGB 254, 186, 173 */
 }
 
 /* ============================================
@@ -78,11 +99,11 @@ h3, h4, h5, h6,
 }
 
 p {
-  max-width: 90ch;
   margin-inline: auto;
 }
 
 code, pre, kbd, .font-monospace {
+  max-width: 90ch;
   font-family: var(--bs-font-monospace);
 }
 
@@ -1889,17 +1910,37 @@ code {
    10. UTILITIES & FIXES
    ============================================ */
 
-/* Icon enhancements */
-button i.la {
+/* Header Icon enhancements */
+.site-header button i.la,
+.site-header a i.la {
   font-size: 2.5rem;
   margin-right: 0.5rem;
   vertical-align: middle;
   color: #333;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: transform 0.2s, color 0.2s;
 }
-button:hover i.la {
+
+.site-header button:hover i.la,
+.site-header a:hover i.la {
   transform: scale(1.2);
-  color: #22223B;
+  color: #22223b;
+}
+
+/* Tablet */
+@media (max-width: 991.98px) {
+  .site-header button i.la,
+  .site-header a i.la {
+    font-size: 2rem;
+  }
+}
+
+/* Phone */
+@media (max-width: 575.98px) {
+  .site-header button i.la,
+  .site-header a i.la {
+    font-size: 1.5rem;
+    margin-right: 0.25rem;
+  }
 }
 
 /* Search modal */
@@ -2017,4 +2058,150 @@ a:hover .user-picture img,
   width: 36px;
   height: 36px;
   border-color: rgba(255,255,255,0.3);
+}
+/* =========================================================
+   PROVINCE / TERRITORY NAVIGATION
+   ========================================================= */
+
+.province-navigation {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.province-menu {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+
+  list-style: none;
+
+  margin: 0;
+  padding: 0.5rem 0;
+
+  width: max-content;
+}
+
+.province-menu li {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+
+/* =========================================================
+   BOOTSTRAP BUTTON
+   ========================================================= */
+
+.province-btn {
+  display: inline-block;
+
+  white-space: nowrap;
+
+  font-weight: 600;
+
+  color: #ffffff;
+  text-decoration: none;
+
+  background-image: none;
+
+  transition:
+    filter 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+/* Keep the classic map colours flat and uncomplicated */
+
+.province-btn:hover,
+.province-btn:focus {
+  color: #ffffff;
+  text-decoration: none;
+  filter: brightness(0.92);
+}
+
+
+/* =========================================================
+   TERRITORIES
+   ========================================================= */
+
+.province-btn.yt {
+  background-color: var(--tc-yukon);
+  border-color: var(--tc-yukon);
+}
+
+.province-btn.nt {
+  background-color: var(--tc-northwest-territories);
+  border-color: var(--tc-northwest-territories);
+}
+
+.province-btn.nu {
+  background-color: var(--tc-nunavut);
+  border-color: var(--tc-nunavut);
+}
+
+
+/* =========================================================
+   WESTERN CANADA
+   ========================================================= */
+
+.province-btn.bc {
+  background-color: var(--tc-british-columbia);
+  border-color: var(--tc-british-columbia);
+}
+
+.province-btn.ab {
+  background-color: var(--tc-alberta);
+  border-color: var(--tc-alberta);
+}
+
+.province-btn.sk {
+  background-color: var(--tc-saskatchewan);
+  border-color: var(--tc-saskatchewan);
+}
+
+.province-btn.mb {
+  background-color: var(--tc-manitoba);
+  border-color: var(--tc-manitoba);
+}
+
+
+/* =========================================================
+   CENTRAL CANADA
+   ========================================================= */
+
+.province-btn.on {
+  background-color: var(--tc-ontario);
+  border-color: var(--tc-ontario);
+}
+
+.province-btn.qc {
+  background-color: var(--tc-quebec);
+  border-color: var(--tc-quebec);
+}
+
+
+/* =========================================================
+   ATLANTIC CANADA
+   ========================================================= */
+
+.province-btn.nb {
+  background-color: var(--tc-new-brunswick);
+  border-color: var(--tc-new-brunswick);
+}
+
+.province-btn.pe {
+  background-color: var(--tc-prince-edward-island);
+  border-color: var(--tc-prince-edward-island);
+}
+
+.province-btn.ns {
+  background-color: var(--tc-nova-scotia);
+  border-color: var(--tc-nova-scotia);
+}
+
+.province-btn.nl {
+  background-color: var(--tc-newfoundland-labrador);
+  border-color: var(--tc-newfoundland-labrador);
 }
