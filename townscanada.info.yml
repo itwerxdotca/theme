@@ -9,6 +9,7 @@ libraries:
   - townscanada/fontawesome
   - townscanada/carousel
   - townscanada/bootstrap-js
+  - townscanada/header-height
 libraries-override:
   hierarchical_taxonomy_menu/hierarchical_taxonomy_menu:
     js:
