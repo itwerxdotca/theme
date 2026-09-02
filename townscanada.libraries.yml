@@ -13,6 +13,13 @@ components:
       css/components/listing.css: {}
       css/components/ghost-autocomplete.css: {}
 
+header-height:
+  js:
+    js/header-height.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
 bootstrap-js:
   js:
     https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js: { type: external, minified: true }

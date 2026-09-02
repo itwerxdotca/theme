@@ -12,6 +12,10 @@
 :root,
 [data-bs-theme=light] {
   /* Layout */
+  /* Fallback only — js/header-height.js measures the real fixed header
+     height on load/resize and overrides this, since the header's height
+     changes at breakpoints (logo + icon sizing). Keep this close to the
+     desktop header height to minimize flash-of-wrong-offset on first paint. */
   --header-h: 6rem;
   /* Brand */
   --bs-primary: #C71C1C;
@@ -777,8 +781,11 @@ body > .offcanvas {
 
 .offcanvas.offcanvas-start,
 .offcanvas.offcanvas-end {
-  top: 80px !important;
-  height: calc(100% - 80px) !important;
+  /* Was a hardcoded 80px that didn't match the header's real height at
+     smaller breakpoints, leaving a gap under the header. --header-h now
+     tracks the header's actual rendered height (see js/header-height.js). */
+  top: var(--header-h) !important;
+  height: calc(100% - var(--header-h)) !important;
   z-index: 480 !important;
   border-top: none;
   box-shadow: 0 4px 32px 0 rgba(0,0,0,0.1);
@@ -786,7 +793,7 @@ body > .offcanvas {
 
 .offcanvas-body {
   overflow-y: auto;
-  max-height: calc(100vh - 120px);
+  max-height: calc(100vh - var(--header-h) - 40px);
   padding-bottom: 2rem;
 }
 
