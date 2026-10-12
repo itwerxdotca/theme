@@ -257,6 +257,8 @@ function townscanada_preprocess_page(array &$variables) {
   // ——————————————————————————————————————
   // Attach the modal library from the theme
   // ——————————————————————————————————————
+  // The page differs for anonymous users, so cached copies must too.
+  $variables['#cache']['contexts'][] = 'user.roles:anonymous';
   if (\Drupal::currentUser()->isAnonymous()) {
     $variables['#attached']['library'][] = 'townscanada/modal-forms';
   }

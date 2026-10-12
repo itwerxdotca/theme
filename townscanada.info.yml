@@ -7,7 +7,6 @@ libraries:
   - townscanada/global-styling
   - townscanada/components
   - townscanada/fontawesome
-  - townscanada/carousel
   - townscanada/bootstrap-js
   - townscanada/header-height
 libraries-override:

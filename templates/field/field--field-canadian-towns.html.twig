@@ -1,0 +1,16 @@
+
+{% for item in items %}
+  {% set term = element['#items'][loop.index0].entity %}
+
+  {% if term %}
+    {% set province_code = term.field_province_code.value|lower|clean_class %}
+
+    <a href="{{ path('entity.taxonomy_term.canonical', {'taxonomy_term': term.id}) }}"
+       hreflang="{{ term.language.id }}"
+       class="btn rounded-pill province-btn {{ province_code }}">
+      {{ term.label }}
+    </a>
+  {% else %}
+    {{ item.content }}
+  {% endif %}
+{% endfor %}
