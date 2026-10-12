@@ -1,0 +1,55 @@
+{#
+/**
+ * @file
+ * One point of interest (view points_of_interest, display block_4) as a card.
+ *
+ * Uses the townscanada:card component. It works out which field is which, so
+ * field machine names don't matter:
+ * - Image: the first field that outputs an image.
+ * - Title: the first field that outputs a link (tick "Link to the Content" on
+ *   the title field). That link makes the whole card clickable.
+ * - Badge colour / icon: fields with "color" / "icon" in their machine name.
+ * - Everything else shows as the card text, in the order set in the view.
+ * Fields marked "Exclude from display" in the view are left out.
+ */
+#}
+{% set image = null %}
+{% set title = null %}
+{% set color = '' %}
+{% set icon = '' %}
+{% set text = [] %}
+
+{% for id, field in fields %}
+  {% set html = field.content|render|trim %}
+  {% if 'color' in id %}
+    {% set color = html|striptags|trim %}
+  {% elseif 'icon' in id %}
+    {% set icon = html|striptags|trim %}
+  {% elseif image is null and '<img' in html %}
+    {% set image = field.content %}
+  {% elseif title is null and '<a ' in html %}
+    {% set title = field.content %}
+  {% elseif html is not empty %}
+    {% set text = text|merge([field.content]) %}
+  {% endif %}
+{% endfor %}
+
+{# No linked field: use the first text field as the title. #}
+{% if title is null and text is not empty %}
+  {% set title = text|first %}
+  {% set text = text|slice(1) %}
+{% endif %}
+
+{% set text_markup %}
+  {% for item in text %}
+    <div>{{ item }}</div>
+  {% endfor %}
+{% endset %}
+
+{{ include('townscanada:card', {
+  image: image,
+  title: title,
+  text: text is not empty ? text_markup : null,
+  badge_color: color,
+  badge_icon: icon,
+}, false) }}

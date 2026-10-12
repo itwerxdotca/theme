@@ -1,0 +1,51 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Slider
+status: stable
+description: A row of items you swipe sideways. Each top-level element in the items slot is one slide. No JavaScript.
+
+# Items across per breakpoint, matching townscanada.breakpoints.yml. Each size
+# falls back to the next smaller one that is set. Below 768px the next item
+# also peeks in, as a cue to swipe.
+props:
+  type: object
+  required:
+    - label
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    label:
+      type: string
+      title: Accessible name
+      description: 'Read out by screen readers, e.g. "Points of interest".'
+    xs:
+      type: integer
+      title: Items across on phones (below 576px)
+      minimum: 1
+      default: 1
+    sm:
+      type: integer
+      title: Items across from 576px (sm-min)
+      minimum: 1
+    md:
+      type: integer
+      title: Items across from 768px (md-min)
+      minimum: 1
+      default: 3
+    lg:
+      type: integer
+      title: Items across from 992px (lg-min)
+      minimum: 1
+      default: 4
+    xl:
+      type: integer
+      title: Items across from 1200px (xl-min)
+      minimum: 1
+    xxl:
+      type: integer
+      title: Items across from 1400px (xxl-min)
+      minimum: 1
+
+slots:
+  items:
+    title: Items
+    description: 'The slides. Each top-level element is one slide (a card, an image, a teaser...).'

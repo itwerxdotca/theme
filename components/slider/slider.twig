@@ -1,0 +1,36 @@
+{#
+/**
+ * @file
+ * Slider: a row of items you swipe sideways. No JavaScript.
+ *
+ * Items across per breakpoint (townscanada.breakpoints.yml):
+ * - xs  below 576px (default 1, with the next item peeking in)
+ * - sm  from 576px (sm-min)
+ * - md  from 768px (md-min, default 3)
+ * - lg  from 992px (lg-min, default 4)
+ * - xl  from 1200px (xl-min)
+ * - xxl from 1400px (xxl-min)
+ * Any size you leave out uses the next smaller one.
+ *
+ * Use it from any template:
+ *   {% set items %}{% for row in rows %}{{ row.content }}{% endfor %}{% endset %}
+ *   {{ include('townscanada:slider', { label: 'Photos', md: 2, xl: 3, items: items }, false) }}
+ */
+#}
+{% set counts = {
+  xs: xs|default(1),
+  sm: sm|default(null),
+  md: md|default(3),
+  lg: lg|default(4),
+  xl: xl|default(null),
+  xxl: xxl|default(null),
+} %}
+{% set style = '' %}
+{% for size, count in counts %}
+  {% if count %}
+    {% set style = style ~ '--tc-slider-' ~ size ~ ': ' ~ count ~ '; ' %}
+  {% endif %}
+{% endfor %}
+<div{{ attributes.addClass('tc-slider').setAttribute('role', 'region').setAttribute('tabindex', '0').setAttribute('aria-label', label).setAttribute('style', style|trim) }}>
+  {{ items }}
+</div>

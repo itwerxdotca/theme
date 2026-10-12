@@ -1,12 +1,27 @@
-
+{#
+/**
+ * @file
+ * Town field (field_canadian_towns): each town as a province-coloured pill.
+ *
+ * The pill colour comes from the town term's field_province_code (on, bc ...),
+ * styled by .province-btn.<code> in css/style.css. Works in Views too when
+ * the field has "Use field template" ticked. The pills are centred
+ * (Bootstrap's text-center).
+ */
+#}
+<div class="text-center">
 {% for item in items %}
-  {% set term = element['#items'][loop.index0].entity %}
+  {# The term this item's formatter rendered, falling back to the raw value. #}
+  {% set term = item.content['#options'].entity ?? element['#items'][loop.index0].entity %}
+
+  {# Render the formatter output without printing it, so the town's cache
+     tags still apply and renaming a town updates the page straight away. #}
+  {% set cache_bubble = item.content|render %}
 
   {% if term %}
     {% set province_code = term.field_province_code.value|lower|clean_class %}
-
     <a href="{{ path('entity.taxonomy_term.canonical', {'taxonomy_term': term.id}) }}"
-       hreflang="{{ term.language.id }}"
+       hreflang="{{ term.langcode.value }}"
        class="btn rounded-pill province-btn {{ province_code }}">
       {{ term.label }}
     </a>
@@ -14,3 +29,4 @@
     {{ item.content }}
   {% endif %}
 {% endfor %}
+</div>

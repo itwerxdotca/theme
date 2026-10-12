@@ -1,0 +1,42 @@
+{#
+/**
+ * @file
+ * Card: Bootstrap card with image, optional badge, linked title and text.
+ *
+ * With no image, the image area shows a grey-to-white gradient instead, so
+ * every card keeps the same shape.
+ *
+ * Use it from any template:
+ *   {{ include('townscanada:card', {
+ *     image: content.field_image,
+ *     title: link(node.label, path('entity.node.canonical', {node: node.id})),
+ *     text: content.body,
+ *   }, false) }}
+ */
+#}
+{% set has_image = '<img' in (image|render|trim) %}
+<div{{ attributes.addClass('card', 'card-listing', 'tc-card', 'h-100') }}>
+  <div class="tc-card__media{{ has_image ? '' : ' tc-card__media--empty' }}">
+    {% if has_image %}
+      {{ image }}
+    {% endif %}
+    {% if badge_color or badge_icon %}
+      <div class="term-badge position-absolute top-50 start-50 translate-middle">
+        <div class="category-icon-wrapper">
+          <svg class="category-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+            <circle cx="50" cy="50" r="50" fill="{{ badge_color|default('#999') }}" />
+          </svg>
+          <i class="{{ badge_icon|default('la la-question') }} category-icon" aria-hidden="true"></i>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    {% if title is not empty %}
+      <h3 class="card-title h6 mb-1">{{ title }}</h3>
+    {% endif %}
+    {% if text is not empty %}
+      <div class="card-text small text-body-secondary">{{ text }}</div>
+    {% endif %}
+  </div>
+</div>

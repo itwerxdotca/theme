@@ -1,28 +1,34 @@
-breakpoint.phone_small:
+townscanada.screen.phone-small:
   label: 'Phone small (xxs)'
-  mediaQuery: '(max-width: 319px)'
+  mediaQuery: '(max-width: 319.98px)'
   weight: 0
   group: townscanada.screen
-  multipliers: [1x, 2x]
+  multipliers:
+    - 1x
+    - 2x
 
-breakpoint.phone:
+townscanada.screen.phone:
   label: 'Phone (xs)'
-  mediaQuery: '(min-width: 320px) and (max-width: 374px)'
+  mediaQuery: '(min-width: 320px) and (max-width: 374.98px)'
   weight: 1
   group: townscanada.screen
-  multipliers: [1x, 2x]
+  multipliers:
+    - 1x
+    - 2x
 
-breakpoint.phone_plus:
-  label: 'Phone plus (sm-min)'
-  mediaQuery: '(min-width: 375px) and (max-width: 575px)'
+townscanada.screen.phone-plus:
+  label: 'Phone plus'
+  mediaQuery: '(min-width: 375px) and (max-width: 575.98px)'
   weight: 2
   group: townscanada.screen
-  multipliers: [1x, 2x]
+  multipliers:
+    - 1x
+    - 2x
 
 townscanada.screen.xs-max:
   label: xs-max
   mediaQuery: '(max-width: 575.98px)'
-  weight: 1
+  weight: 3
   group: townscanada.screen
   multipliers:
     - 1x
@@ -31,7 +37,7 @@ townscanada.screen.xs-max:
 townscanada.screen.sm-min:
   label: sm-min
   mediaQuery: '(min-width: 576px)'
-  weight: 2
+  weight: 4
   group: townscanada.screen
   multipliers:
     - 1x
@@ -40,7 +46,7 @@ townscanada.screen.sm-min:
 townscanada.screen.sm-max:
   label: sm-max
   mediaQuery: '(max-width: 767.98px)'
-  weight: 3
+  weight: 5
   group: townscanada.screen
   multipliers:
     - 1x
@@ -49,7 +55,7 @@ townscanada.screen.sm-max:
 townscanada.screen.md-min:
   label: md-min
   mediaQuery: '(min-width: 768px)'
-  weight: 4
+  weight: 6
   group: townscanada.screen
   multipliers:
     - 1x
@@ -58,7 +64,7 @@ townscanada.screen.md-min:
 townscanada.screen.md-max:
   label: md-max
   mediaQuery: '(max-width: 991.98px)'
-  weight: 5
+  weight: 7
   group: townscanada.screen
   multipliers:
     - 1x
@@ -67,7 +73,7 @@ townscanada.screen.md-max:
 townscanada.screen.lg-min:
   label: lg-min
   mediaQuery: '(min-width: 992px)'
-  weight: 6
+  weight: 8
   group: townscanada.screen
   multipliers:
     - 1x
@@ -76,7 +82,7 @@ townscanada.screen.lg-min:
 townscanada.screen.lg-max:
   label: lg-max
   mediaQuery: '(max-width: 1199.98px)'
-  weight: 7
+  weight: 9
   group: townscanada.screen
   multipliers:
     - 1x
@@ -85,7 +91,7 @@ townscanada.screen.lg-max:
 townscanada.screen.xl-min:
   label: xl-min
   mediaQuery: '(min-width: 1200px)'
-  weight: 8
+  weight: 10
   group: townscanada.screen
   multipliers:
     - 1x
@@ -94,7 +100,7 @@ townscanada.screen.xl-min:
 townscanada.screen.xl-max:
   label: xl-max
   mediaQuery: '(max-width: 1399.98px)'
-  weight: 9
+  weight: 11
   group: townscanada.screen
   multipliers:
     - 1x
@@ -103,7 +109,7 @@ townscanada.screen.xl-max:
 townscanada.screen.xxl-min:
   label: xxl-min
   mediaQuery: '(min-width: 1400px)'
-  weight: 10
+  weight: 12
   group: townscanada.screen
   multipliers:
     - 1x

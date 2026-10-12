@@ -1,0 +1,58 @@
+/**
+ * Card: builds on Bootstrap's .card and the theme's .card-listing style.
+ */
+
+/* Image: same shape on every card, so rows of cards line up. */
+.tc-card__media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--bs-card-inner-border-radius, 0.375rem) var(--bs-card-inner-border-radius, 0.375rem) 0 0;
+  background: var(--bs-secondary-bg, #e9ecef);
+}
+
+/* No image: grey in the middle fading to white at the edges. Swap the two
+   colours to get white in the middle instead. */
+.tc-card__media--empty {
+  background: radial-gradient(ellipse at center, #adb5bd 0%, #fff 100%);
+}
+
+.tc-card__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tc-card__media .term-badge {
+  z-index: 2;
+}
+
+/* The title link covers the whole card, so anywhere on it is tappable. */
+.tc-card .card-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.tc-card .card-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+/* Other links in the card text stay clickable above the card-wide link. */
+.tc-card .card-text a {
+  position: relative;
+  z-index: 4;
+}
+
+.tc-card .card-title a:focus-visible {
+  outline: none;
+}
+
+.tc-card:has(.card-title a:focus-visible) {
+  outline: 3px solid var(--bs-primary);
+  outline-offset: 2px;
+}
