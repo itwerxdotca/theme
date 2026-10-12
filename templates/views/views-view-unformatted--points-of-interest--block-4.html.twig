@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ * Points of interest (block_4) as a row of cards you swipe sideways.
+ *
+ * Uses the townscanada:slider component. Each card is built by
+ * views-view-fields--points-of-interest--block-4.html.twig.
+ */
+#}
+{% if title %}
+  <h3>{{ title }}</h3>
+{% endif %}
+
+{% set items %}
+  {% for row in rows %}
+    {{- row.content -}}
+  {% endfor %}
+{% endset %}
+
+{{ include('townscanada:slider', {
+  label: (view.getTitle() ?: view.storage.label())|striptags|trim,
+  md: 3,
+  lg: 4,
+  items: items,
+}, false) }}

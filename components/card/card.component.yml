@@ -1,0 +1,27 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Card
+status: stable
+description: Bootstrap card with an image, an optional colour/icon badge, a linked title and text. The title link makes the whole card clickable.
+
+props:
+  type: object
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    badge_color:
+      type: string
+      title: Badge colour
+      description: 'Any CSS colour, e.g. #d9534f. Leave empty for no badge.'
+    badge_icon:
+      type: string
+      title: Badge icon
+      description: 'Line Awesome classes, e.g. "la la-utensils".'
+
+slots:
+  image:
+    title: Image
+  title:
+    title: Title
+    description: 'Usually a link. That link makes the whole card clickable.'
+  text:
+    title: Text

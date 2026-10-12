@@ -1,0 +1,100 @@
+/**
+ * Slider: a row of items you swipe sideways.
+ *
+ * The row scrolls horizontally and snaps to each item, so on a phone the
+ * items move with your finger. No buttons, no JavaScript.
+ *
+ * Items across come from the component (--tc-slider-xs ... --tc-slider-xxl).
+ * The media queries below use the same widths as townscanada.breakpoints.yml;
+ * each size falls back to the next smaller one that is set.
+ */
+.tc-slider {
+  --tc-slider-gap: 1rem;
+  --tc-slider-peek: 15%; /* Below 768px the next item peeks in. */
+  --tc-slider-per: var(--tc-slider-xs, 1);
+  --tc-slider-size: calc((100% - var(--tc-slider-peek) - (var(--tc-slider-per) - 1) * var(--tc-slider-gap)) / var(--tc-slider-per));
+
+  display: flex;
+  gap: var(--tc-slider-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain; /* Don't trigger the browser's back swipe. */
+
+  /* Room for hover lifts, shadows and focus rings, which a scroll area
+     would otherwise clip. */
+  margin: -0.5rem -0.25rem 0;
+  padding: 0.5rem 0.25rem 1rem;
+  scroll-padding-inline: 0.25rem;
+}
+
+/* townscanada.screen.sm-min */
+@media (min-width: 576px) {
+  .tc-slider {
+    --tc-slider-per: var(--tc-slider-sm, var(--tc-slider-xs, 1));
+  }
+}
+
+/* townscanada.screen.md-min */
+@media (min-width: 768px) {
+  .tc-slider {
+    --tc-slider-gap: 1.5rem;
+    --tc-slider-peek: 0%;
+    --tc-slider-per: var(--tc-slider-md, var(--tc-slider-sm, var(--tc-slider-xs, 1)));
+  }
+}
+
+/* townscanada.screen.lg-min */
+@media (min-width: 992px) {
+  .tc-slider {
+    --tc-slider-per: var(--tc-slider-lg, var(--tc-slider-md, var(--tc-slider-sm, var(--tc-slider-xs, 1))));
+  }
+}
+
+/* townscanada.screen.xl-min */
+@media (min-width: 1200px) {
+  .tc-slider {
+    --tc-slider-per: var(--tc-slider-xl, var(--tc-slider-lg, var(--tc-slider-md, var(--tc-slider-sm, var(--tc-slider-xs, 1)))));
+  }
+}
+
+/* townscanada.screen.xxl-min */
+@media (min-width: 1400px) {
+  .tc-slider {
+    --tc-slider-per: var(--tc-slider-xxl, var(--tc-slider-xl, var(--tc-slider-lg, var(--tc-slider-md, var(--tc-slider-sm, var(--tc-slider-xs, 1))))));
+  }
+}
+
+/* Every top-level element in the slider is a slide. */
+.tc-slider > * {
+  flex: 0 0 var(--tc-slider-size);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+/* Slides in a row stretch to the tallest one. Bootstrap's .h-100 (used on
+   cards for grids) would stop that here, so undo it inside the slider. */
+.tc-slider > .h-100 {
+  height: auto !important;
+}
+
+/* Touch screens swipe, so no scrollbar. Mouse and trackpad get a thin one. */
+@media (pointer: coarse) {
+  .tc-slider {
+    scrollbar-width: none;
+  }
+
+  .tc-slider::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (pointer: fine) {
+  .tc-slider {
+    scrollbar-width: thin;
+  }
+}
+
+.tc-slider:focus-visible {
+  outline: 3px solid var(--bs-primary);
+  outline-offset: -3px;
+}
