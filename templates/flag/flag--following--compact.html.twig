@@ -9,7 +9,7 @@
  * - action: 'flag' or 'unflag'
  * - flag:   The flag object.
  * - flaggable: The flaggable entity.
- * - is_anonymous:  Boolean, true if current user is anonymous.
+ * - logged_in: Boolean, provided by core.
  */
 #}
 
@@ -42,7 +42,7 @@
 {% set attributes = attributes.setAttribute('rel', 'nofollow') %}
 
 <span class="{{ classes|join(' ') }} {{ badge_class }}">
-  <i class="{{ icon_class }}"></i>
+  <i class="{{ icon_class }}" aria-hidden="true"></i>
   <a{{ attributes }}>
    {{ title }}
   </a>

@@ -1,7 +1,7 @@
 name: townscanada
 type: theme
 description: 'townscanada subtheme based on Bootstrap 5 theme.'
-core_version_requirement: '^10.1 || ^11.0'
+core_version_requirement: '^10.3 || ^11'
 'base theme': bootstrap
 libraries:
   - townscanada/global-styling
@@ -14,8 +14,6 @@ libraries-override:
     js:
       js/hierarchical-taxonomy-menu.js: false
 
-ckeditor_stylesheets:
-  - css/style.css
 ckeditor5-stylesheets:
   - css/ck5style.css
 components:

@@ -2,7 +2,7 @@
   Drupal.behaviors.tclogin = {
     attach: function (context) {
       once('tcloginModal', '#loginModal', context).forEach(modal => {
-        const myModal = new bootstrap.Modal(modal);
+        const myModal = bootstrap.Modal.getOrCreateInstance(modal);
 
         // Helper to load form via AJAX into the correct tab
         function loadForm(tabName) {
@@ -13,7 +13,7 @@
           if (tabPane.dataset.loaded === "1") return;
 
           // Show spinner
-          tabPane.innerHTML = '<div class="ajax-form-loading text-center py-5"><div class="spinner-border"></div></div>';
+          tabPane.innerHTML = '<div class="ajax-form-loading text-center py-5"><div class="spinner-border" role="status"><span class="visually-hidden">' + Drupal.t('Loading…') + '</span></div></div>';
 
           const ajaxSettings = {
             url: Drupal.url('modal/tclogin/' + tabName),
@@ -30,7 +30,7 @@
               }
             },
             error: function(xhr, status, error) {
-              tabPane.innerHTML = '<p>An error occurred. Please try again.</p>';
+              tabPane.innerHTML = '<p role="alert">' + Drupal.t('An error occurred. Please try again.') + '</p>';
             }
           };
           Drupal.ajax(ajaxSettings).execute();

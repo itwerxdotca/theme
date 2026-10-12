@@ -9,7 +9,7 @@ dependencies:
     - townscanada
 id: townscanada_footer
 theme: townscanada
-region: footer
+region: footer_bottom
 weight: -6
 provider: null
 plugin: 'system_menu_block:footer'

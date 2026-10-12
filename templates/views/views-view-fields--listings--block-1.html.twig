@@ -11,13 +11,13 @@
   {% block content %}
     <ul class="list-inline">
       {% if address_html %}
-        <li class="list-inline-item"><i class="fas fa-map-marker-alt"></i>&nbsp;{{ address_html }}</li>
+        <li class="list-inline-item"><i class="la la-map-marker" aria-hidden="true"></i>&nbsp;{{ address_html }}</li>
       {% endif %}
       {% if phone_html %}
-        <li class="list-inline-item"><i class="fas fa-phone-alt"></i>&nbsp;{{ phone_html }}</li>
+        <li class="list-inline-item"><i class="la la-phone" aria-hidden="true"></i>&nbsp;{{ phone_html }}</li>
       {% endif %}
       {% if website_html %}
-        <li class="list-inline-item"><i class="fas fa-link"></i>&nbsp;{{ website_html }}</li>
+        <li class="list-inline-item"><i class="la la-link" aria-hidden="true"></i>&nbsp;{{ website_html }}</li>
       {% endif %}
     </ul>
   {% endblock %}

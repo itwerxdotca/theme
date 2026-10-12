@@ -7,7 +7,7 @@
 /* ============================================
    1. FONTS & ROOT VARIABLES
    ============================================ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Inter is loaded by the global-styling library in townscanada.libraries.yml. */
 
 :root,
 [data-bs-theme=light] {
@@ -49,7 +49,7 @@
   --main-color: var(--bs-primary);
   --prime-two: #C71C1C;
   --prime-five: #a91515;
-  --prime-ten: #4FB9A4;
+  --prime-ten: #2B7A6B; /* was #4FB9A4 (2.4:1 with white text); now 5.1:1 */
 
   /* Territories */
   --tc-yukon: #7C868E;                    /* RGB 124, 134, 142 */
@@ -563,6 +563,7 @@ tr.region-title td {
   display: grid;
   color: #fff;
   position: relative;
+  background-color: var(--hero-bg, transparent);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -587,7 +588,8 @@ tr.region-title td {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: rgba(0,0,0,0.45);
+  /* Opacity comes from region--hero.html.twig (validated in preprocess). */
+  background: rgba(0, 0, 0, var(--hero-overlay-opacity, 0.35));
 }
 
 .hero-media {
@@ -1059,7 +1061,7 @@ body > .offcanvas {
 }
 
 .business-detail-review .field-rating-count {
-  color: #999;
+  color: var(--bs-secondary-color, #6c757d);
   margin-left: 20px;
 }
 .business-detail-review .field-write-comment {
@@ -1214,7 +1216,7 @@ body > .offcanvas {
   font-weight: 500;
 }
 .block-similar-listing .views-row .views-row-inner .views-field-field-locations {
-  color: #999;
+  color: var(--bs-secondary-color, #6c757d);
 }
 
 /* Office Hours */
@@ -2222,4 +2224,49 @@ a:hover .user-picture img,
 
 .ui-autocomplete a {
   text-decoration: none !important;
+}
+
+/* =========================================================
+   Accessibility fixes
+   ========================================================= */
+
+/* Skip link (html.html.twig): visible above the fixed header when focused. */
+.skip-link:focus,
+.skip-link:focus-visible {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1090;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  color: var(--bs-link-color, #C71C1C);
+  border-radius: var(--bs-border-radius, 0.375rem);
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+/* Skip-link target: keep it clear of the fixed header, no focus ring on
+   the non-interactive <main>. */
+#main-content {
+  scroll-margin-top: calc(var(--header-h) + var(--toolbar-h, 0px));
+}
+#main-content:focus {
+  outline: none;
+}
+
+/* Province buttons: white text fails WCAG AA on the lighter province
+   colours, so they use dark text. PE and NS keep white text (6.4:1, 5.5:1). */
+.province-btn.yt,
+.province-btn.bc {
+  color: #000;
+}
+.province-btn.nt,
+.province-btn.nu,
+.province-btn.ab,
+.province-btn.sk,
+.province-btn.mb,
+.province-btn.on,
+.province-btn.qc,
+.province-btn.nb,
+.province-btn.nl {
+  color: #212529;
 }

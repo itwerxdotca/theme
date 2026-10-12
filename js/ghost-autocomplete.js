@@ -1,90 +1,126 @@
-document.addEventListener('DOMContentLoaded', function () {
-  document.querySelectorAll('input.form-autocomplete').forEach(function (input) {
-    // Create ghost text overlay
-    const ghost = document.createElement('span');
-    ghost.className = 'ghost-text-autocomplete';
-    ghost.style.position = 'absolute';
-    ghost.style.color = '#aaa';
-    ghost.style.pointerEvents = 'none';
-    ghost.style.userSelect = 'none';
-    ghost.style.zIndex = '10';
-    ghost.style.whiteSpace = 'pre';
-    ghost.style.fontSize = getComputedStyle(input).fontSize;
-    ghost.style.fontFamily = getComputedStyle(input).fontFamily;
-    ghost.style.paddingLeft = getComputedStyle(input).paddingLeft;
+/**
+ * @file
+ * Ghost-text autocomplete: shows the rest of the first suggestion in grey
+ * behind the input, as a hint.
+ *
+ * Accept the suggestion with the Right arrow or End key when the cursor is
+ * at the end of the text. Tab is never intercepted, so keyboard users can
+ * always move on to the next field (WCAG 2.1.2).
+ *
+ * Runs as a Drupal behavior so it also works on forms loaded by AJAX, such
+ * as the ones in the login modal.
+ */
+((Drupal, once) => {
+  'use strict';
 
-    // Setup wrapper for relative positioning
-    const wrapper = document.createElement('div');
-    wrapper.style.position = 'relative';
-    input.parentNode.insertBefore(wrapper, input);
-    wrapper.appendChild(input);
-    wrapper.appendChild(ghost);
+  Drupal.behaviors.townscanadaGhostAutocomplete = {
+    attach(context) {
+      once('ghost-autocomplete', 'input.form-autocomplete', context).forEach((input) => {
+        const autocompletePath = input.dataset.autocompletePath;
+        if (!autocompletePath) {
+          return;
+        }
 
-    // Helper: update ghost position & size
-    function syncGhost() {
-      ghost.style.left = input.offsetLeft + 'px';
-      ghost.style.top = input.offsetTop + 'px';
-      ghost.style.width = input.offsetWidth + 'px';
-      ghost.style.height = input.offsetHeight + 'px';
-    }
-    window.addEventListener('resize', syncGhost);
-    input.addEventListener('focus', syncGhost);
-
-    // Helper: get autocomplete path
-    const autocompletePath =
-      input.getAttribute('data-autocomplete-path') ||
-      input.dataset.autocompletePath;
-
-    // Main: fetch suggestions and update ghost text
-    input.addEventListener('input', function () {
-      const val = input.value;
-      ghost.textContent = '';
-      ghost.style.display = 'none';
-      if (!val || !autocompletePath) return;
-
-      fetch(autocompletePath + '?q=' + encodeURIComponent(val), {
-        credentials: 'same-origin',
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (
-            Array.isArray(data) &&
-            data.length &&
-            data[0].value &&
-            data[0].value.toLowerCase().startsWith(val.toLowerCase()) &&
-            data[0].value.toLowerCase() !== val.toLowerCase()
-          ) {
-            // Show the remainder as ghost text
-            ghost.textContent =
-              val + data[0].value.substring(val.length);
-            ghost.style.display = 'block';
-            syncGhost();
-          } else {
-            ghost.style.display = 'none';
-          }
-        })
-        .catch(() => {
-          ghost.style.display = 'none';
+        const ghost = document.createElement('span');
+        ghost.className = 'ghost-text-autocomplete';
+        ghost.setAttribute('aria-hidden', 'true');
+        Object.assign(ghost.style, {
+          position: 'absolute',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          zIndex: '10',
+          whiteSpace: 'pre',
+          display: 'none',
         });
-    });
 
-    // On Tab or ArrowRight, fill input with ghost text
-    input.addEventListener('keydown', function (e) {
-      if (
-        (e.key === 'Tab' || e.key === 'ArrowRight') &&
-        ghost.style.display === 'block' &&
-        ghost.textContent
-      ) {
-        e.preventDefault();
-        input.value = ghost.textContent;
-        ghost.style.display = 'none';
-        input.dispatchEvent(new Event('input'));
-      }
-    });
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        input.parentNode.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+        wrapper.appendChild(ghost);
 
-    // Hide ghost on blur
-    input.addEventListener('blur', function () {
-      ghost.style.display = 'none';
-    });
-  });
-});
+        const syncGhost = () => {
+          const cs = getComputedStyle(input);
+          Object.assign(ghost.style, {
+            fontSize: cs.fontSize,
+            fontFamily: cs.fontFamily,
+            paddingLeft: cs.paddingLeft,
+            lineHeight: cs.lineHeight,
+            left: `${input.offsetLeft}px`,
+            top: `${input.offsetTop}px`,
+            width: `${input.offsetWidth}px`,
+            height: `${input.offsetHeight}px`,
+            paddingTop: cs.paddingTop,
+          });
+        };
+
+        const hide = () => {
+          ghost.textContent = '';
+          ghost.style.display = 'none';
+        };
+
+        let controller = null;
+        const fetchSuggestion = Drupal.debounce(() => {
+          const val = input.value;
+          if (!val) {
+            hide();
+            return;
+          }
+          if (controller) {
+            controller.abort();
+          }
+          controller = new AbortController();
+          fetch(`${autocompletePath}?q=${encodeURIComponent(val)}`, {
+            credentials: 'same-origin',
+            signal: controller.signal,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const first = Array.isArray(data) && data.length ? data[0].value : '';
+              // Ignore stale responses and non-prefix matches.
+              if (
+                input.value === val &&
+                first &&
+                first.toLowerCase().startsWith(val.toLowerCase()) &&
+                first.toLowerCase() !== val.toLowerCase()
+              ) {
+                ghost.textContent = val + first.substring(val.length);
+                ghost.style.display = 'block';
+                syncGhost();
+              }
+              else {
+                hide();
+              }
+            })
+            .catch(() => {});
+        }, 200);
+
+        input.addEventListener('input', () => {
+          hide();
+          fetchSuggestion();
+        });
+        input.addEventListener('focus', syncGhost);
+        window.addEventListener('resize', syncGhost);
+        input.addEventListener('blur', hide);
+
+        input.addEventListener('keydown', (e) => {
+          const atEnd = input.selectionStart === input.value.length;
+          if (
+            (e.key === 'ArrowRight' || e.key === 'End') &&
+            atEnd &&
+            ghost.style.display === 'block' &&
+            ghost.textContent
+          ) {
+            e.preventDefault();
+            input.value = ghost.textContent;
+            hide();
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          else if (e.key === 'Escape') {
+            hide();
+          }
+        });
+      });
+    },
+  };
+})(Drupal, once);

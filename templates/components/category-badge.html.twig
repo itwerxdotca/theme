@@ -1,16 +1,27 @@
 {#
 /**
  * @file
- * Category badge component.
+ * Category badge.
  *
  * Available variables:
- * - colour: background color (hex or rgba).
- * - label: text to display inside badge.
+ * - url: Link to the category.
+ * - label: Text to display inside the badge.
+ * - colour: Background colour (hex, e.g. #c71c1c).
+ * - border_colour: Border colour (hex). Defaults to colour.
+ *
+ * Colours are only used when they are hex values, because they are written
+ * into a style attribute.
  */
 #}
-{# templates/components/category-badge.html.twig #}
-<a href="{{ url }}" title="View posts filed under {{ label }}">
-  <span class="badge category-name" style="background-color: {{ colour }}; border: 5px solid {{ border_colour }};">
-	{{ label }}
+{% set hex = '/^#[0-9a-fA-F]{3,8}$/' %}
+{% set bg = colour|default('') matches hex ? colour : null %}
+{% set border = border_colour|default('') matches hex ? border_colour : bg %}
+{% set badge_style = [
+  bg ? 'background-color: ' ~ bg,
+  border ? 'border: 5px solid ' ~ border,
+]|filter(v => v) %}
+<a href="{{ url }}" title="{{ 'View posts filed under @label'|t({'@label': label}) }}">
+  <span class="badge category-name"{% if badge_style %} style="{{ badge_style|join('; ') }}"{% endif %}>
+    {{ label }}
   </span>
 </a>

@@ -37,13 +37,16 @@ header.site-header.fixed-top {
 .site-header .navbar-toggler {
   border: none;
   background: transparent;
-  outline: none;
   font-size: 1.5rem;
   padding: 0.25rem 0.75rem;
 }
 
-.site-header .navbar-toggler:focus {
-  box-shadow: 0 0 0 2px #6661;
+/* Visible keyboard focus (the old 2px #6661 ring was almost transparent). */
+.site-header .navbar-toggler:focus-visible,
+.site-header .btn-link:focus-visible {
+  outline: 2px solid var(--bs-primary, #C71C1C);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 /* Centered branding */

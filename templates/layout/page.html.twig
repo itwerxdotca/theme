@@ -5,8 +5,7 @@
 {# Include the header with offcanvas triggers #}
 {% include "@townscanada/templates/region/header.html.twig" %}
 
-<main role="main">
-  <a id="main-content" tabindex="-1"></a>
+<main id="main-content" tabindex="-1">
 {# Hero region #}
   {% if attribute(page, 'hero') is not empty %}
     {{ attribute(page, 'hero') }}
@@ -20,7 +19,7 @@
   {% endif %}
 
   {# Layout for content and sidebars #}
-  <div class="container {{ b5_top_container }}">
+  <div class="{{ b5_top_container|default('container') }}">
     <div class="row g-3">
 
       {# Sidebar first #}
@@ -54,7 +53,7 @@
       {% for i in 1..4 %}
         {% set region_name = 'footer_' ~ i %}
         {% if attribute(page, region_name) %}
-          <div class="col-12 col-md-3 mb-3 mb-md-0 d-flex justify-content-center">
+          <div class="col-12 col-md mb-3 mb-md-0 d-flex justify-content-center">
             {{ attribute(page, region_name) }}
           </div>
         {% endif %}

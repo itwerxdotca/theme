@@ -2,7 +2,6 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 name: Hero Text Overlay
 status: stable
 description: Text/HTML overlay positioned within a hero region whose background is supplied externally.
-template: hero-text-overlay.twig
 
 props:
   type: object
@@ -12,7 +11,7 @@ props:
     overlay_position:
       type: string
       enum: [top-left, top-center, top-right, center-left, center, center-right, bottom-left, bottom-center, bottom-right]
-      default: center
+      default: bottom-left
     height:
       type: string
       enum: [auto, small, medium, large, fullscreen]
@@ -28,17 +27,16 @@ props:
       default: 2
     max_width:
       type: string
+      title: Maximum width of the text box
+      description: 'A CSS length such as 40rem, 600px or 60%. Anything else is ignored.'
       default: ""
     wrap_title:
       type: boolean
       default: true
 
 slots:
+  title: { title: Title, required: false }
+  subtitle: { title: Subtitle, required: false }
   content: { title: Main body HTML, required: false }
   cta_primary: { title: Primary CTA, required: false }
   cta_secondary: { title: Secondary CTA, required: false }
-
-library:
-  css:
-    component:
-      hero_text_overlay.css: {}

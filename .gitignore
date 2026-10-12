@@ -1,1 +1,4 @@
 .DS_Store
+.nova/
+*.css.map
+node_modules/

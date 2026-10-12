@@ -29,33 +29,28 @@
     not root_path ? 'path-frontpage' : 'path-' ~ root_path|clean_class,
     node_type ? 'page-node-type-' ~ node_type|clean_class,
     db_offline ? 'db-offline',
-    (b5_body_schema == 'light' ? ' text-dark' : (b5_body_schema == 'dark' ? ' text-light' :  ' ')),
-    (b5_body_bg_schema != 'none' ? " bg-#{b5_body_bg_schema}" : ' '),
-    'd-flex flex-column h-100',
-    ''
+    b5_body_schema == 'light' ? 'text-dark',
+    b5_body_schema == 'dark' ? 'text-light',
+    b5_body_bg_schema and b5_body_bg_schema != 'none' ? 'bg-' ~ b5_body_bg_schema|clean_class,
+    'd-flex',
+    'flex-column',
+    'h-100',
   ]
 %}
 
 <!DOCTYPE html>
-<html{{ html_attributes.addClass('') }}>
+<html{{ html_attributes }}>
   <head>
     <head-placeholder token="{{ placeholder_token }}">
     <title>{{ head_title|safe_join(' | ') }}</title>
     <css-placeholder token="{{ placeholder_token }}">
     <js-placeholder token="{{ placeholder_token }}">
   </head>
-  <body{{ attributes.addClass('body_classes') }}">
-    {#
-      Keyboard navigation/accessibility link to main content section in
-      page.html.twig.
-    #}
-    <div class="visually-hidden-focusable skip-link p-3 container">
-      {#
-      <a href="#main-content" class="p-2">
-        {{ 'Skip to main content'|t }}
-      </a>
-      #}
-    </div>
+  <body{{ attributes.addClass(body_classes) }}>
+    {# Keyboard/screen-reader link to the main content in page.html.twig (WCAG 2.4.1). #}
+    <a href="#main-content" class="visually-hidden-focusable skip-link">
+      {{ 'Skip to main content'|t }}
+    </a>
     {{ page_top }}
     {{ page }}
     {{ page_bottom }}

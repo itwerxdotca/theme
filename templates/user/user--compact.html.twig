@@ -31,8 +31,8 @@
           {# Logged in users:  show real flag #}
           {{ content.flag_following }}
           {% else %}
-          <span class="btn-badge bg-secondary"><i class="la la-user-plus p-1"></i> <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" aria-label="Login to follow this user">
-          Follow
+          <span class="btn-badge bg-secondary"><i class="la la-user-plus p-1" aria-hidden="true"></i> <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" aria-label="{{ 'Follow: log in to follow this user'|t }}">
+          {{ 'Follow'|t }}
           </a></span>
           {% endif %}
         </div>
@@ -59,21 +59,21 @@
 				  {# Location #}
 				  {% if content.field_user_location %}
 					<li class="mb-1">
-					  <i class="la la-map-marker"></i>
+					  <i class="la la-map-marker" aria-hidden="true"></i>
 					  <strong>Location:</strong> {{ content.field_user_location }}
 					</li>
 				  {% endif %}
 
 				  {# Member Since / Join Date #}
 				  <li class="mb-1">
-					<i class="la la-calendar"></i>
+					<i class="la la-calendar" aria-hidden="true"></i>
 					<strong>Member since:</strong> {{ user. getCreatedTime()|format_date('custom', 'F Y') }}
 				  </li>
 
 				  {# Followers Count #}
 				  {% if content. field_numberoffollowers %}
 					<li class="mb-1">
-					  <i class="la la-users"></i>
+					  <i class="la la-users" aria-hidden="true"></i>
 					  <strong>Followers: </strong> {{ content.field_numberoffollowers }}
 					</li>
 				  {% endif %}

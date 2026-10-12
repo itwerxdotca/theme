@@ -3,7 +3,8 @@
 {% set height = height|default('medium') %}
 {% set variant = variant|default('default') %}
 {% set heading_level = heading_level|default(2) %}
-{% set max_width = max_width|default('100%') %}
+{# max_width goes into a style attribute, so only accept a plain CSS length. #}
+{% set max_width = max_width|default('') matches '/^[0-9]+(\\.[0-9]+)?(px|rem|em|ch|%|vw)$/' ? max_width : '100%' %}
 {% set wrap_title = wrap_title is defined ? wrap_title : true %}
 
 {% set pos_map = {
@@ -35,7 +36,7 @@
 {% set _cta_primary %}{% block cta_primary %}{% endblock %}{% endset %}
 {% set _cta_secondary %}{% block cta_secondary %}{% endblock %}{% endset %}
 
-<section class="{{ classes|join(' ') }}">
+<section{{ attributes|default(create_attribute()).addClass(classes) }}>
   <div class="hero-text-overlay__inner d-flex {{ align_classes|join(' ') }}">
     <div class="container">
       <div class="hero-text-overlay__box" style="max-width: {{ max_width }};">

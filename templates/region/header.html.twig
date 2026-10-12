@@ -22,12 +22,12 @@
 
         {# Search modal trigger #}
         <button type="button"
-                title="Search Towns Canada"
+                title="{{ 'Search Towns Canada'|t }}"
                 class="btn btn-link text-dark p-0"
                 data-bs-toggle="modal"
                 data-bs-target="#searchModal"
                 aria-label="{{ 'Search'|t }}">
-          <i class="la la-search"></i>
+          <i class="la la-search" aria-hidden="true"></i>
         </button>
 
         {# Account offcanvas/modal #}
@@ -39,29 +39,30 @@
                   data-bs-target="#offcanvasRight"
                   aria-controls="offcanvasRight"
                   aria-label="{{ 'Account menu'|t }}">
-            <i class="la la-user"></i>
+            <i class="la la-user" aria-hidden="true"></i>
           </button>
 
         {% else %}
 
           <button type="button"
-                  title="Login / Register at Towns Canada"
+                  title="{{ 'Login / Register at Towns Canada'|t }}"
                   class="btn btn-link text-dark p-0"
                   data-bs-toggle="modal"
                   data-bs-target="#loginModal"
                   aria-label="{{ 'Login / Register'|t }}">
-            <i class="la la-user"></i>
+            <i class="la la-user" aria-hidden="true"></i>
           </button>
 
         {% endif %}
-        <span class="border-start mx-1 align-self-stretch text-dark"></span>
+        <span class="border-start mx-1 align-self-stretch text-dark" aria-hidden="true"></span>
         {# Shop #}
         <a href="https://shop.townscanada.ca"
            target="_blank"
-           title="Shop Towns Canada"
+           rel="noopener"
+           title="{{ 'Shop Towns Canada (opens in a new tab)'|t }}"
            class="btn btn-link text-dark p-0"
-           aria-label="{{ 'Shop Towns Canada'|t }}">
-          <i class="la la-shopping-cart"></i>
+           aria-label="{{ 'Shop Towns Canada (opens in a new tab)'|t }}">
+          <i class="la la-shopping-cart" aria-hidden="true"></i>
         </a>
       </div>
 
@@ -86,9 +87,9 @@
 
       <div class="modal-header border-0">
 
-        <h5 class="modal-title" id="searchModalLabel">
+        <h2 class="modal-title h5" id="searchModalLabel">
           {{ 'Search'|t }}
-        </h5>
+        </h2>
 
         <button type="button"
                 class="btn-close"
@@ -106,30 +107,39 @@
 
           <li class="nav-item" role="presentation">
             <button class="nav-link active"
+                    id="search-tab-listings"
                     data-bs-toggle="tab"
-                    data-bs-target="#listings"
+                    data-bs-target="#search-pane-listings"
                     type="button"
-                    role="tab">
+                    role="tab"
+                    aria-controls="search-pane-listings"
+                    aria-selected="true">
               {{ 'Listings'|t }}
             </button>
           </li>
 
           <li class="nav-item" role="presentation">
             <button class="nav-link"
+                    id="search-tab-poi"
                     data-bs-toggle="tab"
-                    data-bs-target="#poi"
+                    data-bs-target="#search-pane-poi"
                     type="button"
-                    role="tab">
+                    role="tab"
+                    aria-controls="search-pane-poi"
+                    aria-selected="false">
               {{ 'Points of Interest'|t }}
             </button>
           </li>
 
           <li class="nav-item" role="presentation">
             <button class="nav-link"
+                    id="search-tab-stories"
                     data-bs-toggle="tab"
-                    data-bs-target="#stories"
+                    data-bs-target="#search-pane-stories"
                     type="button"
-                    role="tab">
+                    role="tab"
+                    aria-controls="search-pane-stories"
+                    aria-selected="false">
               {{ 'Stories'|t }}
             </button>
           </li>
@@ -140,8 +150,10 @@
 
           {# Listings #}
           <div class="tab-pane fade show active"
-               id="listings"
-               role="tabpanel">
+               id="search-pane-listings"
+               role="tabpanel"
+               aria-labelledby="search-tab-listings"
+               tabindex="0">
 
             {{ drupal_block('views_exposed_filter_block:listings_search-page_1', {
               label_display: false
@@ -151,14 +163,18 @@
 
           {# Points of Interest #}
           <div class="tab-pane fade"
-               id="poi"
-               role="tabpanel">
+               id="search-pane-poi"
+               role="tabpanel"
+               aria-labelledby="search-tab-poi"
+               tabindex="0">
           </div>
 
           {# Stories #}
           <div class="tab-pane fade"
-               id="stories"
-               role="tabpanel">
+               id="search-pane-stories"
+               role="tabpanel"
+               aria-labelledby="search-tab-stories"
+               tabindex="0">
 
             {{ drupal_block('story_search_block') }}
 
@@ -192,9 +208,9 @@
 
       <div class="modal-header border-0">
 
-        <h5 class="modal-title" id="loginModalLabel">
+        <h2 class="modal-title h5" id="loginModalLabel">
           {{ 'Account Access'|t }}
-        </h5>
+        </h2>
 
         <button type="button"
                 class="btn-close"
@@ -212,9 +228,12 @@
           <li class="nav-item" role="presentation">
             <button class="nav-link active"
                     data-bs-toggle="tab"
+                    id="login-tab-login"
                     data-bs-target="#login"
                     type="button"
-                    role="tab">
+                    role="tab"
+                    aria-controls="login"
+                    aria-selected="true">
               {{ 'Login'|t }}
             </button>
           </li>
@@ -222,9 +241,12 @@
           <li class="nav-item" role="presentation">
             <button class="nav-link"
                     data-bs-toggle="tab"
+                    id="login-tab-register"
                     data-bs-target="#register"
                     type="button"
-                    role="tab">
+                    role="tab"
+                    aria-controls="register"
+                    aria-selected="false">
               {{ 'Register'|t }}
             </button>
           </li>
@@ -232,9 +254,12 @@
           <li class="nav-item" role="presentation">
             <button class="nav-link"
                     data-bs-toggle="tab"
+                    id="login-tab-password"
                     data-bs-target="#password"
                     type="button"
-                    role="tab">
+                    role="tab"
+                    aria-controls="password"
+                    aria-selected="false">
               {{ 'Forgot Password'|t }}
             </button>
           </li>
@@ -246,10 +271,13 @@
           {# Login #}
           <div class="tab-pane fade show active"
                id="login"
-               role="tabpanel">
+               role="tabpanel"
+               aria-labelledby="login-tab-login">
 
             <div class="ajax-form-loading text-center py-5">
-              <div class="spinner-border"></div>
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">{{ 'Loading…'|t }}</span>
+              </div>
             </div>
 
           </div>
@@ -257,7 +285,8 @@
           {# Register #}
           <div class="tab-pane fade"
                id="register"
-               role="tabpanel">
+               role="tabpanel"
+               aria-labelledby="login-tab-register">
 
             <div class="ajax-form-loading text-center py-5"></div>
 
@@ -266,7 +295,8 @@
           {# Forgot Password #}
           <div class="tab-pane fade"
                id="password"
-               role="tabpanel">
+               role="tabpanel"
+               aria-labelledby="login-tab-password">
 
             <div class="ajax-form-loading text-center py-5"></div>
 

@@ -15,7 +15,7 @@
 <div{{ attributes.addClass('d-flex flex-wrap align-items-center gap-2 tags-wrapper') }}>
   {% if not label_hidden %}
     <div{{ title_attributes.addClass('me-2 d-flex align-items-center tags-wrapper__label') }} aria-label="{{ label }}">
-      <i class="fa-solid fa-tags"></i>
+      <i class="la la-tags" aria-hidden="true"></i>
       <span class="visually-hidden">{{ label }}</span>
     </div>
   {% endif %}

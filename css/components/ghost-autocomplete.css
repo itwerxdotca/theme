@@ -1,5 +1,5 @@
 .ghost-text-autocomplete {
-  color: #aaa;
+  color: #767676; /* 4.5:1 on white */
   position: absolute;
   pointer-events: none;
   user-select: none;

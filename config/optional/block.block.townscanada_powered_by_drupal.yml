@@ -7,7 +7,7 @@ dependencies:
     - townscanada
 id: townscanada_powered_by_drupal
 theme: townscanada
-region: footer
+region: footer_bottom
 weight: 0
 provider: null
 plugin: system_powered_by_block

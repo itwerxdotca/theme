@@ -1,15 +1,15 @@
-{# hierarchical-taxonomy-menu.html.twig #}
-
-{# hierarchical-taxonomy-menu.html.twig #}
+{#
+/**
+ * @file
+ * Hierarchical taxonomy menu.
+ *
+ * - prefix: The /province/town URL prefix, set in
+ *   townscanada_preprocess_hierarchical_taxonomy_menu().
+ * - item.custom_url, item.field_listing_category_icon,
+ *   item.field_listing_category_color: set in _townscanada_add_term_fields().
+ */
+#}
 {{ attach_library('townscanada/taxonomy-menu') }}
-{# Get current path #}
-{% set current_path = request.pathInfo %}
-{% set path_parts = current_path|split('/') %}
-{% set prefix = (path_parts|length >= 3) ? '/' ~ path_parts[1] ~ '/' ~ path_parts[2] : '' %}
-
-{# Debug - remove after #}
-<!-- DEBUG: Path: {{ current_path }} -->
-<!-- DEBUG: Prefix: {{ prefix }} -->
 
 {% macro menu_links(menu_tree, route_tid, current_depth, max_depth, collapsible, prefix) %}
   {% import _self as macros %}
@@ -33,12 +33,13 @@
               {% set circle_color = item.field_listing_category_color|default('#999') %}
               {% set icon_class = item.field_listing_category_icon|default('la la-question') %}
               <div class="category-icon-wrapper">
-                <svg class="category-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <svg class="category-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                   <circle cx="50" cy="50" r="50" fill="{{ circle_color }}" />
                 </svg>
-                <i class="{{ icon_class }} category-icon"></i>
+                <i class="{{ icon_class }} category-icon" aria-hidden="true"></i>
               </div>
             {% endif %}
+            <span class="visually-hidden">{{ item.name }}</span>
           </a>
         {% else %}
           {% set final_url = item.custom_url ?? item.url %}
@@ -50,7 +51,7 @@
               {% set circle_color = item.field_listing_category_color|default('#999') %}
               {% set icon_class = item.field_listing_category_icon|default('la la-question') %}
               <span class="category-icon-inline me-2">
-                <svg class="category-icon-svg" width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <svg class="category-icon-svg" width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                   <circle cx="50" cy="50" r="50" fill="{{ circle_color }}" />
                 </svg>
                 <i class="{{ icon_class }} category-icon" aria-hidden="true"></i>
@@ -73,12 +74,13 @@
               {% set circle_color = item.field_listing_category_color|default('#999') %}
               {% set icon_class = item.field_listing_category_icon|default('la la-question') %}
               <div class="category-icon-wrapper">
-                <svg class="category-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <svg class="category-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                   <circle cx="50" cy="50" r="50" fill="{{ circle_color }}" />
                 </svg>
-                <i class="{{ icon_class }} category-icon"></i>
+                <i class="{{ icon_class }} category-icon" aria-hidden="true"></i>
               </div>
             {% endif %}
+            <span class="visually-hidden">{{ item.name }}</span>
           </a>
         {% else %}
           {% set final_url = item.custom_url ?? item.url %}
@@ -90,7 +92,7 @@
               {% set circle_color = item.field_listing_category_color|default('#999') %}
               {% set icon_class = item.field_listing_category_icon|default('la la-question') %}
               <span class="category-icon-inline me-2">
-                <svg class="category-icon-svg" width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <svg class="category-icon-svg" width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                   <circle cx="50" cy="50" r="50" fill="{{ circle_color }}" />
                 </svg>
                 <i class="{{ icon_class }} category-icon" aria-hidden="true"></i>
@@ -107,7 +109,3 @@
 <ul class="menu hierarchical-taxonomy-menu nav">
   {{ macros.menu_links(menu_tree, route_tid, 0, max_depth, collapsible, prefix) }}
 </ul>
-<!-- DEBUG: Current path: {{ current_path }} -->
-<!-- DEBUG: Path parts: {{ path_parts|join(',') }} -->
-<!-- DEBUG: Prefix: {{ prefix }} -->
-<!-- DEBUG: First item URL: {{ menu_tree.0.url|default('NO ITEMS') }} -->

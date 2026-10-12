@@ -1,44 +1,42 @@
-{# Region: hero - Background image layer #}
-
+{#
+/**
+ * @file
+ * Hero region: background image layer, overlay and the region's blocks.
+ *
+ * Variables (set and validated in townscanada_preprocess_region()):
+ * - hero_image_responsive: Render array for the background image, or NULL.
+ * - hero_image_url: Fallback image URL when no render array is available.
+ * - hero_background_color: A validated hex colour, or empty.
+ * - hero_overlay_opacity: A number between 0 and 1.
+ * - hero_parallax_speed: A number, read by js/parallax.js.
+ * - hero_fit: TRUE to scale the image to fit (data-hero-fit="scale").
+ *
+ * Colours and the image URL are passed as CSS custom properties so no
+ * editor-supplied value is written into a style declaration directly.
+ */
+#}
 {% set has_image = hero_image_responsive is not empty or hero_image_url is not empty %}
 
-{# Parallax config (safe defaults if not provided by preprocess) #}
-{% set parallax_enabled = has_image ? 'true' : 'false' %}
-{% set parallax_speed = hero_parallax_speed|default('0.18') %}
-{# Disable parallax below this width (px). Common choice: 992 for Bootstrap md/lg boundary. #}
-{% set parallax_breakpoint = hero_parallax_breakpoint|default('992') %}
-{# Clamp modes: 'up' (default, prevents downward gap), 'down', or 'none' #}
-{% set parallax_clamp = hero_parallax_clamp|default('up') %}
-
-{# Region: hero - Background image layer #}
+{% set region_style = [] %}
+{% if hero_background_color %}
+  {% set region_style = region_style|merge(['--hero-bg: ' ~ hero_background_color]) %}
+{% endif %}
+{% set region_style = region_style|merge(['--hero-overlay-opacity: ' ~ hero_overlay_opacity|default(0.35)]) %}
 
 <div class="hero-region"
-     {% if has_image %}data-parallax="true" data-parallax-speed="{{ hero_parallax_speed|default('0.50') }}"{% else %}data-parallax="false"{% endif %}
+     data-parallax="{{ has_image ? 'true' : 'false' }}"
+     {% if has_image %}data-parallax-speed="{{ hero_parallax_speed|default(0.18) }}"{% endif %}
      {% if hero_fit %}data-hero-fit="scale"{% endif %}
-     {# MINIMAL CHANGE: keep only background-color on the region #}
-     {% set region_style = '' %}
-     {% if hero_background_color %}
-       {% set region_style = "background-color: " ~ hero_background_color ~ ";" %}
-     {% endif %}
-     {% if region_style %} style="{{ region_style }}"{% endif %}>
+     style="{{ region_style|join('; ') }}">
 
-  {# MINIMAL CHANGE: put background-image on .hero-media when there is no responsive image #}
-  {% set media_bg = '' %}
-  {% if hero_image_url and not hero_image_responsive %}
-    {% set media_bg = "background-image: url('" ~ hero_image_url ~ "');" %}
-  {% endif %}
-
-  <div class="hero-media" aria-hidden="true"{% if media_bg %} style="{{ media_bg }}"{% endif %}>
-    {% if hero_image_responsive %}
-      {{ hero_image_responsive }}
-    {% endif %}
+  <div class="hero-media" aria-hidden="true"
+       {% if hero_image_url and not hero_image_responsive %}style="background-image: url('{{ hero_image_url }}');"{% endif %}>
+    {{ hero_image_responsive }}
   </div>
 
-  {# Foreground content - just render the blocks #}
   <div class="hero-content">
     {{ content }}
   </div>
 
-  {% set overlay_opacity = hero_overlay_opacity|default('0.35') %}
-  <div class="hero-overlay" aria-hidden="true" style="background: rgba(0,0,0,{{ overlay_opacity }});"></div>
+  <div class="hero-overlay" aria-hidden="true"></div>
 </div>
