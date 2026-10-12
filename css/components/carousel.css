@@ -12,13 +12,24 @@
   padding: 0;
   margin: 0;
 }
-.carousel-inner img {
-  opacity: 0.7;
-  transition: opacity 0.3s ease-in-out;
+/* Dim-until-hover only where a mouse exists: phones have no hover, so the
+   images used to stay at 70% opacity for good. */
+@media (hover: hover) {
+  .carousel-inner img {
+    opacity: 0.7;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .carousel-inner a:hover img,
+  .carousel-inner a:focus-visible img {
+    opacity: 1;
+  }
 }
 
-.carousel-inner img:hover {
-  opacity: 1; /* Fully visible on hover */
+/* Indicator tap area: Bootstrap's is 23px tall, under WCAG 2.2's 24px. */
+[data-tc-carousel] .carousel-indicators [data-bs-target] {
+  border-top-width: 12px;
+  border-bottom-width: 12px;
 }
 
 /* Remove spacing between columns */

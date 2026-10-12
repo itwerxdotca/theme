@@ -24,7 +24,9 @@
 {{ attach_library('townscanada/components') }}
 {{ attach_library('townscanada/carousel') }}
 
-<div id="{{ id }}" class="carousel {{ effect }}"
+<div id="{{ id }}" class="carousel {{ effect }}" data-tc-carousel
+     role="region" aria-roledescription="{{ 'carousel'|t }}"
+     aria-label="{{ (view.getTitle() ?: view.storage.label())|striptags|trim }}"
      {% if ride %} data-bs-ride="{{ ride }}"{% endif %}
      data-bs-interval="{{ interval }}"
      data-bs-pause="{% if pause %}hover{% else %}false{% endif %}"
@@ -66,28 +68,27 @@
             {# --- End: Centered Badge over Image --- #}
 
             <a href="{{ term_url }}" class="carousel-image-wrapper position-relative text-center d-inline-block text-decoration-none">
+              <span class="visually-hidden">{{ term_name }}</span>
               {{ row.image }}
               <div class="hero-term">
                 <div class="term-badge position-absolute top-50 start-50 translate-middle" style="z-index: 2;">
                   {% set circle_color = row.field_listing_category_color|striptags|trim|default('#999') %}
                   {% set icon_class = row.field_listing_category_icon|striptags|trim|default('la la-question') %}
                   <div class="category-icon-wrapper">
-                    <svg class="category-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="category-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                       <circle cx="50" cy="50" r="50" fill="{{ circle_color }}" />
                     </svg>
-                    <i class="{{ icon_class }} category-icon"></i>
+                    <i class="{{ icon_class }} category-icon" aria-hidden="true"></i>
                   </div>
                 </div>
               </div>
             </a>
             {# --- End: Centered Badge over Image --- #}
 
-            {% if row.title or row.description %}
+            {# The term name is read out inside the link above. #}
+            {% if row.description %}
               {% if use_caption %}
                 <div class="carousel-caption {{ caption_breakpoints }}">
-              {% endif %}
-              {% if row.title %}
-                <span class="visually-hidden">{{ row.title }}</span>
               {% endif %}
               {% if row.description %}
                 <p>{{ row.description }}</p>
@@ -107,13 +108,13 @@
       {% endfor %}
   </div>
   {% if navigation %}
-    <a class="carousel-control-prev" href="#{{ id }}" role="button" data-bs-slide="prev">
+    <button class="carousel-control-prev" type="button" data-bs-target="#{{ id }}" data-bs-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
       <span class="visually-hidden">{{ 'Previous'|t }}</span>
-    </a>
-    <a class="carousel-control-next" href="#{{ id }}" role="button" data-bs-slide="next">
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#{{ id }}" data-bs-slide="next">
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="visually-hidden">{{ 'Next'|t }}</span>
-    </a>
+    </button>
   {% endif %}
 </div>

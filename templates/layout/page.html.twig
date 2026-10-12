@@ -75,6 +75,7 @@
 
 {# ==================== OFFCANVAS LEFT ==================== #}
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
+  <h2 class="visually-hidden" id="offcanvasLeftLabel">{{ 'Main menu'|t }}</h2>
   <div class="offcanvas-body">
     {% if page.offcanvas_left %}
       {{ page.offcanvas_left }}
@@ -86,6 +87,7 @@
 
 {# ==================== OFFCANVAS RIGHT ==================== #}
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+  <h2 class="visually-hidden" id="offcanvasRightLabel">{{ 'Account'|t }}</h2>
   <div class="offcanvas-body">
     {% if page.offcanvas_right %}
       {{ page.offcanvas_right }}

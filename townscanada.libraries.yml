@@ -31,6 +31,10 @@ bootstrap-js:
 carousel:
   js:
     js/bootstrap-carousel.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - townscanada/bootstrap-js
 
 fontawesome:
   css:

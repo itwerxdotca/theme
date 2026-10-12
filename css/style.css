@@ -2212,3 +2212,14 @@ a:hover .user-picture img,
   background-color: var(--tc-newfoundland-labrador);
   border-color: var(--tc-newfoundland-labrador);
 }
+
+/* =========================================================
+ Drupal autocomplete fix
+ ========================================================= */
+.ui-autocomplete {
+ z-index: 1056 !important;
+}
+
+.ui-autocomplete a {
+  text-decoration: none !important;
+}
