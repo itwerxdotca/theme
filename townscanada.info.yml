@@ -22,10 +22,7 @@ components:
   namespaces:
     townscanada: components
 regions:
-  header: Header
-  nav_branding: 'Navigation branding region'
-  nav_main: 'Main navigation region'
-  nav_additional: 'Additional navigation region (eg search form, social icons, etc)'
+  header: 'Header (inside the floating header, under the navigation bar)'
   hero: Hero
   breadcrumb: Breadcrumbs
   content: 'Main content'
