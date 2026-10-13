@@ -43,7 +43,6 @@ function townscanada_file_url(string $uri): string {
  * Implements hook_preprocess_page().
  */
 function townscanada_preprocess_page(array &$variables) {
-<<<<<<< Updated upstream
   // Initialize hero variables
   $variables['hero_image_url'] = '';
   $variables['hero_image_responsive'] = NULL;
@@ -158,11 +157,6 @@ function townscanada_preprocess_page(array &$variables) {
     // Cache dependency
     $variables['#cache']['tags'][] = 'node:' . $node->id();
   }
-=======
-  // page.html.twig checks the hero region with attribute(), so make sure it
-  // exists even when no blocks are placed in it.
-  $variables['page']['hero'] ??= [];
->>>>>>> Stashed changes
 
   // ——————————————————————————————————————
   // CASE 2: TAXONOMY TERM PAGE
