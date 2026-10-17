@@ -1,0 +1,29 @@
+{#
+/**
+ * @file
+ * A town (canadian_towns term): the town banner in its province colour,
+ * then the term's other fields.
+ *
+ * Variables added by townscanada_preprocess_taxonomy_term():
+ * - province_code: two letters (on, bc ...), or empty.
+ * - province_name: e.g. "Ontario", or empty.
+ *
+ * Check in and Save buttons join the banner in Stages 4 and 5.
+ */
+#}
+<div{{ attributes.addClass('tc-town') }}>
+  {{ title_suffix.contextual_links }}
+  {% if view_mode == 'full' %}
+    {{ include('townscanada:town-banner', {
+      title: name|render|striptags|trim,
+      heading_level: 2,
+      eyebrow: province_name,
+      province_code: province_code,
+    }, false) }}
+  {% else %}
+    {{ title_prefix }}
+    <h2{{ title_attributes }}><a href="{{ url }}">{{ name }}</a></h2>
+    {{ title_suffix|without('contextual_links') }}
+  {% endif %}
+  {{ content|without('field_province_code') }}
+</div>

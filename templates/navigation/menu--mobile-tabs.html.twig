@@ -1,0 +1,43 @@
+{#
+/**
+ * @file
+ * App tab bar: the "Mobile tabs" menu (machine name mobile-tabs) shown as
+ * the bottom navigation on phones. Printed by page.html.twig.
+ *
+ * Only the first five top-level links are used. Each link's icon is picked
+ * from its title (Home, Map, Trips, Check-ins, Discover); any other title
+ * gets a plain dot, so a new tab can be added from the menu admin without
+ * touching this file.
+ *
+ * Available variables:
+ * - items: Top-level menu links (title, url, in_active_trail).
+ * - is_front: TRUE on the front page (townscanada_preprocess_menu__mobile_tabs).
+ */
+#}
+{{ attach_library('townscanada/app-tabbar') }}
+{% set icons = {
+  'home': 'home',
+  'map': 'map',
+  'trips': 'bookmark',
+  'check-ins': 'check-circle',
+  'discover': 'compass',
+} %}
+{% if items %}
+  <nav class="app-tabbar d-md-none" aria-label="{{ 'App'|t }}">
+    <ul class="app-tabbar__list">
+      {% for item in items|slice(0, 5) %}
+        {% set key = item.title|striptags|trim|lower %}
+        {% set front_link = item.url.isRouted() and item.url.routeName == '<front>' %}
+        {% set current = item.in_active_trail or (is_front and front_link) %}
+        <li class="app-tabbar__item">
+          <a href="{{ item.url.toString() }}"
+             class="app-tabbar__link{{ current ? ' is-active' }}"
+             aria-current="{{ current ? 'page' : 'false' }}">
+            {{ include('townscanada:icon', {name: icons[key] ?? 'dot'}, false) }}
+            <span class="app-tabbar__label">{{ item.title }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}

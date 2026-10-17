@@ -1,0 +1,14 @@
+{#
+/**
+ * @file
+ * Search trigger: a search-box look-alike that opens #searchModal.
+ */
+#}
+<button type="button"
+        data-bs-toggle="modal"
+        data-bs-target="#searchModal"
+        aria-haspopup="dialog"{{ attributes.addClass('tc-search-trigger') }}>
+  {{ include('townscanada:icon', {name: 'search', size: 20}, false) }}
+  <span class="tc-search-trigger__text">{{ placeholder|default('A town, a café, a trail…'|t) }}</span>
+  <span class="visually-hidden">{{ 'Search'|t }}</span>
+</button>

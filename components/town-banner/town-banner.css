@@ -1,0 +1,83 @@
+/**
+ * Town banner. Band colour from the province (.province-<code> sets
+ * --province / --province-ink in css/style.css); grey band when the town
+ * has no province code.
+ */
+
+.tc-town-banner {
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.tc-town-banner__band {
+  padding: 16px 16px 14px;
+  background: var(--province, #e9ecef);
+  color: var(--province-ink, #212529);
+}
+
+.tc-town-banner__eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tc-town-banner__badge {
+  display: inline-block;
+  margin-bottom: 18px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #fff;
+  color: #212529;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tc-town-banner .tc-town-banner__title {
+  margin: 2px 0 0;
+  max-width: none;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 2.125rem; /* 34px */
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+
+h2.tc-town-banner__title,
+h3.tc-town-banner__title {
+  font-size: 1.875rem; /* 30px */
+}
+
+.tc-town-banner__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 16px 16px;
+}
+
+.tc-town-banner__meta {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+.tc-town-banner__actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Nothing to show under the band: no meta line and no actions. */
+.tc-town-banner__actions:not(:has(*)) {
+  display: none;
+}
+
+.tc-town-banner__body:not(:has(.tc-town-banner__meta)):not(:has(.tc-town-banner__actions > *)) {
+  display: none;
+}

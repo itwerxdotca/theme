@@ -1,0 +1,91 @@
+/**
+ * Place row. The title link covers the whole row, so the row is one
+ * tap target. Badge: secondary green on white, 5.5:1.
+ */
+
+.tc-place-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tc-place-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+}
+
+.tc-place-row__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 6px;
+  background: #f8f9fa;
+  color: var(--bs-heritage-indigo, #191957);
+}
+
+.tc-place-row__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tc-place-row__title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #212529;
+  text-decoration: none;
+}
+
+a.tc-place-row__title::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+a.tc-place-row__title:hover {
+  color: #212529;
+  text-decoration: underline;
+}
+
+a.tc-place-row__title:focus-visible {
+  outline: none;
+}
+
+.tc-place-row:has(a.tc-place-row__title:focus-visible) {
+  outline: 3px solid var(--bs-primary, #c71c1c);
+  outline-offset: 2px;
+}
+
+.tc-place-row__meta {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+.tc-place-row__badge {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid var(--bs-secondary, #22773e);
+  border-radius: 999px;
+  color: var(--bs-secondary, #22773e);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tc-place-row__badge .tc-icon {
+  stroke-width: 3;
+}

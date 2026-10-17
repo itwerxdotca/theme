@@ -1,0 +1,16 @@
+{#
+/**
+ * @file
+ * App section: Courier heading, optional "See all" link, then content.
+ */
+#}
+{% set id = heading_id|default('tc-section-' ~ heading|clean_id) %}
+<section{{ attributes.addClass('tc-section').setAttribute('aria-labelledby', id) }}>
+  <div class="tc-section__head">
+    <h2 class="tc-section__heading" id="{{ id }}">{{ heading }}</h2>
+    {% if link_url %}
+      <a class="tc-section__link" href="{{ link_url }}">{{ link_label|default('See all'|t) }}</a>
+    {% endif %}
+  </div>
+  {% block content %}{{ content }}{% endblock %}
+</section>

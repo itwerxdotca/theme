@@ -1,0 +1,42 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Town banner
+status: stable
+description: 'A town in its province colour: the "You''re in" card on the Near me screen, the top of a town page, and the featured town on Discover. Text colour on the band comes from --province-ink, so it stays readable on every province.'
+
+props:
+  type: object
+  required:
+    - title
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    title:
+      type: string
+      title: Town name
+    heading_level:
+      type: integer
+      title: Heading level
+      description: 1 when the town is the page's main subject, 2 inside a page.
+      enum: [1, 2, 3]
+      default: 1
+    eyebrow:
+      type: string
+      title: Small label above the name
+      description: 'e.g. "You''re in · Ontario".'
+    badge:
+      type: string
+      title: Badge
+      description: 'A white pill on the band instead of the small label, e.g. "Small town of the week".'
+    province_code:
+      type: string
+      title: Province code
+      description: Two letters (on, bc, ns ...). Sets the band colour.
+    meta:
+      type: string
+      title: Line under the band
+      description: 'e.g. "Georgina · York Region · 38 places listed".'
+
+slots:
+  actions:
+    title: Actions
+    description: Buttons under the meta line (Check in, Save, Explore town).

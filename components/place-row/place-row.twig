@@ -1,0 +1,31 @@
+{#
+/**
+ * @file
+ * Place row: one place in an "Open nearby" style list.
+ *
+ *   <ul class="tc-place-list">
+ *     {{ include('townscanada:place-row', {title: 'Public library', meta: 'Library · 1.1 km', badge: 'Verified'|t, url: '/node/12'}, false) }}
+ *   </ul>
+ */
+#}
+<li{{ attributes.addClass('tc-place-row') }}>
+  <span class="tc-place-row__icon">
+    {{ include('townscanada:icon', {name: icon|default('pin'), size: 20}, false) }}
+  </span>
+  <div class="tc-place-row__text">
+    {% if url %}
+      <a class="tc-place-row__title" href="{{ url }}">{{ title }}</a>
+    {% else %}
+      <span class="tc-place-row__title">{{ title }}</span>
+    {% endif %}
+    {% if meta %}
+      <span class="tc-place-row__meta">{{ meta }}</span>
+    {% endif %}
+  </div>
+  {% if badge %}
+    <span class="tc-place-row__badge">
+      {{ include('townscanada:icon', {name: 'check', size: 12}, false) }}
+      {{ badge }}
+    </span>
+  {% endif %}
+</li>

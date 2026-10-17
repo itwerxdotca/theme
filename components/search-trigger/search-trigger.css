@@ -1,0 +1,30 @@
+.tc-search-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 50px;
+  padding: 0 14px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--bs-secondary-color, #6c757d);
+  font-size: 1rem;
+  text-align: left;
+  cursor: text;
+}
+
+.tc-search-trigger:hover {
+  border-color: var(--bs-heritage-indigo, #191957);
+}
+
+.tc-search-trigger:focus-visible {
+  outline: 3px solid var(--bs-primary, #c71c1c);
+  outline-offset: 2px;
+}
+
+.tc-search-trigger__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

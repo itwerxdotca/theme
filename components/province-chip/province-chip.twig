@@ -1,0 +1,10 @@
+{#
+/**
+ * @file
+ * Province chip: pill with a colour dot.
+ */
+#}
+<a href="{{ url }}" role="listitem"{{ attributes.addClass('tc-province-chip', 'province-' ~ province_code|lower|clean_class) }}>
+  <span class="tc-province-chip__dot" aria-hidden="true"></span>
+  {{ title }}
+</a>

@@ -1,0 +1,53 @@
+/**
+ * Action buttons. White on brand red is 5.6:1; indigo on white 15.4:1.
+ */
+
+.tc-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.tc-action--primary {
+  flex: 1;
+  padding: 0 18px;
+  border: 1px solid var(--bs-primary, #c71c1c);
+  background: var(--bs-primary, #c71c1c);
+  color: #fff;
+}
+
+.tc-action--primary:hover,
+.tc-action--primary:focus {
+  border-color: var(--bs-link-hover-color, #a91515);
+  background: var(--bs-link-hover-color, #a91515);
+  color: #fff;
+  text-decoration: none;
+}
+
+.tc-action--square {
+  flex: 0 0 48px;
+  width: 48px;
+  padding: 0;
+  border: 1px solid var(--bs-heritage-indigo, #191957);
+  background: #fff;
+  color: var(--bs-heritage-indigo, #191957);
+}
+
+.tc-action--square:hover,
+.tc-action--square:focus {
+  background: #f8f9fa;
+  color: var(--bs-heritage-indigo, #191957);
+}
+
+.tc-action:focus-visible {
+  outline: 3px solid var(--bs-primary, #c71c1c);
+  outline-offset: 2px;
+}

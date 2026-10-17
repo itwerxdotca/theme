@@ -1,0 +1,23 @@
+{#
+/**
+ * @file
+ * Town tile: province-coloured top, town name, distance.
+ *
+ *   <div class="tc-town-tiles">
+ *     {{ include('townscanada:town-tile', {title: 'Sutton', url: '/sutton', meta: '18 km east', province_code: 'on'}, false) }}
+ *   </div>
+ */
+#}
+{% set classes = [
+  'tc-town-tile',
+  province_code ? 'province-' ~ province_code|lower|clean_class,
+] %}
+<a href="{{ url }}"{{ attributes.addClass(classes) }}>
+  <span class="tc-town-tile__band" aria-hidden="true"></span>
+  <span class="tc-town-tile__text">
+    <span class="tc-town-tile__title">{{ title }}</span>
+    {% if meta %}
+      <span class="tc-town-tile__meta">{{ meta }}</span>
+    {% endif %}
+  </span>
+</a>

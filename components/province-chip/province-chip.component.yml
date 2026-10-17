@@ -1,0 +1,23 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Province chip
+status: stable
+description: 'A province or territory as a pill with its colour dot, for browsing by province. Put chips in <div class="tc-province-chips" role="list">.'
+
+props:
+  type: object
+  required:
+    - title
+    - url
+    - province_code
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    title:
+      type: string
+      title: Province name
+    url:
+      type: string
+      title: URL
+    province_code:
+      type: string
+      title: Province code

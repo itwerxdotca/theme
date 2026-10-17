@@ -60,13 +60,14 @@
           </button>
 
         {% endif %}
-        <span class="border-start mx-1 align-self-stretch text-dark" aria-hidden="true"></span>
-        {# Shop #}
+        {# Shop: tablets and desktop only. On phones the app design puts the
+           shop link in the left offcanvas region instead. #}
+        <span class="border-start mx-1 align-self-stretch text-dark d-none d-md-block" aria-hidden="true"></span>
         <a href="https://shop.townscanada.ca"
            target="_blank"
            rel="noopener"
            title="{{ 'Shop Towns Canada (opens in a new tab)'|t }}"
-           class="btn btn-link text-dark p-0"
+           class="btn btn-link text-dark p-0 d-none d-md-inline-block"
            aria-label="{{ 'Shop Towns Canada (opens in a new tab)'|t }}">
           <i class="la la-shopping-cart" aria-hidden="true"></i>
         </a>
@@ -112,7 +113,11 @@
 
       {# Content #}
       <div class="{% if page.sidebar_first and page.sidebar_second %}col-lg-6{% elseif page.sidebar_first or page.sidebar_second %}col-lg-9{% else %}col-12{% endif %} order-lg-2">
-        {{ page.content }}
+        {# page--front.html.twig overrides this block to add the Discover
+           screen's title and search box above the content. #}
+        {% block main_content %}
+          {{ page.content }}
+        {% endblock %}
       </div>
 
       {# Sidebar second #}
@@ -152,6 +157,12 @@
 
   </div>
 </footer>
+
+{# ==================== APP TAB BAR (phones) ==================== #}
+{# Bottom navigation from the "Mobile tabs" menu (machine name mobile-tabs),
+   top level only. Prints nothing until that menu has links.
+   Markup: templates/navigation/menu--mobile-tabs.html.twig. #}
+{{ drupal_menu('mobile-tabs', 1, 1) }}
 
 {# ==================== OFFCANVAS LEFT ==================== #}
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">

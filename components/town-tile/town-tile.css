@@ -1,0 +1,53 @@
+.tc-town-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.tc-town-tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 6px;
+  overflow: hidden;
+  color: #212529;
+  text-decoration: none;
+}
+
+.tc-town-tile:hover {
+  color: #212529;
+  border-color: var(--bs-heritage-indigo, #191957);
+}
+
+.tc-town-tile:focus-visible {
+  outline: 3px solid var(--bs-primary, #c71c1c);
+  outline-offset: 2px;
+}
+
+.tc-town-tile__band {
+  display: block;
+  height: 56px;
+  background: var(--province, #e9ecef);
+}
+
+.tc-town-tile__text {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px 10px;
+}
+
+.tc-town-tile__title {
+  overflow: hidden;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tc-town-tile__meta {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--bs-secondary-color, #6c757d);
+}
