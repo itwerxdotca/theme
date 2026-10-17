@@ -12,6 +12,12 @@ components:
       css/components/site-header.css: {}
       css/components/listing.css: {}
       css/components/ghost-autocomplete.css: {}
+      css/components/app-screen.css: {}
+
+app-tabbar:
+  css:
+    component:
+      css/components/app-tabbar.css: {}
 
 header-height:
   js:

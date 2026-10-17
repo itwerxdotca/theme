@@ -1,0 +1,39 @@
+{#
+/**
+ * @file
+ * One view row as a town tile (townscanada:town-tile).
+ *
+ * Used by any view display whose CSS class includes "tc-town-tiles".
+ * - Name and link: the first field that outputs a link.
+ * - Province colour: a field with "province" in its machine name that
+ *   outputs the two-letter code (e.g. field_province_code, as plain text).
+ * - Detail line: every other field, joined with " · ".
+ */
+#}
+{% set title = '' %}
+{% set url = '' %}
+{% set code = '' %}
+{% set meta = [] %}
+
+{% for id, field in fields %}
+  {% set html = field.content|render|trim %}
+  {# Plain text, with Drupal's escaping undone; the component escapes it once. #}
+  {% set text = html|striptags|replace({'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&nbsp;': ' '})|trim %}
+  {% if 'province' in id %}
+    {% set code = text|lower %}
+  {% elseif title is empty and '<a ' in html %}
+    {% set title = text %}
+    {% set url = (html|split('href="')[1] ?? '')|split('"')|first|replace({'&amp;': '&'}) %}
+  {% elseif text is not empty %}
+    {% set meta = meta|merge([text]) %}
+  {% endif %}
+{% endfor %}
+
+{% if title is not empty %}
+  {{ include('townscanada:town-tile', {
+    title: title,
+    url: url,
+    meta: meta|join(' · '),
+    province_code: code,
+  }, false) }}
+{% endif %}

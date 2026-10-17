@@ -1,0 +1,31 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Bucket list progress
+status: stable
+description: 'Top of the Trips screen: "14 of 52 visited", a bar split by province colour, and a legend.'
+
+props:
+  type: object
+  required:
+    - visited
+    - total
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    visited:
+      type: integer
+      title: Places visited
+    total:
+      type: integer
+      title: Places on the list
+    provinces:
+      type: array
+      title: Visited, by province
+      items:
+        type: object
+        properties:
+          code:
+            type: string
+          name:
+            type: string
+          count:
+            type: integer

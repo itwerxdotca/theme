@@ -1,0 +1,33 @@
+/**
+ * App screens (Near me, Discover, Trips): the vertical rhythm between the
+ * components on a screen, and the Courier screen title.
+ *
+ *   <div class="tc-screen">
+ *     <h1 class="tc-screen__title">Where to next?</h1>
+ *     ...components...
+ *   </div>
+ */
+
+.tc-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 16px 0 24px;
+}
+
+.tc-screen .tc-screen__title {
+  margin: 0;
+  max-width: none;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 2.125rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--bs-heritage-indigo, #191957);
+}
+
+/* Search box and province chips sit closer to the title than sections do. */
+.tc-screen__title + .tc-search-trigger,
+.tc-search-trigger + .tc-province-chips {
+  margin-top: -6px;
+}

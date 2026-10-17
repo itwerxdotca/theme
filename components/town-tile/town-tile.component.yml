@@ -1,0 +1,26 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Town tile
+status: stable
+description: 'A small town card topped with its province colour, for "Towns close by". Put tiles in <div class="tc-town-tiles">.'
+
+props:
+  type: object
+  required:
+    - title
+    - url
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    title:
+      type: string
+      title: Town name
+    url:
+      type: string
+      title: URL
+    meta:
+      type: string
+      title: Detail line
+      description: 'e.g. "7 km south".'
+    province_code:
+      type: string
+      title: Province code

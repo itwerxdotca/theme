@@ -1,0 +1,39 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Trip card
+status: stable
+description: 'The next trip on the Trips screen: date, title, a Start button and the numbered stops, each number in its town''s province colour. Fed from an itinerary node and its itinerary_stop nodes.'
+
+props:
+  type: object
+  required:
+    - title
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    title:
+      type: string
+      title: Trip name
+    eyebrow:
+      type: string
+      title: Small label
+      description: 'e.g. "Next trip · Sat Oct 17".'
+    url:
+      type: string
+      title: Trip URL
+    start_url:
+      type: string
+      title: Start button URL
+    stops:
+      type: array
+      title: Stops, in order
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          meta:
+            type: string
+          url:
+            type: string
+          province_code:
+            type: string

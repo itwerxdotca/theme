@@ -1,0 +1,44 @@
+{#
+/**
+ * @file
+ * One view row as a place row (townscanada:place-row).
+ *
+ * Used by any view display whose CSS class (Advanced > Other > CSS class)
+ * includes "tc-place-list". Field machine names don't matter:
+ * - Name and link: the first field that outputs a link (tick "Link to the
+ *   Content" on the title field).
+ * - Badge: a field with "badge" in its machine name, e.g. a verified label.
+ * - Detail line: every other field, joined with " · ".
+ * Fields marked "Exclude from display" are left out.
+ */
+#}
+{% set title = '' %}
+{% set url = '' %}
+{% set badge = '' %}
+{% set meta = [] %}
+
+{% for id, field in fields %}
+  {% set html = field.content|render|trim %}
+  {# Plain text, with Drupal's escaping undone; the component escapes it once. #}
+  {% set text = html|striptags|replace({'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&nbsp;': ' '})|trim %}
+  {% if 'badge' in id %}
+    {% set badge = text %}
+  {% elseif title is empty and '<a ' in html %}
+    {% set title = text %}
+    {% set url = (html|split('href="')[1] ?? '')|split('"')|first|replace({'&amp;': '&'}) %}
+  {% elseif text is not empty %}
+    {% set meta = meta|merge([text]) %}
+  {% endif %}
+{% endfor %}
+
+{% if title is empty and meta is not empty %}
+  {% set title = meta|first %}
+  {% set meta = meta|slice(1) %}
+{% endif %}
+
+{{ include('townscanada:place-row', {
+  title: title,
+  url: url,
+  meta: meta|join(' · '),
+  badge: badge,
+}, false) }}

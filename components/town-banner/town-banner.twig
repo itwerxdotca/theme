@@ -1,0 +1,38 @@
+{#
+/**
+ * @file
+ * Town banner: a town in its province colour, with actions underneath.
+ *
+ *   {% embed 'townscanada:town-banner' with {
+ *     title: 'Keswick', eyebrow: "You're in · Ontario",
+ *     province_code: 'on', meta: 'Georgina · York Region',
+ *   } only %}
+ *     {% block actions %}...buttons...{% endblock %}
+ *   {% endembed %}
+ */
+#}
+{% set level = heading_level|default(1) %}
+{% set classes = [
+  'tc-town-banner',
+  province_code ? 'province-' ~ province_code|lower|clean_class,
+] %}
+<section{{ attributes.addClass(classes) }}>
+  <div class="tc-town-banner__band">
+    {% if badge %}
+      <span class="tc-town-banner__badge">{{ badge }}</span>
+    {% elseif eyebrow %}
+      <p class="tc-town-banner__eyebrow">{{ eyebrow }}</p>
+    {% endif %}
+    <h{{ level }} class="tc-town-banner__title">{{ title }}</h{{ level }}>
+  </div>
+  {# The actions block is always printed so {% embed %} overrides work;
+     town-banner.css hides the body and actions when they are empty. #}
+  <div class="tc-town-banner__body">
+    {% if meta %}
+      <p class="tc-town-banner__meta">{{ meta }}</p>
+    {% endif %}
+    <div class="tc-town-banner__actions">
+      {% block actions %}{{ actions }}{% endblock %}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * A view display with CSS class "tc-place-list" or "tc-town-tiles": the
+ * view title as a section heading (townscanada:section, which also loads
+ * its CSS), then the rows as a place list or a grid of town tiles. Rows
+ * come from views-view-fields--tc-place-row or views-view-fields--tc-town-tile.
+ *
+ * Variables added by townscanada_preprocess_views_view_unformatted():
+ * - tc_layout: 'place-list' or 'town-tiles'.
+ */
+#}
+{% set tiles = tc_layout == 'town-tiles' %}
+{% set wrapper = tiles ? 'div' : 'ul' %}
+{# A grouping title when the view groups rows, otherwise the view's title. #}
+{% set heading = title ?: view.getTitle() %}
+
+{% set list %}
+  <{{ wrapper }} class="{{ tiles ? 'tc-town-tiles' : 'tc-place-list' }}">
+    {% for row in rows %}
+      {{- row.content -}}
+    {% endfor %}
+  </{{ wrapper }}>
+{% endset %}
+
+{% if heading %}
+  {{ include('townscanada:section', {
+    heading: heading|render|striptags|trim,
+    heading_id: 'tc-' ~ view.id()|clean_class ~ '-' ~ view.current_display|clean_class,
+    content: list,
+  }, false) }}
+{% else %}
+  {{ list }}
+{% endif %}

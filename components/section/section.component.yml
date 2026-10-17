@@ -1,0 +1,30 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: App section
+status: stable
+description: A home-screen section with a Courier heading and an optional "See all" link, e.g. "Open nearby" or "Towns close by".
+
+props:
+  type: object
+  required:
+    - heading
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    heading:
+      type: string
+      title: Heading
+    heading_id:
+      type: string
+      title: Heading id
+      description: Used to label the section for screen readers. Generated from the heading when empty.
+    link_url:
+      type: string
+      title: Link URL
+    link_label:
+      type: string
+      title: Link label
+      default: See all
+
+slots:
+  content:
+    title: Content

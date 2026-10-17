@@ -890,3 +890,160 @@ function townscanada_preprocess_flag(&$variables) {
   // Add cache context so it varies per user
   $variables['#cache']['contexts'][] = 'user';
 }
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * On a town page, or on content tagged with a town, adds
+ * "has-province province-<code>" to <body>. css/style.css maps each class
+ * to var(--province) and var(--province-ink).
+ */
+function townscanada_preprocess_html(array &$variables): void {
+  $code = _townscanada_current_province_code();
+  if ($code !== NULL) {
+    $variables['attributes']['class'][] = 'has-province';
+    $variables['attributes']['class'][] = 'province-' . $code;
+  }
+}
+
+/**
+ * Returns the province code (on, bc ...) for the page being viewed.
+ *
+ * Reads field_province_code from the town term being viewed, or from the
+ * first town in a node's field_canadian_towns.
+ *
+ * @return string|null
+ *   A two-letter province or territory code, or NULL when the page has none.
+ */
+function _townscanada_current_province_code(): ?string {
+  $route_match = \Drupal::routeMatch();
+  $town = NULL;
+
+  $term = $route_match->getParameter('taxonomy_term');
+  if ($term instanceof Term && $term->hasField('field_province_code')) {
+    $town = $term;
+  }
+  else {
+    $node = $route_match->getParameter('node');
+    if ($node instanceof NodeInterface
+      && $node->hasField('field_canadian_towns')
+      && !$node->get('field_canadian_towns')->isEmpty()) {
+      $town = $node->get('field_canadian_towns')->entity;
+    }
+  }
+
+  return _townscanada_province_code_of($town);
+}
+
+/**
+ * Returns the known province and territory codes with their names.
+ *
+ * @return string[]
+ *   Names keyed by the two-letter code used in field_province_code and in
+ *   the .province-<code> CSS classes.
+ */
+function _townscanada_province_names(): array {
+  return [
+    'yt' => t('Yukon'),
+    'nt' => t('Northwest Territories'),
+    'nu' => t('Nunavut'),
+    'bc' => t('British Columbia'),
+    'ab' => t('Alberta'),
+    'sk' => t('Saskatchewan'),
+    'mb' => t('Manitoba'),
+    'on' => t('Ontario'),
+    'qc' => t('Quebec'),
+    'nb' => t('New Brunswick'),
+    'pe' => t('Prince Edward Island'),
+    'ns' => t('Nova Scotia'),
+    'nl' => t('Newfoundland and Labrador'),
+  ];
+}
+
+/**
+ * Returns a town term's province code, or NULL when it has no known code.
+ */
+function _townscanada_province_code_of($town): ?string {
+  if (!$town || !$town->hasField('field_province_code') || $town->get('field_province_code')->isEmpty()) {
+    return NULL;
+  }
+  $code = strtolower(trim((string) $town->get('field_province_code')->value));
+  return isset(_townscanada_province_names()[$code]) ? $code : NULL;
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for taxonomy-term.html.twig.
+ *
+ * Gives town templates the province code and name for the town banner.
+ */
+function townscanada_preprocess_taxonomy_term(array &$variables): void {
+  $term = $variables['term'] ?? NULL;
+  $code = _townscanada_province_code_of($term);
+  $variables['province_code'] = $code ?? '';
+  $variables['province_name'] = $code ? (string) _townscanada_province_names()[$code] : '';
+}
+
+/**
+ * Returns which app layout a view display asked for through its CSS class.
+ *
+ * @return string|null
+ *   'place-list' for the class "tc-place-list", 'town-tiles' for
+ *   "tc-town-tiles", otherwise NULL.
+ */
+function _townscanada_view_app_layout($view): ?string {
+  if (!is_object($view) || !isset($view->display_handler)) {
+    return NULL;
+  }
+  $classes = preg_split('/\s+/', (string) $view->display_handler->getOption('css_class'));
+  if (in_array('tc-town-tiles', $classes, TRUE)) {
+    return 'town-tiles';
+  }
+  if (in_array('tc-place-list', $classes, TRUE)) {
+    return 'place-list';
+  }
+  return NULL;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for views_view_fields.
+ *
+ * Rows of a view display with the CSS class "tc-place-list" use
+ * views-view-fields--tc-place-row.html.twig; "tc-town-tiles" uses
+ * views-view-fields--tc-town-tile.html.twig.
+ */
+function townscanada_theme_suggestions_views_view_fields_alter(array &$suggestions, array $variables): void {
+  $layout = _townscanada_view_app_layout($variables['view'] ?? NULL);
+  if ($layout === 'place-list') {
+    $suggestions[] = 'views_view_fields__tc_place_row';
+  }
+  elseif ($layout === 'town-tiles') {
+    $suggestions[] = 'views_view_fields__tc_town_tile';
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for views_view_unformatted.
+ */
+function townscanada_theme_suggestions_views_view_unformatted_alter(array &$suggestions, array $variables): void {
+  if (_townscanada_view_app_layout($variables['view'] ?? NULL)) {
+    $suggestions[] = 'views_view_unformatted__tc_place_list';
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for views-view-unformatted.html.twig.
+ */
+function townscanada_preprocess_views_view_unformatted(array &$variables): void {
+  $variables['tc_layout'] = _townscanada_view_app_layout($variables['view'] ?? NULL) ?? '';
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for menu--mobile-tabs.html.twig.
+ *
+ * Tells the tab bar when it is on the front page, so the Home tab (a link
+ * to <front>) is marked current there.
+ */
+function townscanada_preprocess_menu__mobile_tabs(array &$variables): void {
+  $variables['is_front'] = \Drupal::service('path.matcher')->isFrontPage();
+  $variables['#cache']['contexts'][] = 'url.path.is_front';
+}

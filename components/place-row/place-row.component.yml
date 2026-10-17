@@ -1,0 +1,30 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Place row
+status: stable
+description: 'One place in a list ("Open nearby"): icon, name, a line of detail and an optional green badge such as "Verified" or "Open now". Wrap rows in <ul class="tc-place-list">.'
+
+props:
+  type: object
+  required:
+    - title
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    title:
+      type: string
+      title: Place name
+    url:
+      type: string
+      title: URL
+    meta:
+      type: string
+      title: Detail line
+      description: 'e.g. "Park · 400 m".'
+    badge:
+      type: string
+      title: Badge
+      description: 'e.g. "Verified". Leave empty for none.'
+    icon:
+      type: string
+      title: Icon name
+      default: pin

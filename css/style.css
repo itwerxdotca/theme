@@ -71,6 +71,25 @@
   --tc-prince-edward-island: #5C5D75;     /* RGB 92, 93, 117 */
   --tc-nova-scotia: #C62D42;              /* RGB 198, 45, 66 */
   --tc-newfoundland-labrador: #FEBAAD;    /* RGB 254, 186, 173 */
+
+  /* Text on each province colour. Each pair passes WCAG AA for normal
+     text (4.5:1): dark text on the light colours, white on Nova Scotia
+     and PEI, black on the two mid-tones (Yukon, BC) where neither dark
+     grey nor white reaches 4.5:1. */
+  --tc-ink-dark: #212529;
+  --tc-yukon-ink: #000000;                    /* 5.66:1 */
+  --tc-northwest-territories-ink: var(--tc-ink-dark); /* 6.69:1 */
+  --tc-nunavut-ink: var(--tc-ink-dark);       /* 8.03:1 */
+  --tc-british-columbia-ink: #000000;         /* 5.69:1 */
+  --tc-alberta-ink: var(--tc-ink-dark);       /* 6.43:1 */
+  --tc-saskatchewan-ink: var(--tc-ink-dark);  /* 8.18:1 */
+  --tc-manitoba-ink: var(--tc-ink-dark);      /* 9.79:1 */
+  --tc-ontario-ink: var(--tc-ink-dark);       /* 9.36:1 */
+  --tc-quebec-ink: var(--tc-ink-dark);        /* 8.63:1 */
+  --tc-new-brunswick-ink: var(--tc-ink-dark); /* 5.95:1 */
+  --tc-prince-edward-island-ink: #ffffff;     /* 6.41:1 */
+  --tc-nova-scotia-ink: #ffffff;              /* 5.45:1 */
+  --tc-newfoundland-labrador-ink: var(--tc-ink-dark); /* 9.43:1 */
 }
 
 /* ============================================
@@ -2121,9 +2140,10 @@ a:hover .user-picture img,
 
 /* Keep the classic map colours flat and uncomplicated */
 
+/* Text colour comes from the province rules below (--tc-*-ink), which
+   follow this rule and so also apply on hover and focus. */
 .province-btn:hover,
 .province-btn:focus {
-  color: #ffffff;
   text-decoration: none;
   filter: brightness(0.92);
 }
@@ -2136,16 +2156,19 @@ a:hover .user-picture img,
 .province-btn.yt {
   background-color: var(--tc-yukon);
   border-color: var(--tc-yukon);
+  color: var(--tc-yukon-ink);
 }
 
 .province-btn.nt {
   background-color: var(--tc-northwest-territories);
   border-color: var(--tc-northwest-territories);
+  color: var(--tc-northwest-territories-ink);
 }
 
 .province-btn.nu {
   background-color: var(--tc-nunavut);
   border-color: var(--tc-nunavut);
+  color: var(--tc-nunavut-ink);
 }
 
 
@@ -2156,21 +2179,25 @@ a:hover .user-picture img,
 .province-btn.bc {
   background-color: var(--tc-british-columbia);
   border-color: var(--tc-british-columbia);
+  color: var(--tc-british-columbia-ink);
 }
 
 .province-btn.ab {
   background-color: var(--tc-alberta);
   border-color: var(--tc-alberta);
+  color: var(--tc-alberta-ink);
 }
 
 .province-btn.sk {
   background-color: var(--tc-saskatchewan);
   border-color: var(--tc-saskatchewan);
+  color: var(--tc-saskatchewan-ink);
 }
 
 .province-btn.mb {
   background-color: var(--tc-manitoba);
   border-color: var(--tc-manitoba);
+  color: var(--tc-manitoba-ink);
 }
 
 
@@ -2181,11 +2208,13 @@ a:hover .user-picture img,
 .province-btn.on {
   background-color: var(--tc-ontario);
   border-color: var(--tc-ontario);
+  color: var(--tc-ontario-ink);
 }
 
 .province-btn.qc {
   background-color: var(--tc-quebec);
   border-color: var(--tc-quebec);
+  color: var(--tc-quebec-ink);
 }
 
 
@@ -2196,21 +2225,54 @@ a:hover .user-picture img,
 .province-btn.nb {
   background-color: var(--tc-new-brunswick);
   border-color: var(--tc-new-brunswick);
+  color: var(--tc-new-brunswick-ink);
 }
 
 .province-btn.pe {
   background-color: var(--tc-prince-edward-island);
   border-color: var(--tc-prince-edward-island);
+  color: var(--tc-prince-edward-island-ink);
 }
 
 .province-btn.ns {
   background-color: var(--tc-nova-scotia);
   border-color: var(--tc-nova-scotia);
+  color: var(--tc-nova-scotia-ink);
 }
 
 .province-btn.nl {
   background-color: var(--tc-newfoundland-labrador);
   border-color: var(--tc-newfoundland-labrador);
+  color: var(--tc-newfoundland-labrador-ink);
+}
+
+/* =========================================================
+   PAGE PROVINCE
+   townscanada_preprocess_html() adds "has-province province-<code>" to
+   <body> on town pages and on content tagged with a town. Anything on the
+   page can then use var(--province) and var(--province-ink).
+   ========================================================= */
+
+.province-yt { --province: var(--tc-yukon); --province-ink: var(--tc-yukon-ink); }
+.province-nt { --province: var(--tc-northwest-territories); --province-ink: var(--tc-northwest-territories-ink); }
+.province-nu { --province: var(--tc-nunavut); --province-ink: var(--tc-nunavut-ink); }
+.province-bc { --province: var(--tc-british-columbia); --province-ink: var(--tc-british-columbia-ink); }
+.province-ab { --province: var(--tc-alberta); --province-ink: var(--tc-alberta-ink); }
+.province-sk { --province: var(--tc-saskatchewan); --province-ink: var(--tc-saskatchewan-ink); }
+.province-mb { --province: var(--tc-manitoba); --province-ink: var(--tc-manitoba-ink); }
+.province-on { --province: var(--tc-ontario); --province-ink: var(--tc-ontario-ink); }
+.province-qc { --province: var(--tc-quebec); --province-ink: var(--tc-quebec-ink); }
+.province-nb { --province: var(--tc-new-brunswick); --province-ink: var(--tc-new-brunswick-ink); }
+.province-pe { --province: var(--tc-prince-edward-island); --province-ink: var(--tc-prince-edward-island-ink); }
+.province-ns { --province: var(--tc-nova-scotia); --province-ink: var(--tc-nova-scotia-ink); }
+.province-nl { --province: var(--tc-newfoundland-labrador); --province-ink: var(--tc-newfoundland-labrador-ink); }
+
+/* A stripe in the province colour under the fixed header. */
+.has-province .site-header::after {
+  content: "";
+  display: block;
+  height: 4px;
+  background: var(--province);
 }
 
 /* =========================================================

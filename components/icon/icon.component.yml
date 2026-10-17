@@ -1,0 +1,32 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Icon
+status: stable
+description: The app's line icons as inline SVG, drawn in the current text colour. Decorative (hidden from screen readers); put the meaning in the text beside it or in the button's aria-label.
+
+props:
+  type: object
+  properties:
+    name:
+      type: string
+      title: Icon name
+      enum:
+        - home
+        - compass
+        - map
+        - bookmark
+        - bookmark-add
+        - check-circle
+        - check
+        - pin
+        - pin-check
+        - search
+        - user
+        - menu
+        - close
+        - cart
+        - sign-out
+        - dot
+    size:
+      type: integer
+      title: Size in pixels
+      default: 24

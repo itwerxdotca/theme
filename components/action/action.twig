@@ -1,0 +1,23 @@
+{#
+/**
+ * @file
+ * Action button: wide red primary, or a square icon-only button.
+ *
+ *   {{ include('townscanada:action', {label: 'Check in'|t, icon: 'pin-check', url: '/check-in'}, false) }}
+ *   {{ include('townscanada:action', {label: 'Save to bucket list'|t, icon: 'bookmark', variant: 'square'}, false) }}
+ */
+#}
+{% set v = variant|default('primary') %}
+{% set attributes = attributes.addClass('tc-action', 'tc-action--' ~ v|clean_class) %}
+{% if v == 'square' %}
+  {% set attributes = attributes.setAttribute('aria-label', label) %}
+{% endif %}
+{% set inner %}
+  {% if icon %}{{ include('townscanada:icon', {name: icon, size: 20}, false) }}{% endif %}
+  {% if v != 'square' %}<span>{{ label }}</span>{% endif %}
+{% endset %}
+{% if url %}
+  <a href="{{ url }}"{{ attributes }}>{{ inner }}</a>
+{% else %}
+  <button type="button"{{ attributes }}>{{ inner }}</button>
+{% endif %}

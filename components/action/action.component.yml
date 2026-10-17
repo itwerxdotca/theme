@@ -1,0 +1,30 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Action button
+status: stable
+description: 'The app''s buttons: a wide red one (Check in, Explore town, Start) or a square icon-only one (Save to bucket list). A link when url is set, otherwise a button.'
+
+props:
+  type: object
+  required:
+    - label
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    label:
+      type: string
+      title: Label
+      description: Shown on primary buttons; becomes the aria-label on square ones.
+    url:
+      type: string
+      title: URL
+    variant:
+      type: string
+      title: Variant
+      enum:
+        - primary
+        - square
+      default: primary
+    icon:
+      type: string
+      title: Icon name
+      description: Any name from the Icon component.

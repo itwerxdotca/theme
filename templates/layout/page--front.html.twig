@@ -1,0 +1,21 @@
+{#
+/**
+ * @file
+ * Front page: the Discover home screen.
+ *
+ * The same page as page.html.twig, with the screen title and the search
+ * box (which opens the existing search modal) above the front page's
+ * content. Blocks placed in the Content region follow underneath; give
+ * their views the CSS class "tc-place-list" or "tc-town-tiles" to show
+ * them as the design's place rows or town tiles.
+ */
+#}
+{% extends 'page.html.twig' %}
+
+{% block main_content %}
+  <div class="tc-screen">
+    <h1 class="tc-screen__title">{{ 'Where to next?'|t }}</h1>
+    {{ include('townscanada:search-trigger', {}, false) }}
+    {{ page.content }}
+  </div>
+{% endblock %}
