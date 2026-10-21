@@ -20,10 +20,13 @@
   <div class="tc-town-banner__band">
     {% if badge %}
       <span class="tc-town-banner__badge">{{ badge }}</span>
-    {% elseif eyebrow %}
-      <p class="tc-town-banner__eyebrow">{{ eyebrow }}</p>
+    {% else %}
+      {# Always printed, so the band is the same height with or without the
+         small label (e.g. on a province's own page). #}
+      <p class="tc-town-banner__eyebrow"{% if not eyebrow %} aria-hidden="true"{% endif %}>{% if eyebrow %}{{ eyebrow }}{% else %}&nbsp;{% endif %}</p>
     {% endif %}
-    <h{{ level }} class="tc-town-banner__title">{{ title }}</h{{ level }}>
+    {# --chars lets town-banner.css shrink long names to fit on one line. #}
+    <h{{ level }} class="tc-town-banner__title" style="--chars: {{ max(title|length, 1) }}">{{ title }}</h{{ level }}>
   </div>
   {# The actions block is always printed so {% embed %} overrides work;
      town-banner.css hides the body and actions when they are empty. #}

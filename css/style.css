@@ -574,112 +574,6 @@ tr.region-title td {
   flex-shrink: 0;
 }
 
-/* --- Hero --- */
-.hero-region {
-  width: 100%;
-  min-height: 60vh;
-  margin-bottom: 4rem;
-  display: grid;
-  color: #fff;
-  position: relative;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  overflow: hidden;
-  --hero-pad: clamp(1rem, 2vw + 0.5rem, 2rem);
-  --parallax-bleed: 6rem;
-  align-items: normal;
-  justify-content: normal;
-}
-
-.hero-region::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 1;
-  pointer-events: none;
-}
-
-.hero-region .hero-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: rgba(0,0,0,0.45);
-}
-
-.hero-media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-  will-change: transform;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  top: calc(-1 * var(--parallax-bleed));
-  bottom: calc(-1 * var(--parallax-bleed));
-}
-
-.hero-media picture,
-.hero-media img,
-.hero-media .hero-image {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-}
-
-.hero-region .hero-content {
-  position: relative;
-  width: 100%;
-  z-index: 2;
-  min-height: inherit;
-  align-content: stretch;
-  display: flex !important;
-  flex-direction: column;
-}
-
-.hero-region .hero-content .block-page-title-block {
-  margin-top: auto;
-  margin-bottom: auto;
-  align-self: center;
-  text-align: center;
-  width: 100%;
-  padding-left: var(--hero-pad, 1rem);
-  padding-right: var(--hero-pad, 1rem);
-}
-
-.hero-region .hero-content h1.title {
-  position: static !important;
-  top: auto !important;
-  left: auto !important;
-  transform: none !important;
-  margin: 0;
-}
-
-.hero-region .hero-content > .hero-bottom,
-.hero-region .hero-content > .align-bottom,
-.hero-region .hero-content > .hero-text-overlay {
-  margin-top: auto;
-}
-
-/* Hero term badge */
-.hero-term {
-  position: absolute;
-  left: 50%;
-  top: calc(50% + 2.5rem);
-  transform: translateX(-50%);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 2;
-  pointer-events: none;
-}
-
 .term-badge {
   display: flex;
   flex-direction: column;
@@ -727,69 +621,6 @@ tr.region-title td {
   }
   .category-icon {
     font-size: 1.8rem;
-  }
-}
-
-/* Mobile hero */
-@media (max-width: 767.98px) {
-  .hero-region {
-    min-height: 45vh;
-    margin-bottom: 2rem;
-  }
-
-  .hero-region[data-hero-fit="scale"] {
-    position: relative;
-    min-height: auto;
-    height: auto;
-    aspect-ratio: 16 / 9;
-    display: block;
-  }
-
-  .hero-region[data-hero-fit="scale"] .hero-media,
-  .hero-region[data-hero-fit="scale"] .hero-media img,
-  .hero-region[data-hero-fit="scale"] .hero-media picture {
-    position: static;
-    inset: auto;
-    z-index: 0;
-    overflow: visible;
-    pointer-events: auto;
-    will-change: auto;
-    transform: none;
-    width: 100%;
-    height: auto;
-    max-width: 100%;
-    display: block;
-    object-fit: contain;
-    object-position: center center;
-  }
-
-  .hero-region[data-hero-fit="scale"]::before,
-  .hero-region[data-hero-fit="scale"] .hero-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background: rgba(0,0,0,0.35);
-  }
-
-  .hero-region[data-hero-fit="scale"] .hero-content {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 1.5rem 1rem;
-  }
-
-  .hero-region .hero-content h1 {
-    font-size: clamp(1.75rem, 5vw, 2.5rem);
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  }
-
-  .hero-region.hero-scale-active {
-    overflow: visible;
   }
 }
 
@@ -2117,134 +1948,66 @@ a:hover .user-picture img,
 
 
 /* =========================================================
-   BOOTSTRAP BUTTON
+   PROVINCE PILL (.province-btn <code>)
+   A white pill with the province colour as a dot before the name,
+   as in the app design. The dot colour comes from --province, set
+   per province code below. Dark text on white passes WCAG AA.
    ========================================================= */
 
-.province-btn {
-  display: inline-block;
-
-  white-space: nowrap;
-
+.province-btn,
+.province-btn.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.375rem 0.875rem 0.375rem 0.625rem;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  background: #fff;
+  color: #212529;
   font-weight: 600;
-
-  color: #ffffff;
   text-decoration: none;
-
+  white-space: nowrap;
   background-image: none;
-
-  transition:
-    filter 0.15s ease,
-    box-shadow 0.15s ease;
+  margin: 0.2rem 0.1rem;
+  transition: border-color 0.15s ease;
 }
 
+.province-btn::before {
+  content: "";
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--province, #adb5bd);
+}
 
-/* Keep the classic map colours flat and uncomplicated */
-
-/* Text colour comes from the province rules below (--tc-*-ink), which
-   follow this rule and so also apply on hover and focus. */
 .province-btn:hover,
-.province-btn:focus {
+.province-btn:focus,
+.province-btn.btn:hover,
+.province-btn.btn:focus {
+  border-color: var(--province, #adb5bd);
+  background: #fff;
+  color: #212529;
   text-decoration: none;
-  filter: brightness(0.92);
 }
 
-
-/* =========================================================
-   TERRITORIES
-   ========================================================= */
-
-.province-btn.yt {
-  background-color: var(--tc-yukon);
-  border-color: var(--tc-yukon);
-  color: var(--tc-yukon-ink);
+.province-btn:focus-visible {
+  outline: 3px solid var(--bs-primary, #c71c1c);
+  outline-offset: 2px;
 }
 
-.province-btn.nt {
-  background-color: var(--tc-northwest-territories);
-  border-color: var(--tc-northwest-territories);
-  color: var(--tc-northwest-territories-ink);
-}
-
-.province-btn.nu {
-  background-color: var(--tc-nunavut);
-  border-color: var(--tc-nunavut);
-  color: var(--tc-nunavut-ink);
-}
-
-
-/* =========================================================
-   WESTERN CANADA
-   ========================================================= */
-
-.province-btn.bc {
-  background-color: var(--tc-british-columbia);
-  border-color: var(--tc-british-columbia);
-  color: var(--tc-british-columbia-ink);
-}
-
-.province-btn.ab {
-  background-color: var(--tc-alberta);
-  border-color: var(--tc-alberta);
-  color: var(--tc-alberta-ink);
-}
-
-.province-btn.sk {
-  background-color: var(--tc-saskatchewan);
-  border-color: var(--tc-saskatchewan);
-  color: var(--tc-saskatchewan-ink);
-}
-
-.province-btn.mb {
-  background-color: var(--tc-manitoba);
-  border-color: var(--tc-manitoba);
-  color: var(--tc-manitoba-ink);
-}
-
-
-/* =========================================================
-   CENTRAL CANADA
-   ========================================================= */
-
-.province-btn.on {
-  background-color: var(--tc-ontario);
-  border-color: var(--tc-ontario);
-  color: var(--tc-ontario-ink);
-}
-
-.province-btn.qc {
-  background-color: var(--tc-quebec);
-  border-color: var(--tc-quebec);
-  color: var(--tc-quebec-ink);
-}
-
-
-/* =========================================================
-   ATLANTIC CANADA
-   ========================================================= */
-
-.province-btn.nb {
-  background-color: var(--tc-new-brunswick);
-  border-color: var(--tc-new-brunswick);
-  color: var(--tc-new-brunswick-ink);
-}
-
-.province-btn.pe {
-  background-color: var(--tc-prince-edward-island);
-  border-color: var(--tc-prince-edward-island);
-  color: var(--tc-prince-edward-island-ink);
-}
-
-.province-btn.ns {
-  background-color: var(--tc-nova-scotia);
-  border-color: var(--tc-nova-scotia);
-  color: var(--tc-nova-scotia-ink);
-}
-
-.province-btn.nl {
-  background-color: var(--tc-newfoundland-labrador);
-  border-color: var(--tc-newfoundland-labrador);
-  color: var(--tc-newfoundland-labrador-ink);
-}
+.province-btn.yt { --province: var(--tc-yukon); }
+.province-btn.nt { --province: var(--tc-northwest-territories); }
+.province-btn.nu { --province: var(--tc-nunavut); }
+.province-btn.bc { --province: var(--tc-british-columbia); }
+.province-btn.ab { --province: var(--tc-alberta); }
+.province-btn.sk { --province: var(--tc-saskatchewan); }
+.province-btn.mb { --province: var(--tc-manitoba); }
+.province-btn.on { --province: var(--tc-ontario); }
+.province-btn.qc { --province: var(--tc-quebec); }
+.province-btn.nb { --province: var(--tc-new-brunswick); }
+.province-btn.pe { --province: var(--tc-prince-edward-island); }
+.province-btn.ns { --province: var(--tc-nova-scotia); }
+.province-btn.nl { --province: var(--tc-newfoundland-labrador); }
 
 /* =========================================================
    PAGE PROVINCE

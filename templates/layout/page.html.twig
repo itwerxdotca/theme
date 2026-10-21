@@ -88,10 +88,6 @@
 
 <main role="main">
   <a id="main-content" tabindex="-1"></a>
-{# Hero region #}
-  {% if attribute(page, 'hero') is not empty %}
-    {{ attribute(page, 'hero') }}
-  {% endif %}
 
   {# Breadcrumb #}
   {% if page.breadcrumb %}

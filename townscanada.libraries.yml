@@ -60,10 +60,6 @@ ghost-autocomplete:
     js:
       js/ghost-autocomplete.js: {}
 
-hero-parallax:
-      js:
-        js/parallax.js: {}
-
 taxonomy-menu:
         js:
           js/taxonomy-menu-reparent.js: {}
