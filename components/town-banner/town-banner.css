@@ -12,6 +12,8 @@
 }
 
 .tc-town-banner__band {
+  /* Lets the title size itself to the band's width (cqi units below). */
+  container-type: inline-size;
   padding: 16px 16px 14px;
   background: var(--province, #e9ecef);
   color: var(--province-ink, #212529);
@@ -38,20 +40,47 @@
   text-transform: uppercase;
 }
 
+/* The name stays on one line in a fixed-height line box, so the band is
+   the same height for every town and province. Long names shrink to fit:
+   Courier is monospaced (each letter 0.6em wide), so the size that fits
+   is the band width divided by (letters x 0.62); --chars comes from the
+   template. Anything still too long ends in an ellipsis. */
 .tc-town-banner .tc-town-banner__title {
+  height: 2.75rem;
   margin: 2px 0 0;
   max-width: none;
+  overflow: hidden;
   font-family: "Courier New", Courier, monospace;
-  font-size: 2.125rem; /* 34px */
+  font-size: min(2.125rem, calc(100cqi / (var(--chars, 10) * 0.62))); /* up to 34px */
   font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  line-height: 2.75rem;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: inherit;
 }
 
-h2.tc-town-banner__title,
-h3.tc-town-banner__title {
-  font-size: 1.875rem; /* 30px */
+.tc-town-banner h2.tc-town-banner__title,
+.tc-town-banner h3.tc-town-banner__title {
+  font-size: min(1.875rem, calc(100cqi / (var(--chars, 10) * 0.62))); /* up to 30px */
+}
+
+/* Town and province pages, every screen size: the band's colour runs to
+   both edges of the screen while the name stays lined up with the page
+   content. The colour is a box-shadow spread sideways (clip-path stops
+   it spreading up and down); shadows never cause sideways scrolling.
+   .tc-town is the wrapper in taxonomy-term--canadian-towns.html.twig. */
+.tc-town > .tc-town-banner {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+}
+
+.tc-town > .tc-town-banner .tc-town-banner__band {
+  /* No side padding, so the name lines up with the page text below. */
+  padding-inline: 0;
+  box-shadow: 0 0 0 100vmax var(--province, #e9ecef);
+  clip-path: inset(0 -100vmax);
 }
 
 .tc-town-banner__body {

@@ -3,10 +3,9 @@
  * @file
  * Front page: the Discover home screen.
  *
- * The same page as page.html.twig, with the screen title and the search
- * box (which opens the existing search modal) above the front page's
- * content. Blocks placed in the Content region follow underneath; give
- * their views the CSS class "tc-place-list" or "tc-town-tiles" to show
+ * The same page as page.html.twig, with the screen title and the
+ * Town search block (helper_module) above the front page's content.
+ * Blocks placed in the Content region follow underneath; give their views the CSS class "tc-place-list" or "tc-town-tiles" to show
  * them as the design's place rows or town tiles.
  */
 #}
@@ -15,7 +14,18 @@
 {% block main_content %}
   <div class="tc-screen">
     <h1 class="tc-screen__title">{{ 'Where to next?'|t }}</h1>
-    {{ include('townscanada:search-trigger', {}, false) }}
+    {# Town search block from helper_module: Province, then Town (switched
+       on once a province is picked), then Search, which goes to the town's
+       page. The wrappers match the search modal so it has the same look. #}
+    <div class="tc-front-search modal-content border-0">
+      <div class="modal-body">
+        <div class="tab-content">
+          <div class="tab-pane show active">
+            {{ drupal_block('helper_module_town_search', {label_display: false}) }}
+          </div>
+        </div>
+      </div>
+    </div>
     {{ page.content }}
   </div>
 {% endblock %}

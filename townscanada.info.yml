@@ -23,7 +23,6 @@ components:
     townscanada: components
 regions:
   header: 'Header (inside the floating header, under the navigation bar)'
-  hero: Hero
   breadcrumb: Breadcrumbs
   content: 'Main content'
   sidebar_first: 'Sidebar first'

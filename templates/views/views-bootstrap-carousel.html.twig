@@ -70,8 +70,7 @@
             <a href="{{ term_url }}" class="carousel-image-wrapper position-relative text-center d-inline-block text-decoration-none">
               <span class="visually-hidden">{{ term_name }}</span>
               {{ row.image }}
-              <div class="hero-term">
-                <div class="term-badge position-absolute top-50 start-50 translate-middle" style="z-index: 2;">
+              <div class="term-badge position-absolute top-50 start-50 translate-middle" style="z-index: 2;">
                   {% set circle_color = row.field_listing_category_color|striptags|trim|default('#999') %}
                   {% set icon_class = row.field_listing_category_icon|striptags|trim|default('la la-question') %}
                   <div class="category-icon-wrapper">
@@ -81,7 +80,6 @@
                     <i class="{{ icon_class }} category-icon" aria-hidden="true"></i>
                   </div>
                 </div>
-              </div>
             </a>
             {# --- End: Centered Badge over Image --- #}
 
