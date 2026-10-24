@@ -1,8 +1,0 @@
-.ghost-text-autocomplete {
-  color: #aaa;
-  position: absolute;
-  pointer-events: none;
-  user-select: none;
-  z-index: 10;
-  white-space: pre;
-}
