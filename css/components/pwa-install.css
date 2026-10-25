@@ -1,0 +1,25 @@
+/**
+ * Install button (templates/block/pwa-add-to-home-screen.html.twig).
+ *
+ * The pwa_a2hs module's script creates the button itself, with the classes
+ * "button button--primary" rather than Bootstrap's "btn btn-primary", so
+ * it gets the theme's primary button look here (as .btn-primary in
+ * css/style.css).
+ */
+.tc-install > .button--primary {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--bs-primary, #c71c1c);
+  border-radius: var(--bs-border-radius, 0.375rem);
+  background-color: var(--bs-primary, #c71c1c);
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.tc-install > .button--primary:hover,
+.tc-install > .button--primary:active {
+  border-color: #a91515;
+  background-color: #a91515;
+}

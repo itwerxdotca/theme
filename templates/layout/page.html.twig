@@ -429,3 +429,82 @@
   </div>
 
 </div>
+
+
+{# ============================================================
+   GET THE APP MODAL
+   Opened by js/get-app.js: once by itself when the app can be installed
+   and isn't yet, and every time a [data-app-only] link or button is
+   tapped outside the installed app.
+   ============================================================ #}
+{{ attach_library('townscanada/get-app') }}
+<div class="modal fade"
+     id="getAppModal"
+     tabindex="-1"
+     aria-labelledby="getAppModalLabel"
+     aria-hidden="true">
+
+  <div class="modal-dialog modal-dialog-centered">
+
+    <div class="modal-content">
+
+      <div class="modal-header border-0">
+
+        {# Not shown, but screen readers still announce the modal by it. #}
+        <h2 class="modal-title visually-hidden" id="getAppModalLabel">
+          {{ 'Get the Towns Canada app'|t }}
+        </h2>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ 'Close'|t }}">
+        </button>
+
+      </div>
+
+      <div class="modal-body">
+
+        {# The app's home-screen icon, which is also the Install button: when
+           the browser offers to install (Android), js/get-app.js switches it
+           on and a tap opens the browser's install prompt. On iPhone it stays
+           a plain picture. The image is the 192px size the PWA module made
+           from the icon set at /admin/config/services/pwa/manifest; if the
+           icon is replaced there with a file of a different name, update
+           this path. #}
+        <button type="button"
+                class="get-app-icon d-block mx-auto mb-3 p-1 border-0 bg-white rounded-4 shadow"
+                aria-label="{{ 'Install app'|t }}"
+                disabled>
+          <img src="{{ file_url('public://pwa/app-logo-transparent_192x192.png') }}"
+               alt=""
+               width="72"
+               height="72">
+        </button>
+
+        <p class="text-center">
+          {{ 'Discover it on Towns Canada!'|t }}<br>
+          {{ 'Get the app!!'|t }}
+        </p>
+
+        {# Android and desktop Chrome/Edge: the PWA module's Install button
+           (pwa_a2hs). It only appears when the browser offers to install. #}
+        {{ drupal_block('pwa_add_to_home_screen', {
+          label_display: false,
+          intro_text: {value: '', format: 'plain_text'},
+        }) }}
+
+        {# iPhone and iPad: Safari has no install button, so js/get-app.js
+           shows these steps there instead. #}
+        <ol class="get-app-ios d-none mb-0">
+          <li>{{ 'Tap the Share button.'|t }}</li>
+          <li>{{ 'Tap Add to Home Screen.'|t }}</li>
+        </ol>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
