@@ -1800,25 +1800,22 @@ code {
   }
 }
 
-/* Search modal */
-#searchModal .modal-content {
+/* Search and Get the app modals */
+#searchModal .modal-content,
+#getAppModal .modal-content {
   border-radius: 0.5rem;
   border: none;
   box-shadow: 0 4px 32px 0 rgba(0,0,0,0.10);
 }
-#searchModal .modal-header {
+#searchModal .modal-header,
+#getAppModal .modal-header {
   border-bottom: none;
   padding-bottom: 0;
 }
-#searchModal .modal-title {
+#searchModal .modal-title,
+#getAppModal .modal-title {
   font-size: 1.05rem;
   font-weight: 600;
-}
-
-/* Toolbar z-index fix */
-.toolbar-menu-administration {
-  z-index: 10000 !important;
-  position: absolute !important;
 }
 
 /* Listing header text position */
