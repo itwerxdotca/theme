@@ -75,19 +75,18 @@
 
     </div>
   </nav>
-
-  {# Header region: blocks placed in "Header" in Block layout (e.g. an
-     announcement bar). Sits inside the fixed header, so js/header-height.js
-     includes it in the page offset automatically. #}
-  {% if page.header %}
-    <div class="container-xl">
-      {{ page.header }}
-    </div>
-  {% endif %}
 </header>
 
 <main role="main">
   <a id="main-content" tabindex="-1"></a>
+
+  {# Header region: page-level blocks above the breadcrumb, e.g. the Town
+     banner on town and province pages. #}
+  {% if page.header %}
+    <div class="container">
+      {{ page.header }}
+    </div>
+  {% endif %}
 
   {# Breadcrumb #}
   {% if page.breadcrumb %}

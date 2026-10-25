@@ -26,13 +26,6 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
  * Implements hook_preprocess_page().
  */
 function townscanada_preprocess_page(array &$variables) {
-  // Ensure navigation regions always exist.
-  foreach (['nav_branding', 'nav_main', 'nav_additional'] as $region) {
-    if (!isset($variables['page'][$region])) {
-      $variables['page'][$region] = [];
-    }
-  }
-
   // Attach the modal library from the theme.
   // The page differs for anonymous users, so cached copies must too.
   $variables['#cache']['contexts'][] = 'user.roles:anonymous';
@@ -51,12 +44,6 @@ function townscanada_preprocess_page(array &$variables) {
    if (!is_array($variables['menu_tree'])) {
      return;
    }
-
-   // Get all path information for debugging
-   $current_path = \Drupal::service('path.current')->getPath();
-   $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
-   $route_name = \Drupal::routeMatch()->getRouteName();
-   $route_params = \Drupal::routeMatch()->getRawParameters()->all();
 
    // Detect prefix
    $prefix = _townscanada_get_province_town_prefix();
@@ -149,12 +136,6 @@ function townscanada_preprocess_page(array &$variables) {
    // Get current path and alias
    $current_path = \Drupal::service('path.current')->getPath();
    $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
-
-   // Debug logging
-   \Drupal::logger('townscanada')->notice('Breadcrumb hook triggered. Path: @path, Alias: @alias', [
-     '@path' => $current_path,
-     '@alias' => $alias,
-   ]);
 
    // Only process for location-based taxonomy pages
    // Check if alias matches pattern: /province/town/...

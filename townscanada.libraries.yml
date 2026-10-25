@@ -11,7 +11,6 @@ components:
       css/components/tags.css: {}
       css/components/site-header.css: {}
       css/components/listing.css: {}
-      css/components/ghost-autocomplete.css: {}
       css/components/app-screen.css: {}
 
 app-tabbar:
@@ -55,10 +54,6 @@ modal-forms:
     - core/drupal
     - core/once
     - core/drupal.ajax
-
-ghost-autocomplete:
-    js:
-      js/ghost-autocomplete.js: {}
 
 taxonomy-menu:
         js:
