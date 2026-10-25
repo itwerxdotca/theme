@@ -22,7 +22,7 @@ components:
   namespaces:
     townscanada: components
 regions:
-  header: 'Header (inside the floating header, under the navigation bar)'
+  header: 'Header (above the breadcrumb)'
   breadcrumb: Breadcrumbs
   content: 'Main content'
   sidebar_first: 'Sidebar first'

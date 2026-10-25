@@ -65,18 +65,18 @@
   font-size: min(1.875rem, calc(100cqi / (var(--chars, 10) * 0.62))); /* up to 30px */
 }
 
-/* Town and province pages, every screen size: the band's colour runs to
-   both edges of the screen while the name stays lined up with the page
-   content. The colour is a box-shadow spread sideways (clip-path stops
-   it spreading up and down); shadows never cause sideways scrolling.
-   .tc-town is the wrapper in taxonomy-term--canadian-towns.html.twig. */
-.tc-town > .tc-town-banner {
+/* Town banner block (helper-module-town-banner.html.twig), every screen
+   size: the band's colour runs to both edges of the screen while the name
+   stays lined up with the page content. The colour is a box-shadow spread
+   sideways (clip-path stops it spreading up and down); shadows never
+   cause sideways scrolling. */
+.tc-town-banner--full {
   overflow: visible;
   border: 0;
   border-radius: 0;
 }
 
-.tc-town > .tc-town-banner .tc-town-banner__band {
+.tc-town-banner--full .tc-town-banner__band {
   /* No side padding, so the name lines up with the page text below. */
   padding-inline: 0;
   box-shadow: 0 0 0 100vmax var(--province, #e9ecef);

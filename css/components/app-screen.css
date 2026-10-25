@@ -25,9 +25,3 @@
   letter-spacing: -0.01em;
   color: var(--bs-heritage-indigo, #191957);
 }
-
-/* Search box and province chips sit closer to the title than sections do. */
-.tc-screen__title + .tc-search-trigger,
-.tc-search-trigger + .tc-province-chips {
-  margin-top: -6px;
-}

@@ -1,0 +1,29 @@
+{#
+/**
+ * @file
+ * The "Town banner" view (tc_town_banner) as a town banner
+ * (townscanada:town-banner): the town or province being viewed, in its
+ * province colour, full width of the screen.
+ *
+ * Used by any view display whose CSS class includes "tc-town-banner".
+ * Fields (by machine name in the view):
+ * - name: the term's name.
+ * - field_province_code: the two-letter code (on, bc ...).
+ * - name_1: the parent term's name, i.e. the province, through the
+ *   "Parent term" relationship. Empty on a province's own page.
+ */
+#}
+{% set decode = {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&nbsp;': ' '} %}
+{% set title = fields.name.content|render|striptags|replace(decode)|trim %}
+{% set code = fields.field_province_code.content|render|striptags|trim|lower %}
+{% set province = fields.name_1.content|render|striptags|replace(decode)|trim %}
+
+{% if title is not empty %}
+  {{ include('townscanada:town-banner', {
+    attributes: create_attribute({'class': ['tc-town-banner--full']}),
+    title: title,
+    heading_level: 2,
+    eyebrow: province,
+    province_code: code,
+  }, false) }}
+{% endif %}
