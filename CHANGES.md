@@ -1,4 +1,164 @@
-# Changes in this cleanup (2026-10-12)
+# Changes
+
+Newest first. Overall, from 2026-10-12 (`4332ae6`) to 2026-10-25
+(`f9511b8`): 84 files changed, 1,477 lines added, 6,468 removed.
+`townscanada.theme` went from 892 to 382 lines; the theme has 38 templates,
+down from 62.
+
+## Site setup this theme now relies on
+
+These live in the site's configuration or in `helper_module`, not in this
+repository. A fresh site needs them for the theme to work as described.
+
+- **`helper_module`**: the Town search block (`helper_module_town_search`),
+  printed on the front page by `page--front.html.twig`.
+- **View `tc_town_banner`** and its block `townscanada_tc_town_banner` in the
+  Header region: the town banner on town and province pages. Created with
+  `drush ev` and `View::create()` on 2026-10-25.
+- **PWA module** (`pwa` 2.1.0-beta7) with the `access pwa` permission
+  granted to anonymous and authenticated users (otherwise `/manifest.json`
+  returns 403), and its **`pwa_a2hs`** submodule enabled for the Install
+  button.
+- **Service worker cache exclusions** (PWA settings): `admin/.*`,
+  `user/reset/.*`, `/node/.*`, `user$`, `user/.*`, `flag/.*`, with
+  `cache_version` 2. Offline page: `/offline`.
+
+## 2026-10-25: "Get the app" modal (Stage 1)
+
+- `page.html.twig`: a "Get the app" modal next to the search and login
+  modals. The app icon (`public://pwa/app-logo-transparent_192x192.png`) on a
+  white rounded tile with a shadow, then "Discover it on Towns Canada! / Get
+  the app!!". On iPhone and iPad, the two Share steps. The modal title is
+  visually hidden but still read by screen readers.
+- `js/get-app.js` (new): never runs in the installed app. Opens the modal by
+  itself once per phone or tablet: on Android when the browser offers to
+  install, on iPhone straight away. Never by itself on a computer. Opens
+  every time a link or button marked `data-app-only` is tapped. On Android
+  the icon is the Install button: it presses the `pwa_a2hs` block's own
+  button, which is hidden.
+- `templates/block/pwa-add-to-home-screen.html.twig` (new) and
+  `css/components/pwa-install.css` (new): the `pwa_a2hs` block's markup,
+  keeping the classes its script needs, and hiding its own button.
+- `townscanada.libraries.yml`: `pwa-install` and `get-app` libraries.
+- `css/style.css`: the search modal's rules (rounded corners, shadow, title
+  size) also apply to `#getAppModal`. The "Toolbar z-index fix" rule for
+  `.toolbar-menu-administration` was removed; the admin toolbar works
+  without it.
+
+## 2026-10-25: Template cleanup, batch 2
+
+Templates compared with the base theme (`bootstrap` 5.0.2) file by file.
+
+- Removed copies identical to the base theme's, or different only in
+  comments or whitespace: `field/time`, `field/field--comment`,
+  `field/field`, `field/image-formatter`, `views/views-view-summary`,
+  `views/views-view-unformatted`, `views/views-view-list`.
+- Removed overrides that caused problems:
+  - `layout/html.html.twig`: printed the literal class `body_classes` and a
+    stray `"` inside `<body>`, used `b5_*` variables from the separate
+    bootstrap5 theme, and had the skip link commented out. The base
+    theme's version is used now.
+  - `content/comment.html.twig`, `field/file-link`, `file-audio`,
+    `file-video`: attached `bootstrap5/indented` and `bootstrap5/file`,
+    libraries that don't exist on this site.
+  - `views/views-view-table.html.twig`: dropped the base theme's
+    `table-responsive` wrapper, so wide tables overflowed on phones.
+  - `user/username.html.twig`: printed `account_name`, which nothing on the
+    site provides, so linked usernames were empty. The base theme prints
+    `name`, which Realname still sets.
+  - `layout/maintenance-page.html.twig`: the base theme's version is used.
+- Kept on purpose: `page.html.twig`, `block--system-branding-block`,
+  `links--inline` (hides comment links from anonymous visitors),
+  `region.html.twig` (`<div>` rather than `<section>`), `views-view.html.twig`
+  (no Bootstrap `row` on every View), `views-view-grid`,
+  `views-exposed-form`, `views-mini-pager`, and the node title, author and
+  created field templates (Drupal core's current versions).
+- Checked: Bootstrap loads once, from the CDN in `global-styling`. The base
+  theme's local copy isn't attached.
+
+## 2026-10-24/25: Template cleanup, batch 1, and the town banner as a block
+
+- Removed unused files: `js/be_comp_rating.min.js`,
+  `js/be_ui_animations.min.js`, `js/be_ui_icons.min.js`,
+  `js/ghost-autocomplete.js` and `css/components/ghost-autocomplete.css`
+  (the library was never attached), `templates/region/header.html.twig`
+  (not a valid template name), the two `.html.twig.twig` footer templates,
+  `templates/components/category-badge.html.twig`, the debug
+  `templates/field/image.html.twig`, and identical copies of `user.html.twig`,
+  `field--text`, `field--text-long`, `field--text-with-summary`,
+  `link-formatter-link-separate`, `image-style`, `views-view-grouping` and
+  `views-view-summary-unformatted`.
+- Removed unused components: `action`, `bucket-progress`, `province-chip`,
+  `search-trigger`, `trip-card` (built ahead of their stages) and `title`.
+- `townscanada.theme`: removed the loop for `nav_branding`, `nav_main` and
+  `nav_additional` (regions that don't exist), unused debug variables in
+  the taxonomy menu preprocess, and the "Breadcrumb hook triggered" log
+  entry written on every page. The `use` statements were kept.
+- `townscanada.libraries.yml`: removed the `ghost-autocomplete` library and
+  its CSS line.
+- `.nova/` is no longer tracked, and is listed in `.gitignore`.
+- **Town banner as a block.** `taxonomy-term--canadian-towns.html.twig` no
+  longer prints the banner. The View `tc_town_banner` does, through
+  `templates/views/views-view-fields--tc-town-banner.html.twig` (new), which
+  Views picks by the View's name. The full-width colour now comes from the
+  class `tc-town-banner--full` in `town-banner.css`.
+- **Header region moved.** `page.html.twig` prints the Header region at the
+  top of `<main>`, above the breadcrumb, instead of inside the floating
+  header. `townscanada.info.yml` labels it "Header (above the breadcrumb)".
+  The floating navigation bar is unchanged.
+
+## 2026-10-20: Hero removed, province colours, town banner, front page search
+
+- **Hero removed** entirely: the `hero` region, `region--hero.html.twig`,
+  `field--field-hero-image.html.twig`, the `hero_responsive` responsive
+  image template, `js/parallax.js` and its library, the `hero-text-overlay`
+  component, the `.hero-term` wrapper in `views-bootstrap-carousel`,
+  `views-view-fields--listings--block-1.html.twig`, all hero CSS, and the
+  hero functions in `townscanada.theme` (`townscanada_file_url`,
+  `_townscanada_extract_image_from_field`, `townscanada_preprocess_block`,
+  `townscanada_preprocess_region`). `field_hero_image` is no longer
+  excluded in the listing and point-of-interest templates. Blocks that were
+  in the hero region were left disabled in Header.
+- **Province pills**: a white pill with the province's colour dot and its
+  name.
+- **Province colour on province pages**: `_townscanada_term_province_code()`
+  finds the code from the term, its parents, or the province name, so
+  province pages get their colour too. The small province name above the
+  title is left off on a province's own page.
+- **Town banner**: the same height for every town and province (long
+  names shrink to fit on one line), and the colour runs the full width of
+  the screen at every size.
+- **Front page**: the search box that opened the search modal was replaced
+  with the Town search block from `helper_module`.
+- Removed `css/style-2.css` and `townscanada.theme.old`.
+
+## 2026-10-17: Stage 2 app layout
+
+- Components added: `icon`, `place-row`, `section`, `town-banner`,
+  `town-tile`, and others since removed (see batch 1).
+- `page--front.html.twig`: the Discover screen ("Where to next?") above the
+  front page's content.
+- `menu--mobile-tabs.html.twig` and `css/components/app-tabbar.css`: the
+  bottom tab bar on phones, from the "Mobile tabs" menu.
+- `taxonomy-term--canadian-towns.html.twig`: town pages in their province
+  colour.
+- Views templates for place rows and town tiles, chosen by the CSS class
+  `tc-place-list` or `tc-town-tiles` on a View display.
+- `townscanada.theme`: `has-province province-<code>` body classes, province
+  helpers, and the Views template suggestions.
+
+---
+
+**Note on the entry below.** The 2026-10-12 entry describes a cleanup that
+was only partly applied to this repository. Several items it lists as done
+were still in the theme until the batches above, for example the debug
+`image.html.twig`, the broken `<body>` tag in `html.html.twig`,
+`townscanada_system_breadcrumb_alter()` (still in the theme),
+`style-2.css` and the
+`be_*.min.js` files. Read it as history, not as a description of the
+current theme.
+
+## 2026-10-12: Cleanup (partly applied, see the note above)
 
 Based on `itwerxdotca/theme` at commit `8cde179`.
 42 files changed: 648 lines added, 4,665 removed.
@@ -166,7 +326,7 @@ Based on `itwerxdotca/theme` at commit `8cde179`.
 - Stale `.css.map` files, `.DS_Store`, `.nova/`.
 
 ## Checks run
-- `php -l townscanada.theme`: no syntax errors (PHP 8.3).
+- `php -l townscanada.theme`: no syntax errors (PHP 8.4).
 - All Twig templates parse with Twig 3.14. The only failure is
   `views-mini-pager`, and only because the linter doesn't know Drupal's
   `{% trans %}` tag. The original theme gives the same result.
