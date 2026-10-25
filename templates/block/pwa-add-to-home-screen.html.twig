@@ -1,0 +1,20 @@
+{#
+/**
+ * @file
+ * Install button block: "PWA Add to Home Screen" (pwa_a2hs module), shown
+ * inside the "Get the app" modal (page.html.twig).
+ *
+ * Hidden until the browser offers to install the app. The module gives this
+ * div the classes "pwa-a2hs hidden"; when the browser fires its install
+ * prompt event, the module's script swaps them for "pwa-a2hs-active show"
+ * and appends the Install button (class "button button--primary") to this
+ * div. So keep {{ attributes }} on the div, or the button never appears.
+ * Button styling: css/components/pwa-install.css.
+ */
+#}
+{{ attach_library('townscanada/pwa-install') }}
+<div{{ attributes.addClass('tc-install') }}>
+  {% if intro_text|render|striptags|trim is not empty %}
+    <div class="tc-install__intro">{{ intro_text }}</div>
+  {% endif %}
+</div>

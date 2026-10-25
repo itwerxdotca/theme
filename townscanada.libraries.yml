@@ -18,6 +18,19 @@ app-tabbar:
     component:
       css/components/app-tabbar.css: {}
 
+pwa-install:
+  css:
+    component:
+      css/components/pwa-install.css: {}
+
+get-app:
+  js:
+    js/get-app.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - townscanada/bootstrap-js
+
 header-height:
   js:
     js/header-height.js: {}
