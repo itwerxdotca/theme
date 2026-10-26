@@ -58,8 +58,11 @@ function townscanada_preprocess_page(array &$variables) {
   * Get the /province/town prefix.
   */
  function _townscanada_get_province_town_prefix() {
-   $current_path = \Drupal::service('path.current')->getPath();
-   $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+   // The address as requested, before custom routing rewrites it (category
+   // pages are rewritten to /town-listings-router/{tid}/...). If someone
+   // opens an internal path that has an alias, use the alias instead.
+   $requested = \Drupal::request()->getPathInfo();
+   $alias = \Drupal::service('path_alias.manager')->getAliasByPath($requested);
 
    // Parse the alias
    $segments = explode('/', trim($alias, '/'));
@@ -207,8 +210,9 @@ function townscanada_preprocess_html(array &$variables): void {
 /**
  * Returns the province code (on, bc ...) for the page being viewed.
  *
- * Reads field_province_code from the town term being viewed, or from the
- * first town in a node's field_canadian_towns.
+ * Reads field_province_code from the town term being viewed, from the
+ * first town in a node's field_canadian_towns, or from the town on a
+ * category page (/town-listings-router/{town ID}/...).
  *
  * @return string|null
  *   A two-letter province or territory code, or NULL when the page has none.
@@ -227,6 +231,12 @@ function _townscanada_current_province_code(): ?string {
     && $node->hasField('field_canadian_towns')
     && !$node->get('field_canadian_towns')->isEmpty()) {
     $town = $node->get('field_canadian_towns')->entity;
+  }
+
+  // Category pages: /province/town/category/... is routed internally as
+  // /town-listings-router/{town term ID}/...
+  if (!$town && preg_match('#^/town-listings-router/(\d+)#', \Drupal::service('path.current')->getPath(), $m)) {
+    $town = Term::load($m[1]);
   }
 
   return $town ? _townscanada_term_province_code($town) : NULL;

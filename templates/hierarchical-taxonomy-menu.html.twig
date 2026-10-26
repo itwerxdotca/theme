@@ -1,7 +1,11 @@
 {# hierarchical-taxonomy-menu.html.twig #}
 
 {# hierarchical-taxonomy-menu.html.twig #}
-{{ attach_library('townscanada/taxonomy-menu') }}
+{# Town pages only. townscanada_preprocess_hierarchical_taxonomy_menu() sets
+   prefix to /province/town when the address has a province and a town, and
+   leaves it empty on a province's own page (one segment), so the menu
+   prints nothing there. Read before the line below reassigns prefix. #}
+{% set on_town_page = prefix is not empty %}
 {# Get current path #}
 {% set current_path = request.pathInfo %}
 {% set path_parts = current_path|split('/') %}
@@ -28,7 +32,7 @@
           {% if prefix and not item.custom_url %}
             {% set final_url = prefix ~ final_url %}
           {% endif %}
-          <a href="{{ final_url }}" class="nav-link dropdown-toggle {% if route_tid == item.tid %}active{% endif %}" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="{{ item.name }}">
+          <a href="{{ final_url }}" class="nav-link dropdown-toggle {% if route_tid == item.tid %}active{% endif %}" data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="outside" aria-expanded="false" title="{{ item.name }}">
             {% if item.field_listing_category_icon and item.field_listing_category_color %}
               {% set circle_color = item.field_listing_category_color|default('#999') %}
               {% set icon_class = item.field_listing_category_icon|default('la la-question') %}
@@ -104,9 +108,11 @@
   {% endfor %}
 {% endmacro %}
 {% import _self as macros %}
+{% if on_town_page %}
 <ul class="menu hierarchical-taxonomy-menu nav">
   {{ macros.menu_links(menu_tree, route_tid, 0, max_depth, collapsible, prefix) }}
 </ul>
+{% endif %}
 <!-- DEBUG: Current path: {{ current_path }} -->
 <!-- DEBUG: Path parts: {{ path_parts|join(',') }} -->
 <!-- DEBUG: Prefix: {{ prefix }} -->

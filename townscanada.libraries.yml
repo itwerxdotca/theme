@@ -67,9 +67,3 @@ modal-forms:
     - core/drupal
     - core/once
     - core/drupal.ajax
-
-taxonomy-menu:
-        js:
-          js/taxonomy-menu-reparent.js: {}
-        dependencies:
-          - townscanada/bootstrap-js
