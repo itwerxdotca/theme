@@ -200,6 +200,16 @@ function townscanada_preprocess_flag(&$variables) {
  * to var(--province) and var(--province-ink).
  */
 function townscanada_preprocess_html(array &$variables): void {
+  // The base theme's html.html.twig puts "node--type-<type>" on <body>,
+  // the same class the content itself carries, so every CSS rule written
+  // for a content type (e.g. .node--type-listing ... .field--name-body)
+  // also hit blocks and the footer on that page. Use "page-node-type-<type>"
+  // on <body> instead, as the theme did before.
+  if (!empty($variables['node_type'])) {
+    $variables['attributes']['class'][] = 'page-node-type-' . \Drupal\Component\Utility\Html::getClass($variables['node_type']);
+    $variables['node_type'] = '';
+  }
+
   $code = _townscanada_current_province_code();
   if ($code !== NULL) {
     $variables['attributes']['class'][] = 'has-province';

@@ -49,7 +49,7 @@
           {% if prefix and not item.custom_url %}
             {% set final_url = prefix ~ final_url %}
           {% endif %}
-          <a href="{{ final_url }}" class="dropdown-item dropdown-toggle {% if route_tid == item.tid %}active{% endif %}">
+          <a href="{{ final_url }}" class="dropdown-item dropdown-toggle {% if route_tid == item.tid %}active{% endif %}" data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="outside" aria-expanded="false">
             {% if item.field_listing_category_icon and item.field_listing_category_color %}
               {% set circle_color = item.field_listing_category_color|default('#999') %}
               {% set icon_class = item.field_listing_category_icon|default('la la-question') %}

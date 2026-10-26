@@ -316,64 +316,7 @@ span.office-hours__item-slots {
 .leaflet-popup-content br {
   line-height: 0;
 }
-.node--type-listing:not(.teaser) .content > .field.field--name-body:before,
-.node--type-listing:not(.teaser) .content > .field.field--name-field-website:before,
-.node--type-listing:not(.teaser) .content > .field.field--name-field-open-time:before,
-.node--type-listing:not(.teaser) .content > .field.field--name-field-price-range:before,
-.node--type-listing:not(.teaser) .content > .field.field--name-field-phone:before,
-.node--type-listing:not(.teaser) .content > .field.field--name-field-highlights:before,
-.node--type-listing:not(.teaser) .content > .field.field--name-field-locations:before,
-.node--type-listing:not(.teaser) .content > .field.field--name-field-photos:before,
-.node--type-listing:not(.teaser) .content > .field.field--name-field-tags:before,
-.node--type-listing:not(.teaser) .content > .field.field--name-field-category:before,
-.node--type-listing:not(.teaser) .content > .field.field--name-field-video:before {
-  font-family: 'Font Awesome 5 Free';
-  font-weight: bold;
-  font-size: 1.5rem;
-  position: absolute;
-  left: 0;
-  background: var(--main-color);
-  color: #fff;
-  padding: 18px 0px;
-  width: 60px;
-  height: 60px;
-  text-align: center;
-  border-radius: 8px;
-  content: "\f303";
-}
-.node--type-listing .content > .field.field--name-body:before {
-  content: "\f303";
-}
-.node--type-listing .content > .field.field--name-field-website:before {
-  content: "\f03e";
-}
-.node--type-listing .content > .field.field--name-field-open-time:before {
-  content: "\f017";
-}
-.node--type-listing .content > .field.field--name-field-phone:before {
-    content: "\f095";
-}
-.node--type-listing .content > .field.field--name-field-price-range:before {
-  content: "\f155";
-}
-.node--type-listing .content > .field.field--name-field-highlights:before {
-  content: "\f0eb";
-}
-.node--type-listing .content > .field.field--name-field-locations:before {
-  content: "\f015";
-}
-.node--type-listing .content > .field.field--name-field-photos:before {
-  content: "\f03e";
-}
-.node--type-listing .content > .field.field--name-field-tags:before {
-  content: "\f02c";
-}
-.node--type-listing .content > .field.field--name-field-category:before {
-  content: "\f02d";
-}
-.node--type-listing .content > .field.field--name-field-video:before {
-  content: "\f03d";
-}
+/* Listing field icons: see "Listing field icons" in css/style.css. */
 
 .field--name-field-highlights .field__items .field--item,
 .field--name-field-photos .field__items .field--item,

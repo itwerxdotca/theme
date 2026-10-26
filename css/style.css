@@ -1148,20 +1148,22 @@ span.office-hours__item-slots {
   height: 60px;
   text-align: center;
   border-radius: 8px;
-  content: "\f303";
 }
 
-.node--type-listing .content > .field.field--name-body:before        { content: "\f303"; }
-.node--type-listing .content > .field.field--name-field-website:before   { content: "\f0ac"; }
-.node--type-listing .content > .field.field--name-field-open-time:before  { content: "\f017"; }
-.node--type-listing .content > .field.field--name-field-phone:before      { content: "\f095"; }
-.node--type-listing .content > .field.field--name-field-price-range:before { content: "\f155"; }
-.node--type-listing .content > .field.field--name-field-highlights:before { content: "\f0eb"; }
-.node--type-listing .content > .field.field--name-field-locations:before  { content: "\f015"; }
-.node--type-listing .content > .field.field--name-field-photos:before     { content: "\f03e"; }
-.node--type-listing .content > .field.field--name-field-tags:before       { content: "\f02c"; }
-.node--type-listing .content > .field.field--name-field-category:before   { content: "\f02d"; }
-.node--type-listing .content > .field.field--name-field-video:before      { content: "\f03d"; }
+/* Each field's own icon. Same selector weight as the shared rule above
+   (:not(.teaser) included), so these win instead of every icon being
+   the description's pencil. */
+.node--type-listing:not(.teaser) .content > .field.field--name-body:before        { content: "\f303"; }
+.node--type-listing:not(.teaser) .content > .field.field--name-field-website:before   { content: "\f0ac"; }
+.node--type-listing:not(.teaser) .content > .field.field--name-field-open-time:before  { content: "\f017"; }
+.node--type-listing:not(.teaser) .content > .field.field--name-field-phone:before      { content: "\f095"; }
+.node--type-listing:not(.teaser) .content > .field.field--name-field-price-range:before { content: "\f155"; }
+.node--type-listing:not(.teaser) .content > .field.field--name-field-highlights:before { content: "\f0eb"; }
+.node--type-listing:not(.teaser) .content > .field.field--name-field-locations:before  { content: "\f015"; }
+.node--type-listing:not(.teaser) .content > .field.field--name-field-photos:before     { content: "\f03e"; }
+.node--type-listing:not(.teaser) .content > .field.field--name-field-tags:before       { content: "\f02c"; }
+.node--type-listing:not(.teaser) .content > .field.field--name-field-category:before   { content: "\f02d"; }
+.node--type-listing:not(.teaser) .content > .field.field--name-field-video:before      { content: "\f03d"; }
 
 .field--name-field-highlights .field__items .field--item,
 .field--name-field-photos .field__items .field--item,
@@ -1632,6 +1634,16 @@ code {
   padding-left: 0;
 }
 
+/* Phones and tablets: the row runs from the very left edge of the screen
+   to the right edge, outside the page's side padding, so the first icon
+   sits at the edge and the row slides across the full width. */
+@media (max-width: 991.98px) {
+  .hierarchical-taxonomy-menu.nav {
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+}
+
 /* Desktop: the row is centred (the automatic margins centre it when it
    fits; if it's ever wider than the screen, it starts at the left and
    slides, so no icon is cut off), with the original spacing, and each
@@ -1651,16 +1663,6 @@ code {
   }
   .block-hierarchical-taxonomy-menu .nav-item:last-child {
     margin-right: auto;
-  }
-}
-
-/* Phones and tablets: the row runs from the very left edge of the screen
-   to the right edge, outside the page's side padding, so the first icon
-   sits at the edge and the row slides across the full width. */
-@media (max-width: 991.98px) {
-  .hierarchical-taxonomy-menu.nav {
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
   }
 }
 
@@ -1684,10 +1686,9 @@ code {
   box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
 }
 
-/* Deeper levels are always shown inside the panel, indented under their
-   parent (which stays a link to its own page). */
+/* Deeper levels open inside the panel, indented under their parent, when
+   the parent is tapped or clicked (closed until then). */
 .block-hierarchical-taxonomy-menu .dropdown-menu .dropdown-menu {
-  display: block;
   position: static;
   padding: 0 0 0 1rem;
   margin: 0;
@@ -1717,8 +1718,24 @@ code {
   background-color: #e9ecef;
 }
 
-.block-hierarchical-taxonomy-menu .dropdown-toggle::after {
+.block-hierarchical-taxonomy-menu .nav-link.dropdown-toggle::after {
   display: none;
+}
+
+/* Desktop with a mouse: subcategories with their own subcategories also
+   open on hover (the top-level panels open on hover via js/header-height.js). */
+@media (hover: hover) and (min-width: 992px) {
+  .block-hierarchical-taxonomy-menu .dropdown-menu .dropdown:hover > .dropdown-menu {
+    display: block;
+  }
+}
+
+/* A › after a subcategory that has its own subcategories. */
+.block-hierarchical-taxonomy-menu .dropdown-item.dropdown-toggle::after {
+  content: "\203A";
+  border: 0;
+  margin-left: 0.5rem;
+  vertical-align: 0;
 }
 
    /* Category icons */
