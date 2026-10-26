@@ -70,14 +70,14 @@
     {# No results: the View's own no-results text (if it has any), then the
        button. Logged in: add a listing. Visitors: open the login modal
        (page.html.twig, #loginModal). #}
-    <div class="view-empty">
-      {{ empty }}
-      {% if logged_in %}
-        <a href="{{ path('node.add', {'node_type': 'listing'}) }}" class="btn btn-primary">{{ 'Add Listing'|t }}</a>
-      {% else %}
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">{{ 'Log in to add a listing'|t }}</button>
-      {% endif %}
-    </div>
+  <div class="view-empty">
+     <p class="title">No listings found in {{ view.argument.term_node_tid_depth.getTitle() }}.</p>
+     {% if logged_in %}
+       <p class="title"><a href="{{ path('node.add', {'node_type': 'listing'}) }}" class="btn btn-primary">{{ 'Add Listing'|t }}</a></p>
+     {% else %}
+       <p class="title"><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">{{ 'Log in to add a listing'|t }}</button></p>
+     {% endif %}
+   </div>
   {% endif %}
 
   {% if pager %}

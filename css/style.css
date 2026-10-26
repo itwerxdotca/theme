@@ -1654,6 +1654,16 @@ code {
   }
 }
 
+/* Phones and tablets: the row runs from the very left edge of the screen
+   to the right edge, outside the page's side padding, so the first icon
+   sits at the edge and the row slides across the full width. */
+@media (max-width: 991.98px) {
+  .hierarchical-taxonomy-menu.nav {
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+}
+
 /* Subcategory panel: full width, directly under the icons. */
 .block-hierarchical-taxonomy-menu .content > .dropdown-menu,
 .block-hierarchical-taxonomy-menu .nav-item > .dropdown-menu {
