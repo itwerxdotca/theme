@@ -60,14 +60,14 @@
           </button>
 
         {% endif %}
-        {# Shop: tablets and desktop only. On phones the app design puts the
-           shop link in the left offcanvas region instead. #}
-        <span class="border-start mx-1 align-self-stretch text-dark d-none d-md-block" aria-hidden="true"></span>
+        {# Shop: opens shop.townscanada.ca in a new tab (from the home screen
+           app: in the phone's browser). #}
+        <span class="border-start mx-1 align-self-stretch text-dark" aria-hidden="true"></span>
         <a href="https://shop.townscanada.ca"
            target="_blank"
            rel="noopener"
            title="{{ 'Shop Towns Canada (opens in a new tab)'|t }}"
-           class="btn btn-link text-dark p-0 d-none d-md-inline-block"
+           class="btn btn-link text-dark p-0"
            aria-label="{{ 'Shop Towns Canada (opens in a new tab)'|t }}">
           <i class="la la-shopping-cart" aria-hidden="true"></i>
         </a>
