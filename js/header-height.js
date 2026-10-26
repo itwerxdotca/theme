@@ -61,12 +61,32 @@
   Drupal.behaviors.taxonomyMenuPanels = {
   attach: function (context) {
     var desktop = window.matchMedia('(min-width: 992px)');
+    var hoverDesktop = window.matchMedia('(hover: hover) and (min-width: 992px)');
     once('taxonomy-menu-panels', '.hierarchical-taxonomy-menu.nav', context).forEach(function (row) {
     row.querySelectorAll(':scope > .nav-item > [data-bs-toggle="dropdown"]').forEach(function (toggle) {
       var panel = toggle.nextElementSibling;
       if (panel && panel.classList.contains('dropdown-menu')) {
-      bootstrap.Dropdown.getOrCreateInstance(toggle);
+      var dropdown = bootstrap.Dropdown.getOrCreateInstance(toggle);
       row.parentNode.appendChild(panel);
+      // Desktop with a mouse: also open on hover, and close shortly after
+      // the pointer leaves both the icon and its panel (the delay lets
+      // it cross the gap between them).
+      if (hoverDesktop.matches) {
+        var closeTimer;
+        var open = function () {
+        clearTimeout(closeTimer);
+        if (!panel.classList.contains('show')) {
+          dropdown.show();
+        }
+        };
+        var close = function () {
+        closeTimer = setTimeout(function () { dropdown.hide(); }, 200);
+        };
+        [toggle.parentNode, panel].forEach(function (el) {
+        el.addEventListener('mouseenter', open);
+        el.addEventListener('mouseleave', close);
+        });
+      }
       // Desktop: centre the 16rem panel under its icon, kept within
       // the block. Phones: full width (the CSS default).
       toggle.addEventListener('shown.bs.dropdown', function () {
