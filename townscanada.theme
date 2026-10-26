@@ -58,8 +58,11 @@ function townscanada_preprocess_page(array &$variables) {
   * Get the /province/town prefix.
   */
  function _townscanada_get_province_town_prefix() {
-   $current_path = \Drupal::service('path.current')->getPath();
-   $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+   // The address as requested, before custom routing rewrites it (category
+   // pages are rewritten to /town-listings-router/{tid}/...). If someone
+   // opens an internal path that has an alias, use the alias instead.
+   $requested = \Drupal::request()->getPathInfo();
+   $alias = \Drupal::service('path_alias.manager')->getAliasByPath($requested);
 
    // Parse the alias
    $segments = explode('/', trim($alias, '/'));
