@@ -1,0 +1,101 @@
+{#
+/**
+ * @file
+ * The "listings" View, page_2 display: the listings on town + category
+ * pages (/province/town/category/...).
+ *
+ * Same as views-view.html.twig, with the listing category menu
+ * (hierarchical_taxonomy_menu) in the header after the View's own header,
+ * as on town pages (views-view--taxonomy-blocks--block-1.html.twig), and,
+ * when there are no results, an "Add Listing" button for logged-in users or
+ * a button opening the login modal for visitors. Views picks this template by its name
+ * (views-view--<view id>--<display id>).
+ */
+#}
+{%
+  set classes = [
+    'view',
+    'view-' ~ id|clean_class,
+    'view-id-' ~ id,
+    'view-display-id-' ~ display_id,
+    dom_id ? 'js-view-dom-id-' ~ dom_id,
+  ]
+%}
+<div{{ attributes.addClass(classes) }}>
+  {{ title_prefix }}
+  {% if title %}
+    {{ title }}
+  {% endif %}
+  {{ title_suffix }}
+  <div class="view-header">
+    {{ header }}
+    {{ drupal_block('hierarchical_taxonomy_menu', {
+      label_display: false,
+      vocabulary: 'listing_category|',
+      max_depth: 100,
+      dynamic_block_title: false,
+      collapsible: false,
+      stay_open: false,
+      interactive_parent: false,
+      hide_block: false,
+      use_image_style: false,
+      image_height: 16,
+      image_width: 16,
+      image_style: 'gallery_165x106',
+      max_age: '0',
+      base_term: '',
+      dynamic_base_term: false,
+      show_count: 0,
+      referencing_field: '_none',
+      calculate_count_recursively: false,
+      exclude_empty_terms: false,
+    }) }}
+  </div>
+  {% if exposed %}
+    <div class="view-filters">
+      {{ exposed }}
+    </div>
+  {% endif %}
+  {% if attachment_before %}
+    <div class="attachment attachment-before">
+      {{ attachment_before }}
+    </div>
+  {% endif %}
+
+  {% if rows %}
+    <div class="view-content">
+      {{ rows }}
+    </div>
+  {% else %}
+    <div class="view-empty">
+         <p class="title">No {{ view.argument.field_listing_category_target_id.getTitle() }} listings found in {{ view.argument.field_canadian_towns_target_id.getTitle() }}.</p>
+         {% if logged_in %}
+           <p class="title"><a href="{{ path('node.add', {'node_type': 'listing'}) }}" class="btn btn-primary">{{ 'Add Listing'|t }}</a></p>
+         {% else %}
+           <p class="title"><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">{{ 'Log in to add a listing'|t }}</button></p>
+         {% endif %}
+       </div>
+  {% endif %}
+
+  {% if pager %}
+    {{ pager }}
+  {% endif %}
+  {% if attachment_after %}
+    <div class="attachment attachment-after">
+      {{ attachment_after }}
+    </div>
+  {% endif %}
+  {% if more %}
+    {{ more }}
+  {% endif %}
+  {% if footer %}
+    <div class="view-footer">
+      {{ footer }}
+    </div>
+  {% endif %}
+  {% if feed_icons %}
+    <div class="feed-icons">
+      {{ feed_icons }}
+    </div>
+  {% endif %}
+</div>
