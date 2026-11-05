@@ -22,7 +22,7 @@
   {{ include('townscanada:town-banner', {
     attributes: create_attribute({'class': ['tc-town-banner--full']}),
     title: title,
-    heading_level: 2,
+    heading_level: view.current_display == 'block_2' ? 2 : 1,
     eyebrow: province,
     province_code: code,
   }, false) }}

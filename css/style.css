@@ -2052,3 +2052,9 @@ a:hover .user-picture img,
 .ui-autocomplete a {
   text-decoration: none !important;
 }
+/* Page title:
+- Listings  */
+.tc-page__title {
+  font-size: 1.5rem;
+  margin: 1rem 0;
+}
