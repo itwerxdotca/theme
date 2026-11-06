@@ -1,9 +1,11 @@
 {#
 /**
  * @file
- * node--listing--full.html.twig
+ * node--point-of-interest--full.html.twig
  *
- * Full view mode for listing nodes. Renders a Bootstrap accordion containing:
+ * Full view mode for point of interest nodes. Title with category
+ * (components/place-header), contact details (components/contact-details),
+ * then a Bootstrap accordion containing:
  *  - About (open)
  *  - Amenities (paragraph bundle listing_amenities) — only shown when paragraph has content
  *  - Reviews (closed) — comment form rendered inside accordion
@@ -30,7 +32,42 @@
   <div class="container">
     <div class="row">
       <div class="content col-12">
-      <h1 class="tc-page-title">{{ label }}</h1>
+
+        {# Title with the category icon and name (components/place-header).
+           place_category comes from townscanada_preprocess_node(). #}
+        {{ include('townscanada:place-header', {
+          title: label,
+          category: place_category.label|default(''),
+          category_url: place_category.url|default(''),
+          icon: place_category.icon|default(''),
+          color: place_category.color|default(''),
+        }, false) }}
+
+        {% set town = node.field_canadian_towns.entity %}
+
+        {# Contact details under the title (components/contact-details).
+           Town and province come from the town term, street and postal code
+           from field_poi_address, the map link from field_poi_location.
+           Anything empty is left out by the component. #}
+        {% set lat = node.field_poi_location.lat %}
+        {% set lng = node.field_poi_location.lng %}
+        {% set street = node.field_poi_address.address_line1|default('') %}
+        {% if node.field_poi_address.address_line2 %}
+          {% set street = street ~ ', ' ~ node.field_poi_address.address_line2 %}
+        {% endif %}
+        {{ include('townscanada:contact-details', {
+          street: street,
+          locality: town ? town.label : node.field_poi_address.locality|default(''),
+          province: town.field_province_code.value|default(node.field_poi_address.administrative_area)|default('')|upper,
+          postal_code: node.field_poi_address.postal_code|default(''),
+          map_url: lat and lng ? 'https://www.openstreetmap.org/?mlat=' ~ lat ~ '&mlon=' ~ lng ~ '#map=17/' ~ lat ~ '/' ~ lng : '',
+          phone: node.field_poi_phone.value|default(''),
+          email: node.field_poi_email.value|default(''),
+          website: node.field_poi_website.uri|default(''),
+        }, false) }}
+        {# Town cache tags, so renaming a town updates this page. #}
+        {% if town %}{{ {'#cache': {tags: town.getCacheTags()}} }}{% endif %}
+
         {# Render main node content but suppress fields we will render inside the accordion.
            Important: exclude both singular 'comment' and plural 'comments' keys so the
            comment form/list does not print at the top of the node. #}
@@ -40,13 +77,14 @@
              'field_listing_components',
              'comment',
              'comments',
-             'field_listing_address',
-             'field_listing_category',
-             'field_listing_phone',
-             'field_listing_website',
+             'field_poi_category',
+             'field_poi_address',
+             'field_poi_location',
+             'field_poi_phone',
+             'field_poi_email',
+             'field_poi_website',
              'langcode',
              'group_local_impact_score',
-             'field_listing_tags',
              'field_location_vocabulary'
            ) }}
 

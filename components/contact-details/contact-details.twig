@@ -1,0 +1,99 @@
+{#
+/**
+ * @file
+ * Contact details: address, phone, email and website for a place
+ * (business listing, point of interest), under its title.
+ *
+ *   {{ include('townscanada:contact-details', {
+ *     street: '9708 Main Street', locality: 'Fort McMurray', province: 'AB',
+ *     postal_code: 'T9H 1T6', phone: '780-791-7006',
+ *     website: 'https://tavernonmainymm.com/',
+ *   }, false) }}
+ */
+#}
+
+{# "Fort McMurray, AB T9H 1T6" #}
+{% set region_line = (province ~ ' ' ~ postal_code)|trim %}
+{% set place_line = locality|default('') %}
+{% if region_line %}
+  {% set place_line = place_line ? place_line ~ ', ' ~ region_line : region_line %}
+{% endif %}
+{% set has_address = street or place_line %}
+
+{# tel: link from the number as entered: 780-791-7006 -> +17807917006 #}
+{% set tel = phone|default('')|replace({' ': '', '-': '', '.': '', '(': '', ')': ''}) %}
+{% if tel|length == 10 %}
+  {% set tel = '+1' ~ tel %}
+{% elseif tel|length == 11 and tel starts with '1' %}
+  {% set tel = '+' ~ tel %}
+{% endif %}
+
+{% set has_email = email and '@' in email %}
+
+{# Only real web addresses; shown without https://www. and trailing slash. #}
+{% set has_website = website and website matches '{^https?://}i' %}
+{% set website_label = has_website ? website|replace({'https://www.': '', 'http://www.': '', 'https://': '', 'http://': ''})|trim('/', 'right') : '' %}
+
+{% if has_address or phone or has_email or has_website %}
+<address{{ attributes.addClass('tc-contact-details') }}>
+  <ul class="tc-contact-details__list">
+
+    {% if has_address %}
+      <li class="tc-contact-details__item">
+        <span class="tc-contact-details__icon">
+          <i class="la la-map-marker" aria-hidden="true"></i>
+        </span>
+        <div class="tc-contact-details__text">
+          <span class="tc-contact-details__label">{{ 'Address'|t }}</span>
+          {% set address_lines %}
+            {% if street %}<span class="tc-contact-details__line">{{ street }}</span>{% endif %}
+            {% if place_line %}<span class="tc-contact-details__line">{{ place_line }}</span>{% endif %}
+          {% endset %}
+          {% if map_url %}
+            <a class="tc-contact-details__value" href="{{ map_url }}" target="_blank" rel="noopener">{{ address_lines }}<span class="visually-hidden"> {{ '(map, opens in a new tab)'|t }}</span></a>
+          {% else %}
+            <span class="tc-contact-details__value">{{ address_lines }}</span>
+          {% endif %}
+        </div>
+      </li>
+    {% endif %}
+
+    {% if phone %}
+      <li class="tc-contact-details__item">
+        <span class="tc-contact-details__icon">
+          <i class="la la-phone" aria-hidden="true"></i>
+        </span>
+        <div class="tc-contact-details__text">
+          <span class="tc-contact-details__label">{{ 'Phone'|t }}</span>
+          <a class="tc-contact-details__value" href="tel:{{ tel }}">{{ phone }}</a>
+        </div>
+      </li>
+    {% endif %}
+
+    {% if has_email %}
+      <li class="tc-contact-details__item">
+        <span class="tc-contact-details__icon">
+          <i class="la la-envelope" aria-hidden="true"></i>
+        </span>
+        <div class="tc-contact-details__text">
+          <span class="tc-contact-details__label">{{ 'Email'|t }}</span>
+          <a class="tc-contact-details__value" href="mailto:{{ email }}">{{ email }}</a>
+        </div>
+      </li>
+    {% endif %}
+
+    {% if has_website %}
+      <li class="tc-contact-details__item">
+        <span class="tc-contact-details__icon">
+          <i class="la la-external-link-alt" aria-hidden="true"></i>
+        </span>
+        <div class="tc-contact-details__text">
+          <span class="tc-contact-details__label">{{ 'Website'|t }}</span>
+          <a class="tc-contact-details__value" href="{{ website }}" target="_blank" rel="noopener">{{ website_label }}<span class="visually-hidden"> {{ '(opens in a new tab)'|t }}</span></a>
+        </div>
+      </li>
+    {% endif %}
+
+  </ul>
+</address>
+{% endif %}

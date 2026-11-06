@@ -1,0 +1,39 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Contact details
+status: stable
+description: 'Address, phone, email and website for a place (business listing, point of interest), under its title. Each line only shows when it has a value, and nothing prints when all are empty. Stacks on phones; side by side from 768px.'
+
+props:
+  type: object
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    street:
+      type: string
+      title: Street
+      description: 'e.g. "9708 Main Street".'
+    locality:
+      type: string
+      title: Town
+    province:
+      type: string
+      title: Province code
+      description: 'e.g. "AB".'
+    postal_code:
+      type: string
+      title: Postal code
+    map_url:
+      type: string
+      title: Map link
+      description: 'Where the address links to. Leave empty for no link.'
+    phone:
+      type: string
+      title: Phone
+      description: 'As entered, e.g. "780-791-7006". The tel: link is built from it.'
+    email:
+      type: string
+      title: Email
+    website:
+      type: string
+      title: Website
+      description: 'Full URL starting with http:// or https://. Anything else is not shown.'

@@ -400,3 +400,74 @@ function townscanada_preprocess_menu__mobile_tabs(array &$variables): void {
   $variables['is_front'] = \Drupal::service('path.matcher')->isFrontPage();
   $variables['#cache']['contexts'][] = 'url.path.is_front';
 }
+
+
+/**
+ * Implements hook_preprocess_HOOK() for node templates.
+ *
+ * Listing and point of interest pages: the category name, link and circle
+ * for the page title (components/place-header).
+ */
+function townscanada_preprocess_node(array &$variables): void {
+  $node = $variables['node'];
+  $category_fields = [
+    'listing' => 'field_listing_category',
+    'point_of_interest' => 'field_poi_category',
+  ];
+  $field = $category_fields[$node->bundle()] ?? NULL;
+  if (!$field || $variables['view_mode'] !== 'full' || !$node->hasField($field) || $node->get($field)->isEmpty()) {
+    return;
+  }
+  $category = $node->get($field)->entity;
+  if (!$category) {
+    return;
+  }
+
+  // Listings link to this category in the listing's town (the
+  // town_listings_router page), points of interest to the category page.
+  $url = $category->toUrl()->toString();
+  if ($node->bundle() === 'listing' && $node->hasField('field_canadian_towns') && !$node->get('field_canadian_towns')->isEmpty()) {
+    $url = \Drupal\Core\Url::fromRoute('town_listings_router.listing_page', [
+      'town_tid' => $node->get('field_canadian_towns')->target_id,
+      'category_tid' => $category->id(),
+    ])->toString();
+  }
+
+  $circle = _townscanada_category_circle($category);
+  $variables['place_category'] = [
+    'label' => $category->label(),
+    'url' => $url,
+    'icon' => $circle['icon'],
+    'color' => $circle['color'],
+  ];
+  // A new name, icon or colour on the category or a parent updates the page.
+  $variables['#cache']['tags'] = \Drupal\Core\Cache\Cache::mergeTags($variables['#cache']['tags'] ?? [], $circle['cache_tags']);
+}
+
+/**
+ * Returns the icon and colour for a category's circle.
+ *
+ * Uses the category's own icon and colour; if it has none, the nearest
+ * parent's, the same way _townscanada_term_province_code() finds a town's
+ * province. As in the category menu, a term only counts when it has both
+ * an icon and a colour.
+ *
+ * @return array
+ *   'icon' and 'color' (empty strings when no term has them) and
+ *   'cache_tags' for every term looked at.
+ */
+function _townscanada_category_circle($term): array {
+  $circle = ['icon' => '', 'color' => '', 'cache_tags' => []];
+  $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  // loadAllParents() returns the term itself first, then each parent up.
+  foreach ($storage->loadAllParents($term->id()) as $ancestor) {
+    $circle['cache_tags'] = \Drupal\Core\Cache\Cache::mergeTags($circle['cache_tags'], $ancestor->getCacheTags());
+    if ($ancestor->hasField('field_listing_category_icon') && !$ancestor->get('field_listing_category_icon')->isEmpty()
+      && $ancestor->hasField('field_listing_category_color') && !$ancestor->get('field_listing_category_color')->isEmpty()) {
+      $circle['icon'] = $ancestor->get('field_listing_category_icon')->value;
+      $circle['color'] = $ancestor->get('field_listing_category_color')->value;
+      break;
+    }
+  }
+  return $circle;
+}

@@ -1,0 +1,66 @@
+/**
+ * Place header: lays out the category circle beside the H1. The circle
+ * itself is .category-icon-wrapper from css/style.css; only its size is
+ * set here. Long titles wrap beside the circle, not under it.
+ */
+
+.tc-place-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0.25rem 0 1rem;
+}
+
+.tc-place-header .category-icon-wrapper {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+}
+
+.tc-place-header .category-icon {
+  font-size: 1.5rem;
+}
+
+.tc-place-header__text {
+  min-width: 0;
+  padding-top: 5px;
+}
+
+.tc-place-header .tc-page-title {
+  margin: 0;
+}
+
+.tc-place-header__category {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #495057;
+  text-decoration: none;
+}
+
+a.tc-place-header__category:hover {
+  color: #212529;
+  text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+  .tc-place-header {
+    gap: 16px;
+  }
+
+  .tc-place-header .category-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    margin-top: 1px;
+  }
+
+  .tc-place-header .category-icon {
+    font-size: 1.625rem;
+  }
+
+  .tc-place-header__text {
+    padding-top: 0;
+  }
+}
