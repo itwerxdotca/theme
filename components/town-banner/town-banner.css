@@ -60,6 +60,7 @@
   color: inherit;
 }
 
+.tc-town-banner h1.tc-town-banner__title,
 .tc-town-banner h2.tc-town-banner__title,
 .tc-town-banner h3.tc-town-banner__title {
   font-size: min(1.875rem, calc(100cqi / (var(--chars, 10) * 0.62))); /* up to 30px */

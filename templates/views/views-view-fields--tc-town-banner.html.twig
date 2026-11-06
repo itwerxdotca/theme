@@ -18,11 +18,13 @@
 {% set code = fields.field_province_code.content|render|striptags|trim|lower %}
 {% set province = fields.name_1.content|render|striptags|replace(decode)|trim %}
 
+{# Heading level: H1 on town and province pages (block_1). On town x
+   category pages (block_2) the page has its own H1, so the town name is an H2. #}
 {% if title is not empty %}
   {{ include('townscanada:town-banner', {
     attributes: create_attribute({'class': ['tc-town-banner--full']}),
     title: title,
-    heading_level: 2,
+    heading_level: view.current_display == 'block_2' ? 2 : 1,
     eyebrow: province,
     province_code: code,
   }, false) }}

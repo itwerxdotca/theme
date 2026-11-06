@@ -1,0 +1,30 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Place header
+status: stable
+description: 'The top of a place page (business listing, point of interest): the category circle (as in the category menu) beside the H1, and the category name under the title. No circle when the category and its parents have no icon and colour.'
+
+props:
+  type: object
+  properties:
+    attributes:
+      type: Drupal\Core\Template\Attribute
+    category:
+      type: string
+      title: Category name
+    category_url:
+      type: string
+      title: Category link
+      description: 'Where the category name links to. Leave empty for no link.'
+    icon:
+      type: string
+      title: Icon
+      description: 'Line Awesome classes, e.g. "la la-glass".'
+    color:
+      type: string
+      title: Colour
+      description: 'The colour stored on the category, e.g. "red".'
+
+slots:
+  title:
+    title: Title
+    description: 'The page title, printed inside the H1.'

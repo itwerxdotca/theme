@@ -1,0 +1,40 @@
+{#
+/**
+ * @file
+ * Place header: the category circle beside the H1, the category name under
+ * the title.
+ *
+ * The circle is the same markup as in the category menu
+ * (hierarchical-taxonomy-menu.html.twig), styled by .category-icon-wrapper
+ * in css/style.css. The node templates pass in place_category from
+ * townscanada_preprocess_node():
+ *
+ *   {{ include('townscanada:place-header', {
+ *     title: label,
+ *     category: place_category.label|default(''),
+ *     category_url: place_category.url|default(''),
+ *     icon: place_category.icon|default(''),
+ *     color: place_category.color|default(''),
+ *   }, false) }}
+ */
+#}
+<div{{ attributes.addClass('tc-place-header') }}>
+  {% if icon and color %}
+    <div class="category-icon-wrapper">
+      <svg class="category-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <circle cx="50" cy="50" r="50" fill="{{ color }}" />
+      </svg>
+      <i class="{{ icon }} category-icon" aria-hidden="true"></i>
+    </div>
+  {% endif %}
+  <div class="tc-place-header__text">
+    <h1 class="tc-page-title">{{ title }}</h1>
+    {% if category %}
+      {% if category_url %}
+        <a class="tc-place-header__category" href="{{ category_url }}">{{ category }}</a>
+      {% else %}
+        <span class="tc-place-header__category">{{ category }}</span>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
