@@ -401,7 +401,6 @@ function townscanada_preprocess_menu__mobile_tabs(array &$variables): void {
   $variables['#cache']['contexts'][] = 'url.path.is_front';
 }
 
-
 /**
  * Implements hook_preprocess_HOOK() for node templates.
  *
@@ -423,10 +422,10 @@ function townscanada_preprocess_node(array &$variables): void {
     return;
   }
 
-  // Listings link to this category in the listing's town (the
-  // town_listings_router page), points of interest to the category page.
+  // Link to this category in the node's town (the town_listings_router
+  // page, e.g. "Dams in Cambridge"); without a town, the category page.
   $url = $category->toUrl()->toString();
-  if ($node->bundle() === 'listing' && $node->hasField('field_canadian_towns') && !$node->get('field_canadian_towns')->isEmpty()) {
+  if ($node->hasField('field_canadian_towns') && !$node->get('field_canadian_towns')->isEmpty()) {
     $url = \Drupal\Core\Url::fromRoute('town_listings_router.listing_page', [
       'town_tid' => $node->get('field_canadian_towns')->target_id,
       'category_tid' => $category->id(),

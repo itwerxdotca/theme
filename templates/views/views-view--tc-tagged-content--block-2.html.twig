@@ -1,0 +1,17 @@
+{#
+/**
+ * @file
+ * "Tagged: Article" block on tag pages (tc_tagged_content, block_2): the
+ * story cards under the same section heading as the place lists
+ * (views-view-unformatted--tc-place-list.html.twig), using the view title.
+ */
+#}
+<div{{ attributes.addClass('view', 'view-' ~ id|clean_class, 'view-id-' ~ id, 'view-display-id-' ~ display_id) }}>
+  {{ title_prefix }}
+  {{ title_suffix }}
+  {{ include('townscanada:section', {
+    heading: view.getTitle(),
+    heading_id: 'tc-' ~ id|clean_class ~ '-' ~ display_id|clean_class,
+    content: rows,
+  }, false) }}
+</div>
