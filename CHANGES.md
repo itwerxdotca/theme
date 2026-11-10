@@ -22,6 +22,70 @@ repository. A fresh site needs them for the theme to work as described.
 - **Service worker cache exclusions** (PWA settings): `admin/.*`,
   `user/reset/.*`, `/node/.*`, `user$`, `user/.*`, `flag/.*`, with
   `cache_version` 2. Offline page: `/offline`.
+- **Category menus on town pages** are printed by the View templates
+  `views-view--taxonomy-blocks--block-1.html.twig` (listings) and
+  `--block-2` (points of interest) and by `views-view--listings--page-2`
+  (listing category pages), not placed in Block layout. They list every
+  category; empty town × category pages are kept out of search by
+  `noindex` (see the SEO audit doc). Category icons and colours are set on
+  the category terms (`field_listing_category_icon`,
+  `field_listing_category_color`, a `list_string` of named colours).
+- **View `tc_town_banner`, display `block_2`** (block
+  `townscanada_tc_town_banner_category`, visible on `/town-listings-router/*`):
+  the town banner on town × category pages.
+- **View `taxonomy_blocks`**, displays `block_1` and `block_2`: format
+  Unformatted list (was Bootstrap Grid) and no display title, so the theme's
+  `tc-place-list` template wraps the places in a `<ul>`. `block_2` is placed
+  under `block_1` on town pages.
+- **User Register form display** (`user.user.register`) is on, with only
+  "User name and password" enabled. The login modal (`tclogin` module) builds
+  its Register tab with it. The user picture field is not required.
+- **Blocks:** the Province/territory menu in the Left offcanvas region
+  (`townscanada_provinceterritorymenu_offcanvas`), next to the main menu; the
+  User account menu in the Right offcanvas region. The "Mobile tabs" menu
+  has a Home link.
+
+## 2026-10-25 to 2026-11-09: App layout (Stage 2)
+
+- **Category menu** (`hierarchical-taxonomy-menu.html.twig`,
+  `js/header-height.js`, `css/style.css` section 9): one scrolling row of
+  icons, edge to edge on phones and centred on desktop. A category opens a
+  panel underneath: full width on phones, 16rem under its icon on desktop.
+  The panels are moved out of the scrolling row by `taxonomyMenuPanels` in
+  `header-height.js`, because Safari clips them inside it. Subcategories that
+  have their own subcategories stay closed until tapped, with a `›` marker.
+  On desktop with a mouse, categories and subcategories also open on hover.
+  The menu prints nothing on province pages. `js/taxonomy-menu-reparent.js`
+  was removed.
+- **Category menu links** use the visible address (`/province/town/...`), not
+  `/town-listings-router/...` (`townscanada.theme`).
+- **No results** on town pages and town × category pages: "No listings found
+  in {town}." (or "No {category} listings found in {town}.") with an "Add
+  Listing" button for logged-in users, or a button opening the login modal
+  for visitors. Points of interest have the same in
+  `views-view--taxonomy-blocks--block-2.html.twig`.
+- **Body class:** `<body>` gets `page-node-type-<type>` instead of
+  `node--type-<type>` (`townscanada_preprocess_html()`), so rules written for a
+  content type no longer hit blocks and the footer. This fixed the pencil
+  icon showing on every field.
+- **Listing field icons:** each field's own icon (`css/style.css`); the
+  duplicate Font Awesome block in `css/components/listing.css` was removed.
+- **Shop icon** in the header shows on phones too (`page.html.twig`). From the
+  installed app it opens in the phone's browser.
+- **Account menu** in the right offcanvas stacks like the main menu:
+  `templates/navigation/menu--account.html.twig` (new) uses the base theme's
+  `menu_main` component instead of `menu_columns`.
+- **Footer:** links are white on the dark footer (they were red, 2.65:1
+  contrast); the footer menu is centred; the copyright line is printed by
+  `templates/block/block--townscanada-copyright.html.twig` (new) with the
+  current year (`'now'|date('Y')`), so the wording is edited there, not in
+  the block's body.
+- **Tap size:** links in cards (category, phone) are at least 1.5rem tall.
+- **Checked:** keyboard (tab order, focus rings, left offcanvas, search and
+  login modals, category menu with Enter, arrows and Escape) and axe
+  (WCAG 2.2 AA) at 390px and 1280px on the front page, a province, two towns,
+  a town × category page, a listing, a point of interest and Stories. No
+  problems left apart from a false alarm on the closed left offcanvas.
 
 ## 2026-10-25: "Get the app" modal (Stage 1)
 
