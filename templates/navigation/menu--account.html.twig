@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ * User account menu (right offcanvas).
+ *
+ * The base theme shows this menu with its menu_columns component, which puts
+ * the links in a row (nav flex-row). This uses the menu_main component
+ * instead, the same as the main menu in the left offcanvas, so the links
+ * stack one per line and both menus match.
+ *
+ * Available variables:
+ * - items: A nested list of menu items (see the base theme's
+ *   menu--account.html.twig).
+ */
+#}
+{{ include('bootstrap:menu_main', {
+    items: items
+  })
+}}

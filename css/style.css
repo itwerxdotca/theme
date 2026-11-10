@@ -2052,9 +2052,13 @@ a:hover .user-picture img,
 .ui-autocomplete a {
   text-decoration: none !important;
 }
-/* Page title:
-- Listings  */
-.tc-page__title {
+
+/* Main heading of a page (about, categories, tags, stories, listings,
+   points of interest). One class for the whole site. Centred, except
+   beside the category circle on listings and points of interest
+   (components/place-header/place-header.css). */
+.tc-page-title {
   font-size: 1.5rem;
   margin: 1rem 0;
+  text-align: center;
 }

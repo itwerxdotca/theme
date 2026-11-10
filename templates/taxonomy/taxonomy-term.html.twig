@@ -1,0 +1,28 @@
+{#
+/**
+ * @file
+ * A taxonomy term: categories, story categories, tags and any other
+ * vocabulary without its own template (towns use
+ * taxonomy-term--canadian-towns.html.twig). On the term's own page the
+ * name is the H1, with the site-wide .tc-page-title class; elsewhere it
+ * is a linked heading. Otherwise the same as the base theme's template.
+ */
+#}
+{%
+  set classes = [
+    'taxonomy-term',
+    'vocabulary-' ~ term.bundle|clean_class,
+  ]
+%}
+<div{{ attributes.setAttribute('id', 'taxonomy-term-' ~ term.id).addClass(classes) }}>
+  {{ title_prefix }}
+  {% if page %}
+    <h1{{ title_attributes.addClass('tc-page-title') }}>{{ term.label }}</h1>
+  {% else %}
+    <h2><a href="{{ url }}">{{ term.label }}</a></h2>
+  {% endif %}
+  {{ title_suffix }}
+  <div class="content">
+    {{ content }}
+  </div>
+</div>

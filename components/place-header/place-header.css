@@ -28,6 +28,7 @@
 
 .tc-place-header .tc-page-title {
   margin: 0;
+  text-align: left;
 }
 
 .tc-place-header__category {
