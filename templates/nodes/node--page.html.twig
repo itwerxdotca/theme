@@ -2,7 +2,8 @@
 /**
  * @file
  * A basic page (About ...). On its own page the title is the H1, with the
- * site-wide .tc-page-title class; elsewhere a linked heading. Otherwise the
+ * site-wide .tc-page-title class (on the front page, page--front.html.twig
+ * prints it instead); elsewhere a linked heading. Otherwise the
  * same as the base theme's node.html.twig.
  */
 #}
@@ -20,9 +21,13 @@
 <article{{ attributes.addClass(classes) }}>
   <header>
     {{ title_prefix }}
-    {% if page %}
+    {# On the front page the title is printed by page--front.html.twig,
+       above "Where to next?", so not here. The front page path comes from
+       Basic site settings (Twig Tweak's drupal_config). #}
+    {% set is_front_node = drupal_config('system.site', 'page.front') == '/node/' ~ node.id %}
+    {% if page and not is_front_node %}
       <h1{{ title_attributes.addClass('tc-page-title') }}>{{ label }}</h1>
-    {% elseif label %}
+    {% elseif label and not page %}
       <h2{{ title_attributes.addClass('node__title') }}>
         <a href="{{ url }}" rel="bookmark">{{ label }}</a>
       </h2>

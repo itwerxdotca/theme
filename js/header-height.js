@@ -105,4 +105,47 @@
   }
   };
 
+  /**
+   * Front page "Show what's near me" button (page--front.html.twig).
+   *
+   * Asks for the location only when tapped. With a fix better than 1 km it
+   * goes to /near-me/<lat>,<lng><=50km (View tc_near_me). If location is
+   * refused, takes longer than 10 seconds or is too rough, it stays on the
+   * page and says why in the status line under the button.
+   */
+  Drupal.behaviors.townscanadaNearMe = {
+    attach: function (context) {
+      once('tc-near-me', '[data-tc-near-me]', context).forEach(function (button) {
+        var status = button.parentNode.querySelector('.tc-near-me-status');
+        var say = function (text) {
+          if (status) {
+            status.textContent = text;
+          }
+        };
+
+        button.addEventListener('click', function () {
+          if (!('geolocation' in navigator)) {
+            say(Drupal.t('This browser can\'t share your location. You can still search for a town above.'));
+            return;
+          }
+          button.disabled = true;
+          say(Drupal.t('Finding where you are…'));
+
+          navigator.geolocation.getCurrentPosition(function (position) {
+            var c = position.coords;
+            if (c.accuracy > 1000) {
+              button.disabled = false;
+              say(Drupal.t('Your location is too rough to find places near you. Try again, or search for a town above.'));
+              return;
+            }
+            window.location.href = Drupal.url('near-me/' + c.latitude.toFixed(4) + ',' + c.longitude.toFixed(4) + encodeURIComponent('<=50km'));
+          }, function () {
+            button.disabled = false;
+            say(Drupal.t('We couldn\'t get your location. You can still search for a town above.'));
+          }, {enableHighAccuracy: false, timeout: 10000, maximumAge: 300000});
+        });
+      });
+    }
+  };
+
 })(Drupal, once);

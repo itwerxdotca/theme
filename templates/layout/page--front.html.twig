@@ -4,7 +4,8 @@
  * Front page: the Discover home screen.
  *
  * The same page as page.html.twig, with the screen title and the
- * Town search block (helper_module) above the front page's content.
+ * Town search block (helper_module) and the "Show what's near me" button
+ * above the front page's content.
  * Blocks placed in the Content region follow underneath; give their views the CSS class "tc-place-list" or "tc-town-tiles" to show
  * them as the design's place rows or town tiles.
  */
@@ -13,7 +14,13 @@
 
 {% block main_content %}
   <div class="tc-screen">
-    <h1 class="tc-screen__title">{{ 'Where to next?'|t }} <span class="tc-screen__subtitle">{{ 'Discover Canada, one town at a time'|t }}</span></h1>
+    {# The front page node's title is the page's H1 here, above "Where to
+       next?"; node--page.html.twig leaves it out of the node itself on the
+       front page. #}
+    {% if node %}
+      <h1 class="tc-page-title">{{ node.label }}</h1>
+    {% endif %}
+    <h2 class="tc-screen__subtitle">{{ 'Where to next?'|t }}</h2>
     {# Town search block from helper_module: Province, then Town (switched
        on once a province is picked), then Search, which goes to the town's
        page. The wrappers match the search modal so it has the same look. #}
@@ -25,6 +32,14 @@
           </div>
         </div>
       </div>
+    </div>
+    {# Near me: asks for the phone's location only when tapped, then goes to
+       /near-me/<lat>,<lng><=50km (View tc_near_me). js/header-height.js
+       (townscanadaNearMe) does the asking; the status line says why it
+       stayed here if location is refused, slow or too rough. #}
+    <div class="tc-near-me-cta text-center my-3">
+      <button type="button" class="btn btn-primary" data-tc-near-me>{{ "Show what's near me"|t }}</button>
+      <p class="tc-near-me-status small mt-2 mb-0" role="status" aria-live="polite"></p>
     </div>
     {{ page.content }}
   </div>
