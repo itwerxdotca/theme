@@ -1,0 +1,18 @@
+{#
+/**
+ * @file
+ * Copyright block in the footer (block townscanada_copyright).
+ *
+ * Prints the copyright line here instead of the block's body text, so the
+ * year is always the current one. The year is part of the cached page, so
+ * it changes with the first cache clear (drush cr) after January 1.
+ * Change the wording here, not in the block's body.
+ */
+#}
+<div{{ attributes }}>
+  {{ title_prefix }}
+  {{ title_suffix }}
+  <div class="content">
+    <div class="text-center">© Copyright <a href="https://it-werx.ca" target="_blank" rel="noopener">iT-werX</a> {{ 'now'|date('Y') }}. All Rights Reserved.</div>
+  </div>
+</div>

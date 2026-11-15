@@ -2058,3 +2058,28 @@ a:hover .user-picture img,
   font-size: 1.5rem;
   margin: 1rem 0;
 }
+
+/* Footer links: white on the dark footer, like the About link. The site's
+   red link colour is too dark to read there (2.65:1 contrast; WCAG asks
+   for 4.5:1). Buttons in the footer keep their own colours. */
+footer[role="contentinfo"] a:not(.btn) {
+  color: #fff;
+}
+footer[role="contentinfo"] a:not(.btn):hover,
+footer[role="contentinfo"] a:not(.btn):focus {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* Card links (category, phone): at least 1.5rem tall so they are easy to
+   tap (WCAG 2.2 target size, 24px). */
+.tc-card .card-text a:not(.btn) {
+  display: inline-block;
+  min-height: 1.5rem;
+  line-height: 1.5rem;
+}
+
+/* Footer menu (Contact, Site Map): centred under the copyright line. */
+.menu--footer .nav {
+  justify-content: center;
+}
