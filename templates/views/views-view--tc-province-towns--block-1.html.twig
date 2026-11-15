@@ -1,0 +1,56 @@
+{#
+/**
+ * @file
+ * The "tc_province_towns" View, block_1 display: towns with places on
+ * province pages.
+ *
+ * The tiles and their "Towns with places" heading come from
+ * views-view-unformatted--tc-place-list.html.twig (the View's CSS class is
+ * tc-town-tiles). With no towns with places: the same heading over the
+ * View's no-results text. After either: "Know a place here?" with an "Add
+ * Listing" button for logged-in users, or a button opening the login modal
+ * for visitors (page.html.twig, #loginModal). The button is here because it
+ * depends on who is looking, which a View's text cannot do. Views picks this
+ * template by its name (views-view--<view id>--<display id>).
+ */
+#}
+{%
+  set classes = [
+    'view',
+    'view-' ~ id|clean_class,
+    'view-id-' ~ id,
+    'view-display-id-' ~ display_id,
+    dom_id ? 'js-view-dom-id-' ~ dom_id,
+  ]
+%}
+<div{{ attributes.addClass(classes) }}>
+  {{ title_prefix }}
+  {{ title_suffix }}
+
+  {% if rows %}
+    <div class="view-content">
+      {{ rows }}
+    </div>
+  {% else %}
+    {{ include('townscanada:section', {
+      heading: 'Towns with places'|t,
+      heading_id: 'tc-province-towns-empty',
+      content: empty,
+    }, false) }}
+  {% endif %}
+
+  {% embed 'townscanada:section' with {
+    heading: 'Know a place here?'|t,
+    heading_id: 'tc-province-towns-add',
+    logged_in: logged_in,
+  } only %}
+    {% block content %}
+      <p>{{ 'Add a business or a point of interest.'|t }}</p>
+      {% if logged_in %}
+        <p><a href="{{ path('node.add', {'node_type': 'listing'}) }}" class="btn btn-primary">{{ 'Add Listing'|t }}</a></p>
+      {% else %}
+        <p><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">{{ 'Log in to add a listing'|t }}</button></p>
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+</div>

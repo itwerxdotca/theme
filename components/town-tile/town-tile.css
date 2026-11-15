@@ -1,7 +1,12 @@
-.tc-town-tiles {
+/* The tile grid. A View with the CSS class "tc-town-tiles" also puts that
+   class on its outer wrapper (.view), which must stay a plain block, or the
+   whole View is squeezed into one grid cell. Tiles are at least 11rem wide
+   and as many fit as the screen allows: two on a phone, more on wider
+   screens. */
+.tc-town-tiles:not(.view) {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.75rem;
 }
 
 .tc-town-tile {
