@@ -12,11 +12,24 @@
 }
 
 .tc-town-banner__band {
-  /* Lets the title size itself to the band's width (cqi units below). */
-  container-type: inline-size;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   padding: 16px 16px 14px;
   background: var(--province, #e9ecef);
   color: var(--province-ink, #212529);
+}
+
+/* The eyebrow and name; the toggle (if any) sits to their right. */
+.tc-town-banner__heading {
+  flex: 1 1 auto;
+  min-width: 0;
+  /* Lets the title size itself to the space it has (cqi units below). */
+  container-type: inline-size;
+}
+
+.tc-town-banner__toggle {
+  flex-shrink: 0;
 }
 
 .tc-town-banner__eyebrow {
@@ -43,7 +56,7 @@
 /* The name stays on one line in a fixed-height line box, so the band is
    the same height for every town and province. Long names shrink to fit:
    Courier is monospaced (each letter 0.6em wide), so the size that fits
-   is the band width divided by (letters x 0.62); --chars comes from the
+   is the heading's width divided by (letters x 0.62); --chars comes from the
    template. Anything still too long ends in an ellipsis. */
 .tc-town-banner .tc-town-banner__title {
   height: 2.75rem;

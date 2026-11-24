@@ -11,6 +11,8 @@
  * - field_province_code: the two-letter code (on, bc ...).
  * - name_1: the parent term's name, i.e. the province, through the
  *   "Parent term" relationship. Empty on a province's own page.
+ * - link_flag: the town's Bucket List (towns) flag link, through the
+ *   "Flags" relationship (flag bucket_list_town, current user).
  */
 #}
 {% set decode = {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&nbsp;': ' '} %}
@@ -20,6 +22,24 @@
 
 {# Heading level: H1 on town and province pages (block_1). On town x
    category pages (block_2) the page has its own H1, so the town name is an H2. #}
+{# Bucket list toggle, top right of the band, on towns only (not on a
+   province's own page, where there is no parent province name). Logged in:
+   the flag link (field link_flag, flag bucket_list_town, styled by
+   flag--bucket-list-town.html.twig). Visitors: the same icon, opening the
+   login modal and coming back to the town afterwards (js/tclogin.js). #}
+{% set toggle = '' %}
+{% if province is not empty %}
+  {% set toggle %}
+    {% if logged_in %}
+      {{ fields.link_flag.content }}
+    {% else %}
+      <div class="flag flag-bucket-list-town action-flag">
+        <button type="button" class="tc-bucket-toggle" aria-label="{{ 'Add to bucket list'|t }}" title="{{ 'Add to bucket list'|t }}" data-bs-toggle="modal" data-bs-target="#loginModal" data-login-destination="{{ path('entity.taxonomy_term.canonical', {'taxonomy_term': row._entity.id}) }}"><i class="fa-solid fa-bucket" aria-hidden="true"></i></button>
+      </div>
+    {% endif %}
+  {% endset %}
+{% endif %}
+
 {% if title is not empty %}
   {{ include('townscanada:town-banner', {
     attributes: create_attribute({'class': ['tc-town-banner--full']}),
@@ -27,5 +47,6 @@
     heading_level: view.current_display == 'block_2' ? 2 : 1,
     eyebrow: province,
     province_code: code,
+    toggle: toggle,
   }, false) }}
 {% endif %}

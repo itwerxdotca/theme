@@ -9,14 +9,17 @@
           const tabPane = modal.querySelector(`#${tabName}`);
           if (!tabPane) return;
 
-          // Optionally skip reloading if already loaded:
-          if (tabPane.dataset.loaded === "1") return;
+          // Optionally skip reloading if already loaded (for the same
+          // destination; see the trigger handler below):
+          if (tabPane.dataset.loaded === "1" && tabPane.dataset.destination === (modal.dataset.destination || "")) return;
 
           // Show spinner
           tabPane.innerHTML = '<div class="ajax-form-loading text-center py-5"><div class="spinner-border"></div></div>';
 
           const ajaxSettings = {
-            url: Drupal.url('modal/tclogin/' + tabName),
+            // With a destination, Drupal's login and register forms send the
+            // user back there afterwards instead of to their account page.
+            url: Drupal.url('modal/tclogin/' + tabName) + (modal.dataset.destination ? '?destination=' + encodeURIComponent(modal.dataset.destination) : ''),
             base: tabPane,
             progress: { type: 'throbber' },
             success: function(response) {
@@ -25,6 +28,7 @@
                   tabPane.innerHTML = command.data;
                   Drupal.attachBehaviors(tabPane);
                   tabPane.dataset.loaded = "1";
+                  tabPane.dataset.destination = modal.dataset.destination || "";
                   break;
                 }
               }
@@ -53,6 +57,10 @@
         document.querySelectorAll('[data-bs-target="#loginModal"]').forEach(openModalButton => {
           openModalButton.addEventListener('click', (e) => {
             e.preventDefault();
+            // A trigger with data-login-destination (the Bucket list button
+            // for visitors) brings the user back to that page after logging
+            // in or registering; other triggers keep Drupal's default.
+            modal.dataset.destination = openModalButton.dataset.loginDestination || "";
             myModal.show();
           });
         });

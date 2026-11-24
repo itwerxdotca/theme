@@ -1,0 +1,57 @@
+{#
+/**
+ * @file
+ * The "tc_trips" View: the Trips page (page_1 at user/{user}/trips, the
+ * user page's Trips tab; page_2 at /trips, the same page for whoever is
+ * logged in).
+ *
+ * Visitors: "Trips" with a short line and the login button, which brings
+ * them back to /trips afterwards (data-login-destination, js/tclogin.js).
+ * Someone else's Trips tab: "This page is private." Otherwise the View:
+ * its header (the H1, Your trips, the Bucket List heading and Towns), then
+ * Places, or "Places" with a short line when nothing is saved yet.
+ * Views picks this template by its name (views-view--<view id>), for both
+ * pages.
+ */
+#}
+{%
+  set classes = [
+    'view',
+    'view-' ~ id|clean_class,
+    'view-id-' ~ id,
+    'view-display-id-' ~ display_id,
+    dom_id ? 'js-view-dom-id-' ~ dom_id,
+  ]
+%}
+{% set own = display_id != 'page_1' or (view.args[0] ?? '') == user.id %}
+<div{{ attributes.addClass(classes) }}>
+  {{ title_prefix }}
+  {{ title_suffix }}
+
+  {% if not logged_in %}
+    <h1 class="tc-page-title">{{ 'Trips'|t }}</h1>
+    <p>{{ 'Save towns and places to your bucket list and plan your trips.'|t }}</p>
+    <p><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal" data-login-destination="/trips">{{ 'Log in to see your trips'|t }}</button></p>
+  {% elseif not own %}
+    <h1 class="tc-page-title">{{ 'Trips'|t }}</h1>
+    <p>{{ 'This page is private.'|t }}</p>
+  {% else %}
+    {% if header %}
+      <div class="view-header">
+        {{ header }}
+      </div>
+    {% endif %}
+    {% if rows %}
+      <div class="view-content">
+        {{ rows }}
+      </div>
+    {% else %}
+      {{ include('townscanada:section', {
+        heading: 'Places'|t,
+        heading_id: 'tc-trips-places-empty',
+        heading_level: 3,
+        content: {'#markup': '<p>' ~ 'Nothing saved yet. Tap the bucket on a listing or point of interest to save it here.'|t ~ '</p>'},
+      }, false) }}
+    {% endif %}
+  {% endif %}
+</div>

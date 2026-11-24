@@ -40,3 +40,6 @@ slots:
   actions:
     title: Actions
     description: Buttons under the meta line (Check in, Save, Explore town).
+  toggle:
+    title: Toggle
+    description: 'Optional control top right of the band, e.g. the bucket list toggle.'

@@ -11,6 +11,7 @@
  *
  *   {{ include('townscanada:place-header', {
  *     title: label,
+ *     actions: bucket,   (optional: e.g. the bucket list toggle, top right)
  *     category: place_category.label|default(''),
  *     category_url: place_category.url|default(''),
  *     icon: place_category.icon|default(''),
@@ -37,4 +38,7 @@
       {% endif %}
     {% endif %}
   </div>
+  {% if actions %}
+    <div class="tc-place-header__actions">{{ actions }}</div>
+  {% endif %}
 </div>

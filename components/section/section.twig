@@ -2,12 +2,15 @@
 /**
  * @file
  * App section: Courier heading, optional "See all" link, then content.
+ * heading_level (2 by default) sets the heading's level, e.g. 3 for a
+ * section inside another section.
  */
 #}
 {% set id = heading_id|default('tc-section-' ~ heading|clean_id) %}
+{% set level = heading_level|default(2) %}
 <section{{ attributes.addClass('tc-section').setAttribute('aria-labelledby', id) }}>
   <div class="tc-section__head">
-    <h2 class="tc-section__heading" id="{{ id }}">{{ heading }}</h2>
+    <h{{ level }} class="tc-section__heading" id="{{ id }}">{{ heading }}</h{{ level }}>
     {% if link_url %}
       <a class="tc-section__link" href="{{ link_url }}">{{ link_label|default('See all'|t) }}</a>
     {% endif %}

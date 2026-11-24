@@ -1,0 +1,46 @@
+{#
+/**
+ * @file
+ * The Bucket List flag link (flag bucket_list) as a round icon toggle.
+ *
+ * Same as the Flag module's flag.html.twig (the wrapper classes are what
+ * Flag's AJAX uses to swap the link), with the link shown as a bucket icon
+ * (Font Awesome fa-bucket) in a 44px circle, styled by .tc-bucket-toggle in
+ * css/style.css: white with a green bucket when not saved, red with a white
+ * bucket when saved. The words are in aria-label and title. Visitors get the
+ * same icon from the node templates, opening the login modal.
+ *
+ * Available variables:
+ * - attributes: HTML attributes for the link element.
+ * - title: The flag link title.
+ * - action: 'flag' or 'unflag'.
+ * - flag: The flag object.
+ * - flaggable: The flaggable entity.
+ */
+#}
+{{ attach_library('flag/flag.link') }}
+{% set saved = action == 'unflag' %}
+{% set label = saved ? 'Saved to bucket list'|t : 'Add to bucket list'|t %}
+{%
+  set classes = [
+    'flag',
+    'flag-' ~ flag.id()|clean_class,
+    'js-flag-' ~ flag.id()|clean_class ~ '-' ~ flaggable.id(),
+    saved ? 'action-unflag' : 'action-flag',
+  ]
+%}
+{%
+  set attributes = attributes
+    .setAttribute('rel', 'nofollow')
+    .setAttribute('role', 'button')
+    .setAttribute('aria-pressed', saved ? 'true' : 'false')
+    .setAttribute('aria-label', label)
+    .setAttribute('title', label)
+    .addClass('tc-bucket-toggle')
+%}
+{% if saved %}
+  {% set attributes = attributes.addClass('is-saved') %}
+{% endif %}
+<div class="{{ classes|join(' ') }}">
+  <a{{ attributes }}><i class="fa-solid fa-bucket" aria-hidden="true"></i></a>
+</div>

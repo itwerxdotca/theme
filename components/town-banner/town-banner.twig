@@ -8,6 +8,7 @@
  *     province_code: 'on', meta: 'Georgina · York Region',
  *   } only %}
  *     {% block actions %}...buttons...{% endblock %}
+ *   (optional: toggle, a control top right of the band, e.g. the bucket list)
  *   {% endembed %}
  */
 #}
@@ -18,15 +19,21 @@
 ] %}
 <section{{ attributes.addClass(classes) }}>
   <div class="tc-town-banner__band">
-    {% if badge %}
-      <span class="tc-town-banner__badge">{{ badge }}</span>
-    {% else %}
-      {# Always printed, so the band is the same height with or without the
-         small label (e.g. on a province's own page). #}
-      <p class="tc-town-banner__eyebrow"{% if not eyebrow %} aria-hidden="true"{% endif %}>{% if eyebrow %}{{ eyebrow }}{% else %}&nbsp;{% endif %}</p>
+    <div class="tc-town-banner__heading">
+      {% if badge %}
+        <span class="tc-town-banner__badge">{{ badge }}</span>
+      {% else %}
+        {# Always printed, so the band is the same height with or without the
+           small label (e.g. on a province's own page). #}
+        <p class="tc-town-banner__eyebrow"{% if not eyebrow %} aria-hidden="true"{% endif %}>{% if eyebrow %}{{ eyebrow }}{% else %}&nbsp;{% endif %}</p>
+      {% endif %}
+      {# --chars lets town-banner.css shrink long names to fit on one line. #}
+      <h{{ level }} class="tc-town-banner__title" style="--chars: {{ max(title|length, 1) }}">{{ title }}</h{{ level }}>
+    </div>
+    {# Optional control top right of the band, e.g. the bucket list toggle. #}
+    {% if toggle %}
+      <div class="tc-town-banner__toggle">{{ toggle }}</div>
     {% endif %}
-    {# --chars lets town-banner.css shrink long names to fit on one line. #}
-    <h{{ level }} class="tc-town-banner__title" style="--chars: {{ max(title|length, 1) }}">{{ title }}</h{{ level }}>
   </div>
   {# The actions block is always printed so {% embed %} overrides work;
      town-banner.css hides the body and actions when they are empty. #}

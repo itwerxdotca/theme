@@ -17,6 +17,10 @@ props:
       type: string
       title: Heading id
       description: Used to label the section for screen readers. Generated from the heading when empty.
+    heading_level:
+      type: integer
+      title: Heading level
+      description: 2 by default; 3 for a section inside another section.
     link_url:
       type: string
       title: Link URL
