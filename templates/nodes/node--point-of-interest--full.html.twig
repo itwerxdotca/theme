@@ -35,12 +35,26 @@
 
         {# Title with the category icon and name (components/place-header).
            place_category comes from townscanada_preprocess_node(). #}
+        {# Bucket list toggle, top right of the header: the flag link for
+           logged-in users (flag--bucket-list.html.twig); for visitors the
+           same icon, opening the login modal and bringing them back here
+           afterwards (data-login-destination, js/tclogin.js). #}
+        {% set bucket %}
+          {% if logged_in %}
+            {{ content.flag_bucket_list }}
+          {% else %}
+            <div class="flag flag-bucket-list action-flag">
+              <button type="button" class="tc-bucket-toggle" aria-label="{{ 'Add to bucket list'|t }}" title="{{ 'Add to bucket list'|t }}" data-bs-toggle="modal" data-bs-target="#loginModal" data-login-destination="{{ path('entity.node.canonical', {'node': node.id}) }}"><i class="fa-solid fa-bucket" aria-hidden="true"></i></button>
+            </div>
+          {% endif %}
+        {% endset %}
         {{ include('townscanada:place-header', {
           title: label,
           category: place_category.label|default(''),
           category_url: place_category.url|default(''),
           icon: place_category.icon|default(''),
           color: place_category.color|default(''),
+          actions: bucket,
         }, false) }}
 
         {% set town = node.field_canadian_towns.entity %}
@@ -85,7 +99,8 @@
              'field_poi_website',
              'langcode',
              'group_local_impact_score',
-             'field_location_vocabulary'
+             'field_location_vocabulary',
+             'flag_bucket_list'
            ) }}
 
         {#

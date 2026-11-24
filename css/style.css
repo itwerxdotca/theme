@@ -1241,6 +1241,92 @@ span.office-hours__item-slots {
   margin-top: 0.75rem;
 }
 
+/* --- Bucket list toggle (templates/flag/flag--bucket-list.html.twig) ---
+   A round icon button: white with a green bucket when not saved, red with
+   a white bucket when saved. 44px so it is easy to tap. */
+.flag-bucket-list {
+  display: inline-block;
+}
+.tc-bucket-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid var(--bs-secondary);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--bs-secondary);
+  font-size: 1.25rem;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+}
+.tc-bucket-toggle:hover,
+.tc-bucket-toggle:focus-visible {
+  background: var(--bs-secondary);
+  color: #fff;
+}
+.tc-bucket-toggle.is-saved {
+  border-color: var(--bs-primary);
+  background: var(--bs-primary);
+  color: #fff;
+}
+.tc-bucket-toggle.is-saved:hover,
+.tc-bucket-toggle.is-saved:focus-visible {
+  border-color: #a91515;
+  background: #a91515;
+}
+.tc-bucket-toggle:focus-visible {
+  outline: 2px solid var(--bs-heritage-indigo);
+  outline-offset: 2px;
+}
+
+/* No AJAX spinner next to the bucket icon (it would push the icon
+   aside); the colour change and the tooltip show the tap worked. */
+.flag-bucket-list .ajax-progress,
+.flag-bucket-list-town .ajax-progress {
+  display: none;
+}
+
+/* The "Added to / Removed from your bucket list" message Flag shows after
+   a tap (Flag's .js-flag-message, which it fades out by itself) appears as
+   a small tooltip to the left of the icon instead of in the page. Left,
+   not below: the town banner's band clips anything below it (its
+   clip-path), so the tooltip stays level with the icon. */
+.flag-bucket-list,
+.flag-bucket-list-town {
+  position: relative;
+}
+.flag-bucket-list .js-flag-message,
+.flag-bucket-list-town .js-flag-message {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 10px);
+  z-index: 1070;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  background: #212529;
+  color: #fff;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+.flag-bucket-list .js-flag-message::after,
+.flag-bucket-list-town .js-flag-message::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  border: 6px solid transparent;
+  border-left-color: #212529;
+  transform: translateY(-50%);
+}
+
 /* --- Check-in / Success Teal Actions --- */
 .btn-checkin,
 .btn-add-gallery,

@@ -28,3 +28,6 @@ slots:
   title:
     title: Title
     description: 'The page title, printed inside the H1.'
+  actions:
+    title: Actions
+    description: 'Optional controls shown top right of the header, e.g. the bucket list toggle.'

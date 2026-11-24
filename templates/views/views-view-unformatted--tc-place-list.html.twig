@@ -12,8 +12,20 @@
 #}
 {% set tiles = tc_layout == 'town-tiles' %}
 {% set wrapper = tiles ? 'div' : 'ul' %}
-{# A grouping title when the view groups rows, otherwise the view's title. #}
-{% set heading = title ?: view.getTitle() %}
+{# A grouping title when the view groups rows, otherwise the view's title.
+   Pages whose view title is the page's H1 get their own list heading here
+   (Near me, Trips). The Trips page's Towns and Places sit under its
+   "Bucket List" heading, so they are H3s. #}
+{% set key = view.id() ~ ':' ~ view.current_display %}
+{%
+  set own_headings = {
+    'tc_near_me:page_1': 'Listings near you'|t,
+    'tc_trips:page_1': 'Places'|t,
+    'tc_trips:page_2': 'Places'|t,
+  }
+%}
+{% set heading = title ?: (own_headings[key] ?? view.getTitle()) %}
+{% set heading_level = key in ['tc_trips:page_1', 'tc_trips:page_2', 'tc_trips_towns:block_1'] ? 3 : 2 %}
 
 {% set list %}
   <{{ wrapper }} class="{{ tiles ? 'tc-town-tiles' : 'tc-place-list' }}">
@@ -27,6 +39,7 @@
   {{ include('townscanada:section', {
     heading: heading|render|striptags|trim,
     heading_id: 'tc-' ~ view.id()|clean_class ~ '-' ~ view.current_display|clean_class,
+    heading_level: heading_level,
     content: list,
   }, false) }}
 {% else %}

@@ -22,8 +22,14 @@
 }
 
 .tc-place-header__text {
+  flex: 1 1 auto;
   min-width: 0;
   padding-top: 5px;
+}
+
+/* Top right: the bucket list toggle (css/style.css). */
+.tc-place-header__actions {
+  flex-shrink: 0;
 }
 
 .tc-place-header .tc-page-title {
